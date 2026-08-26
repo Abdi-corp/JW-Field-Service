@@ -326,6 +326,14 @@ main{flex:1;padding:16px 14px 90px;}
 .credit-block h4{font-size:14px;font-weight:700;color:var(--primary-dark);margin-bottom:4px;}
 .credit-block p{font-size:13px;color:var(--text-muted);line-height:1.5;}
 
+.tutorial-block{margin-bottom:20px;}
+.tutorial-block h4{font-size:14px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
+.tutorial-block p{font-size:13px;color:var(--text-muted);line-height:1.6;}
+.tutorial-sub{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.tutorial-sub h5{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.tutorial-sub ol{padding-left:18px;margin-top:4px;}
+.tutorial-sub li{font-size:12.5px;color:var(--text-muted);line-height:1.7;}
+
 @media(max-width:480px){
   .topbar{padding:10px 12px;}
   .topbar h2{font-size:16px;}
@@ -399,7 +407,7 @@ main{flex:1;padding:16px 14px 90px;}
         <div class="grid-3">
           <div class="stat-card"><div class="num" id="in-studies">0</div><div class="lbl">Estudios bíblicos</div></div>
           <div class="stat-card"><div class="num" id="in-visits">0</div><div class="lbl">Revisitas</div></div>
-          <div class="stat-card"><div class="num" id="in-contacts">0</div><div class="lbl">Publicaciones</div></div>
+          
         </div>
 
         <div class="section-title">Mensaje del día</div>
@@ -527,6 +535,16 @@ main{flex:1;padding:16px 14px 90px;}
         <div class="card credits-section" id="creditsContainer"></div>
       </section>
 
+      <section class="view" data-view="sugerencias">
+        <div class="section-title">Enviar sugerencias</div>
+        <div class="card">
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;line-height:1.5;">Cuéntanos qué te gustaría mejorar o agregar en la aplicación. Tu mensaje se enviará por correo.</p>
+          <div class="field"><label>Tu sugerencia</label><textarea id="suggestionText" placeholder="Escribe aquí tu sugerencia o comentario" style="min-height:120px;"></textarea></div>
+          <button class="btn btn-primary btn-block" id="sendSuggestionBtn">Enviar sugerencia</button>
+          <div id="suggestionStatus" style="margin-top:10px;font-weight:500;display:none;"></div>
+        </div>
+      </section>
+
     </main>
 
     <nav class="bottom-nav" id="bottomNav"></nav>
@@ -568,6 +586,78 @@ main{flex:1;padding:16px 14px 90px;}
   </div>
 </div>
 
+<div class="modal-overlay" id="tutorialModal">
+  <div class="modal-sheet">
+    <div class="modal-head"><h3>Cómo usar la app</h3><button class="icon-btn" id="tutorialCloseBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+
+    <div class="tutorial-block">
+      <h4>Mini tutorial</h4>
+      <p>
+        En <b>Inicio</b> verás un resumen de tus horas del mes y accesos rápidos.<br>
+        En <b>Horas</b> puedes usar el cronómetro o registrar tu tiempo manualmente.<br>
+        En <b>Metas</b> revisas tu progreso mensual y anual con tu ritmo actual.<br>
+        En <b>Revisitas</b> y <b>Estudios</b> guardas tus personas de interés, con la opción de tomar su ubicación y trazar cómo llegar.<br>
+        En <b>Calendario</b> ves tus horas, revisitas y estudios organizados por día.<br>
+        En <b>Estadísticas</b> encuentras gráficas de tu servicio reciente.<br>
+        En <b>Perfil</b> editas tus datos y cambias el tema de la app.<br>
+        Toca el ícono en la esquina superior para cambiar entre modo claro y oscuro cuando quieras.
+      </p>
+    </div>
+
+    <div class="tutorial-block">
+      <h4>Cómo poner la app de acceso directo</h4>
+
+      <div class="tutorial-sub">
+        <h5>PC — Chrome / Edge</h5>
+        <p>Abre la URL de tu aplicación.</p>
+        <p style="margin-top:8px;"><b>En Chrome</b></p>
+        <ol>
+          <li>Entra a tu aplicación.</li>
+          <li>Arriba a la derecha pulsa los tres puntos.</li>
+          <li>Busca Guardar y compartir, luego Instalar página como aplicación.</li>
+          <li>Pulsa Instalar.</li>
+        </ol>
+        <p style="margin-top:8px;">Si tu aplicación cumple los requisitos de PWA, aparecerá con el nombre y logo configurados en el manifest.</p>
+        <p style="margin-top:10px;"><b>En Microsoft Edge</b></p>
+        <ol>
+          <li>Abre tu aplicación.</li>
+          <li>Pulsa los tres puntos.</li>
+          <li>Ve a Aplicaciones.</li>
+          <li>Pulsa Instalar este sitio como una aplicación.</li>
+          <li>Pulsa Instalar.</li>
+        </ol>
+        <p style="margin-top:8px;">Después podrás encontrarla en el menú Inicio de Windows como si fuera una aplicación normal.</p>
+      </div>
+
+      <div class="tutorial-sub">
+        <h5>Android</h5>
+        <p><b>En Chrome</b></p>
+        <ol>
+          <li>Abre tu aplicación.</li>
+          <li>Pulsa los tres puntos.</li>
+          <li>Selecciona Añadir a pantalla de inicio o Instalar aplicación.</li>
+          <li>Confirma.</li>
+        </ol>
+        <p style="margin-top:8px;">Si tienes bien configurado el manifest, Android utilizará el nombre e icono que configuraste.</p>
+      </div>
+
+      <div class="tutorial-sub">
+        <h5>iPhone / iPad</h5>
+        <p><b>En Safari</b></p>
+        <ol>
+          <li>Abre tu aplicación.</li>
+          <li>Pulsa el botón Compartir.</li>
+          <li>Baja y selecciona Añadir a pantalla de inicio.</li>
+          <li>Revisa el nombre.</li>
+          <li>Pulsa Añadir.</li>
+        </ol>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-block" id="tutorialStartBtn">Comenzar a usar la app</button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="editHoursModal">
   <div class="modal-sheet">
     <div class="modal-head"><h3>Editar horas del día</h3><button class="icon-btn" id="editHoursClose"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
@@ -586,9 +676,11 @@ const NAV_ITEMS = [
   {id:'calendario', label:'Calendario', icon:'M3 10h18M8 2v4M16 2v4M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z'},
   {id:'estadisticas', label:'Estadísticas', icon:'M18 20V10M12 20V4M6 20v-6'},
   {id:'perfil', label:'Perfil', icon:'M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z'},
+  {id:'tutorial', label:'Tutorial', icon:'M12 22a10 10 0 100-20 10 10 0 000 20zM9.5 9a2.5 2.5 0 015 0c0 1.5-2 2-2 3.5M12 17h.01'},
+  {id:'sugerencias', label:'Sugerencias', icon:'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z'},
 ];
 const BOTTOM_ITEMS = ['inicio','horas','metas','mas'];
-const MORE_ITEMS = ['revisitas','estudios','calendario','estadisticas','perfil'];
+const MORE_ITEMS = ['revisitas','estudios','calendario','estadisticas','perfil','tutorial','sugerencias'];
 
 const GOALS = {
   regular:{monthly:50, annual:600, label:'Precursor Regular'},
@@ -688,7 +780,6 @@ function buildNav(){
       <span>${it.label}</span></button>`;
   }).join('');
 
-  // Créditos
   document.getElementById('creditsContainer').innerHTML = `
     <div class="credit-block">
       <h4>Desarrollo</h4>
@@ -705,7 +796,10 @@ function buildNav(){
   `;
 
   document.querySelectorAll('[data-nav]').forEach(el=>{
-    el.addEventListener('click', ()=> switchView(el.dataset.nav));
+    el.addEventListener('click', ()=>{
+      if(el.dataset.nav==='tutorial'){ openTutorialModal(); return; }
+      switchView(el.dataset.nav);
+    });
   });
 }
 
@@ -713,14 +807,13 @@ function switchView(id){
   const prev = currentView;
   currentView = id;
   document.querySelectorAll('.view').forEach(v=> v.classList.toggle('active', v.dataset.view===id));
-  const titleMap = {inicio:'Inicio',horas:'Horas',metas:'Metas',revisitas:'Revisitas',estudios:'Estudios bíblicos',calendario:'Calendario',estadisticas:'Estadísticas',perfil:'Perfil',mas:'Más'};
+  const titleMap = {inicio:'Inicio',horas:'Horas',metas:'Metas',revisitas:'Revisitas',estudios:'Estudios bíblicos',calendario:'Calendario',estadisticas:'Estadísticas',perfil:'Perfil',mas:'Más',sugerencias:'Sugerencias'};
   document.getElementById('viewTitle').textContent = titleMap[id] || '';
   document.querySelectorAll('.nav-item').forEach(el=> el.classList.toggle('active', el.dataset.nav===id));
   document.querySelectorAll('.bn-item').forEach(el=>{
     const active = el.dataset.nav===id || (el.dataset.nav==='mas' && MORE_ITEMS.includes(id));
     el.classList.toggle('active', active);
   });
-  // Mostrar botón volver si no es inicio
   const backBtn = document.getElementById('globalBackBtn');
   if(id === 'inicio') {
     backBtn.style.display = 'none';
@@ -781,8 +874,6 @@ function renderInicio(){
 
   document.getElementById('in-studies').textContent = state.studies.length;
   document.getElementById('in-visits').textContent = state.visits.length;
-  const pubCount = state.visits.filter(v=>v.publication).length + state.studies.filter(s=>s.publication).length;
-  document.getElementById('in-contacts').textContent = pubCount;
 
   const msgIndex = new Date().getDate() % MOTIVATIONAL.length;
   document.getElementById('in-msg').textContent = MOTIVATIONAL[msgIndex];
@@ -922,6 +1013,35 @@ function openFormModal(title, bodyHtml, onSave){
 }
 function closeFormModal(){ document.getElementById('formModal').classList.remove('open'); }
 
+function attachLocationCapture(){
+  const btn = document.getElementById('f-getloc');
+  if(!btn) return;
+  btn.addEventListener('click', ()=>{
+    if(!navigator.geolocation){ showToast('Geolocalización no disponible en este navegador'); return; }
+    showToast('Obteniendo ubicación...');
+    navigator.geolocation.getCurrentPosition(pos=>{
+      document.getElementById('f-lat').value = pos.coords.latitude;
+      document.getElementById('f-lng').value = pos.coords.longitude;
+      document.getElementById('f-loc-status').textContent = 'Ubicación guardada';
+      showToast('Ubicación capturada');
+    }, err=>{
+      showToast('No se pudo obtener la ubicación');
+    }, { enableHighAccuracy:true, timeout:10000 });
+  });
+}
+
+function locationFieldHtml(v){
+  v = v || {};
+  return `
+    <div class="field">
+      <label>Ubicación en el mapa (opcional)</label>
+      <button type="button" class="btn btn-secondary btn-block" id="f-getloc">Coger punto en el mapa</button>
+      <div id="f-loc-status" style="font-size:12px;color:var(--text-muted);margin-top:6px;">${v.lat && v.lng ? 'Ubicación guardada' : 'Sin ubicación guardada'}</div>
+      <input type="hidden" id="f-lat" value="${v.lat!=null? v.lat : ''}">
+      <input type="hidden" id="f-lng" value="${v.lng!=null? v.lng : ''}">
+    </div>`;
+}
+
 function renderVisits(){
   const list = document.getElementById('visitsList');
   if(state.visits.length===0){ list.innerHTML = emptyState('No tienes revisitas registradas.'); return; }
@@ -940,6 +1060,7 @@ function renderVisits(){
       ${v.notes? `<div class="person-notes"><b>Notas:</b> ${escapeHtml(v.notes)}</div>`:''}
       <div class="person-actions">
         <button class="btn btn-secondary btn-sm" data-edit-visit="${v.id}">Editar</button>
+        ${v.lat!=null && v.lng!=null? `<button class="btn btn-secondary btn-sm" data-map-visit="${v.id}">Cómo llegar</button>`:''}
         <button class="btn btn-success btn-sm" data-convert-visit="${v.id}">Convertir en estudio</button>
         <button class="btn btn-danger btn-sm" data-del-visit="${v.id}">Eliminar</button>
       </div>
@@ -949,10 +1070,15 @@ function renderVisits(){
     state.visits = state.visits.filter(v=>v.id!==b.dataset.delVisit);
     saveState(); renderVisits(); showToast('Revisita eliminada');
   }));
+  list.querySelectorAll('[data-map-visit]').forEach(b=> b.addEventListener('click', ()=>{
+    const visit = state.visits.find(v=>v.id===b.dataset.mapVisit);
+    if(visit && visit.lat!=null && visit.lng!=null){
+      window.open('https://www.google.com/maps/dir/?api=1&destination='+visit.lat+','+visit.lng, '_blank');
+    }
+  }));
   list.querySelectorAll('[data-convert-visit]').forEach(b=> b.addEventListener('click', ()=>{
     const visit = state.visits.find(v=>v.id===b.dataset.convertVisit);
     if(visit){
-      // Crear estudio a partir de la revisita
       const study = {
         id: uid(),
         name: visit.name,
@@ -963,10 +1089,11 @@ function renderVisits(){
         frequency: '',
         progress: '',
         pendingTopics: '',
-        notes: visit.notes || ''
+        notes: visit.notes || '',
+        lat: visit.lat!=null? visit.lat : null,
+        lng: visit.lng!=null? visit.lng : null
       };
       state.studies.push(study);
-      // Eliminar la revisita
       state.visits = state.visits.filter(v=>v.id!==visit.id);
       saveState();
       renderVisits();
@@ -984,6 +1111,7 @@ function visitFormHtml(v){
       <div class="field"><label>Próxima visita</label><input type="date" id="f-next" value="${v.nextVisit||''}"></div>
     </div>
     <div class="field"><label>Dirección</label><input id="f-address" value="${escapeHtml(v.address||'')}"></div>
+    ${locationFieldHtml(v)}
     <div class="field"><label>Teléfono</label><input id="f-phone" value="${escapeHtml(v.phone||'')}"></div>
     <div class="field"><label>Tema hablado</label><input id="f-topic" value="${escapeHtml(v.topic||'')}"></div>
     <div class="field-row">
@@ -999,6 +1127,8 @@ function openVisitForm(id){
   openFormModal(v? 'Editar revisita':'Nueva revisita', visitFormHtml(v), ()=>{
     const name = document.getElementById('f-name').value.trim();
     if(!name){ showToast('El nombre es obligatorio'); return; }
+    const latVal = document.getElementById('f-lat').value;
+    const lngVal = document.getElementById('f-lng').value;
     const data = {
       name,
       lastVisit: document.getElementById('f-last').value,
@@ -1010,10 +1140,13 @@ function openVisitForm(id){
       video: document.getElementById('f-video').value.trim(),
       interests: document.getElementById('f-interests').value.trim(),
       notes: document.getElementById('f-notes').value.trim(),
+      lat: latVal!==''? Number(latVal) : null,
+      lng: lngVal!==''? Number(lngVal) : null,
     };
     if(v){ Object.assign(v, data); } else { state.visits.push({id:uid(), ...data}); }
     saveState(); closeFormModal(); renderVisits(); showToast('Revisita guardada');
   });
+  attachLocationCapture();
 }
 
 function renderStudies(){
@@ -1035,6 +1168,7 @@ function renderStudies(){
       ${s.notes? `<div class="person-notes"><b>Notas:</b> ${escapeHtml(s.notes)}</div>`:''}
       <div class="person-actions">
         <button class="btn btn-secondary btn-sm" data-edit-study="${s.id}">Editar</button>
+        ${s.lat!=null && s.lng!=null? `<button class="btn btn-secondary btn-sm" data-map-study="${s.id}">Cómo llegar</button>`:''}
         <button class="btn btn-danger btn-sm" data-del-study="${s.id}">Eliminar</button>
       </div>
     </div>`).join('');
@@ -1042,6 +1176,12 @@ function renderStudies(){
   list.querySelectorAll('[data-del-study]').forEach(b=> b.addEventListener('click', ()=>{
     state.studies = state.studies.filter(s=>s.id!==b.dataset.delStudy);
     saveState(); renderStudies(); showToast('Estudio eliminado');
+  }));
+  list.querySelectorAll('[data-map-study]').forEach(b=> b.addEventListener('click', ()=>{
+    const study = state.studies.find(s=>s.id===b.dataset.mapStudy);
+    if(study && study.lat!=null && study.lng!=null){
+      window.open('https://www.google.com/maps/dir/?api=1&destination='+study.lat+','+study.lng, '_blank');
+    }
   }));
 }
 function studyFormHtml(s){
@@ -1053,6 +1193,7 @@ function studyFormHtml(s){
       <div class="field"><label>Próximo estudio</label><input type="date" id="f-next" value="${s.nextDate||''}"></div>
     </div>
     <div class="field"><label>Lección actual</label><input id="f-lesson" value="${escapeHtml(s.currentLesson||'')}"></div>
+    ${locationFieldHtml(s)}
     <div class="field-row">
       <div class="field"><label>Publicación</label><input id="f-pub" value="${escapeHtml(s.publication||'')}"></div>
       <div class="field"><label>Frecuencia</label><input id="f-freq" value="${escapeHtml(s.frequency||'')}" placeholder="Semanal"></div>
@@ -1067,6 +1208,8 @@ function openStudyForm(id){
   openFormModal(s? 'Editar estudio':'Nuevo estudio bíblico', studyFormHtml(s), ()=>{
     const name = document.getElementById('f-name').value.trim();
     if(!name){ showToast('El nombre es obligatorio'); return; }
+    const latVal = document.getElementById('f-lat').value;
+    const lngVal = document.getElementById('f-lng').value;
     const data = {
       name,
       startDate: document.getElementById('f-start').value,
@@ -1077,10 +1220,13 @@ function openStudyForm(id){
       progress: document.getElementById('f-progress').value.trim(),
       pendingTopics: document.getElementById('f-pending').value.trim(),
       notes: document.getElementById('f-notes').value.trim(),
+      lat: latVal!==''? Number(latVal) : null,
+      lng: lngVal!==''? Number(lngVal) : null,
     };
     if(s){ Object.assign(s, data); } else { state.studies.push({id:uid(), ...data}); }
     saveState(); closeFormModal(); renderStudies(); showToast('Estudio guardado');
   });
+  attachLocationCapture();
 }
 
 function renderCalendar(){
@@ -1122,7 +1268,6 @@ function renderCalendar(){
       const day = el.dataset.day;
       calSelected = day;
       renderCalendar();
-      // Mostrar edición de horas si es hoy o pasado
       const today = todayStr();
       if(day <= today){
         openEditHours(day);
@@ -1178,7 +1323,7 @@ function openEditHours(dateStr){
         state.hours = state.hours.filter(e=>e.id!==btn.dataset.delHourEdit);
         saveState();
         renderCalendar();
-        openEditHours(dateStr); // refrescar
+        openEditHours(dateStr);
         showToast('Registro eliminado');
       });
     });
@@ -1294,6 +1439,13 @@ function selectOnboardType(type){
   document.getElementById('ob-types').dataset.selected = type;
 }
 
+function openTutorialModal(){
+  document.getElementById('tutorialModal').classList.add('open');
+}
+function closeTutorialModal(){
+  document.getElementById('tutorialModal').classList.remove('open');
+}
+
 function init(){
   const loaded = loadState();
   state = loaded || { profile:null, hours:[], visits:[], studies:[], theme:'light' };
@@ -1320,6 +1472,53 @@ function init(){
     saveState();
     document.getElementById('onboardModal').classList.remove('open');
     switchView('inicio');
+    openTutorialModal();
+  });
+
+  document.getElementById('tutorialCloseBtn').addEventListener('click', closeTutorialModal);
+  document.getElementById('tutorialStartBtn').addEventListener('click', closeTutorialModal);
+  document.getElementById('tutorialModal').addEventListener('click', (e)=>{
+    if(e.target.id==='tutorialModal') closeTutorialModal();
+  });
+
+  // Envío de sugerencias con formsubmit.co AJAX (funciona con fetch)
+  document.getElementById('sendSuggestionBtn').addEventListener('click', ()=>{
+    const text = document.getElementById('suggestionText').value.trim();
+    const status = document.getElementById('suggestionStatus');
+    if(!text){ showToast('Escribe tu sugerencia antes de enviar'); return; }
+    status.style.display = 'block';
+    status.textContent = 'Enviando...';
+    status.style.color = 'var(--text-muted)';
+    const formData = new FormData();
+    formData.append('suggestion', text);
+    formData.append('_subject', 'Sugerencia JW Field Service');
+    formData.append('_captcha', 'false'); // Desactivar captcha opcional
+    formData.append('_template', 'table'); // Para mejor formato
+
+    // Usar el endpoint AJAX de formsubmit
+    fetch('https://formsubmit.co/ajax/abdiasjonathanacevedo@gmail.com', {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(response => {
+      if (response.ok) {
+        status.textContent = '✅ Mensaje enviado correctamente';
+        status.style.color = 'var(--success)';
+        document.getElementById('suggestionText').value = '';
+        setTimeout(()=>{ status.style.display = 'none'; }, 4000);
+        showToast('¡Sugerencia enviada!');
+      } else {
+        return response.json().then(data => { throw new Error(data.message || 'Error en el envío'); });
+      }
+    })
+    .catch(err => {
+      status.textContent = '❌ Error al enviar. Intenta de nuevo.';
+      status.style.color = 'var(--danger)';
+      setTimeout(()=>{ status.style.display = 'none'; }, 4000);
+      showToast('Error al enviar');
+      console.error('Error en fetch:', err);
+    });
   });
 
   document.getElementById('themeToggleMobile').addEventListener('click', toggleTheme);
@@ -1378,4 +1577,3 @@ init();
 </script>
 </body>
 </html>
-```
