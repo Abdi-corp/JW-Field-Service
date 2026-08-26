@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+<title>JW Field Service</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/png" href="/logo/Captura de pantalla 2026-08-25 193118.png">
+<link rel="apple-touch-icon" href="/logo/Captura de pantalla 2026-08-25 193118.png">
+<meta name="theme-color" content="#ffffff">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F0F5FE;
+  --surface: #FFFFFF;
+  --surface-2: #E9F0FA;
+  --text: #1A2A3A;
+  --text-muted: #5A6F88;
+  --primary: #2F7BE0;
+  --primary-dark: #1A5BBF;
+  --primary-soft: #D6E6FF;
+  --accent: #8DB4F0;
+  --success: #3BA87A;
+  --warning: #D4A13E;
+  --danger: #D95C4A;
+  --border: #D0DFEE;
+  --shadow: 0 2px 8px rgba(47,123,224,0.08);
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 8px;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color-scheme: light;
+}
+html.dark {
+  --bg: #111B2A;
+  --surface: #1A2A3E;
+  --surface-2: #23354A;
+  --text: #E8EEF8;
+  --text-muted: #8DA3C0;
+  --primary: #4A8EE6;
+  --primary-dark: #7AADF0;
+  --primary-soft: #1E3550;
+  --accent: #3A5F8A;
+  --success: #55C092;
+  --warning: #DDB65A;
+  --danger: #E57362;
+  --border: #2C4058;
+  --shadow: 0 2px 10px rgba(0,0,0,0.3);
+  color-scheme: dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+body{margin:0;font-family:var(--font-body);background:var(--bg);color:var(--text);transition:background .2s,color .2s;line-height:1.5;}
+h1,h2,h3,h4{font-weight:600;margin:0;letter-spacing:-0.01em;}
+p{margin:0;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+input,select,textarea{font-family:inherit;font-size:1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;color:var(--text);width:100%;transition:border .15s;outline:none;}
+input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(47,123,224,0.15);}
+textarea{resize:vertical;min-height:60px;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;}
+
+#app{max-width:1100px;margin:0 auto;min-height:100vh;display:flex;}
+
+.sidebar{
+  display:none;
+  width:210px;
+  flex-shrink:0;
+  padding:28px 16px 20px;
+  border-right:1px solid var(--border);
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow-y:auto;
+  background:var(--bg);
+}
+.sidebar-brand{display:flex;align-items:center;gap:10px;padding:0 6px 28px;}
+.sidebar-brand .logo-dot{width:32px;height:32px;border-radius:8px;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sidebar-brand .logo-dot svg{width:16px;height:16px;stroke:#fff;stroke-width:2.2;}
+.sidebar-brand span{font-weight:600;font-size:15px;line-height:1.2;color:var(--text);}
+.sidebar-nav{display:flex;flex-direction:column;gap:2px;}
+.nav-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;border-radius:var(--radius-sm);
+  color:var(--text-muted);background:transparent;
+  font-size:13.5px;font-weight:500;text-align:left;width:100%;
+  transition:background .15s,color .15s;
+}
+.nav-item svg{width:18px;height:18px;stroke:currentColor;stroke-width:1.8;flex-shrink:0;}
+.nav-item:hover{background:var(--surface-2);color:var(--text);}
+.nav-item.active{background:var(--primary-soft);color:var(--primary-dark);font-weight:600;}
+.sidebar-footer{margin-top:auto;padding-top:20px;border-top:1px solid var(--border);}
+
+.main-col{flex:1;min-width:0;display:flex;flex-direction:column;}
+
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;
+  position:sticky;top:0;z-index:20;
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+}
+.topbar-left{display:flex;align-items:center;gap:8px;}
+.topbar h2{font-size:18px;font-weight:600;}
+.back-btn{display:flex;align-items:center;gap:4px;color:var(--text-muted);font-weight:500;font-size:13px;padding:6px 10px;border-radius:var(--radius-sm);transition:background .15s;}
+.back-btn:hover{background:var(--surface-2);}
+.back-btn svg{width:16px;height:16px;stroke:currentColor;stroke-width:2;}
+.topbar-actions{display:flex;gap:6px;align-items:center;}
+.icon-btn{
+  width:36px;height:36px;border-radius:var(--radius-sm);border:1px solid var(--border);
+  background:var(--surface);display:flex;align-items:center;justify-content:center;
+  color:var(--text-muted);transition:background .15s;
+}
+.icon-btn:hover{background:var(--surface-2);}
+.icon-btn svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.8;}
+.icon-btn:active{transform:scale(.96);}
+
+main{flex:1;padding:16px 14px 90px;}
+@media(min-width:820px){
+  .sidebar{display:flex;flex-direction:column;}
+  main{padding:28px 32px 40px;}
+  .bottom-nav{display:none !important;}
+}
+
+.view{display:none;animation:fade .2s ease;}
+.view.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:16px 18px;
+  box-shadow:var(--shadow);
+}
+.card + .card{margin-top:12px;}
+.section-title{
+  font-size:12px;text-transform:uppercase;letter-spacing:0.04em;
+  color:var(--text-muted);font-weight:600;margin:20px 2px 10px;
+}
+.section-title:first-child{margin-top:0;}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+@media(max-width:480px){.grid-3{grid-template-columns:repeat(2,1fr);}}
+
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;}
+.stat-card .num{font-size:24px;font-weight:700;color:var(--primary-dark);letter-spacing:-0.02em;}
+.stat-card .lbl{font-size:12px;color:var(--text-muted);margin-top:4px;font-weight:500;}
+
+.hero-card{
+  background:linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-radius:var(--radius-lg);
+  padding:22px 24px 20px;
+  color:#fff;
+  box-shadow:0 4px 14px rgba(47,123,224,0.25);
+}
+.hero-card .hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;}
+.hero-card .hero-label{font-size:12px;opacity:.8;font-weight:500;text-transform:uppercase;letter-spacing:.04em;}
+.hero-card .hero-hours{font-size:36px;font-weight:700;margin-top:2px;letter-spacing:-0.02em;}
+.hero-card .hero-sub{font-size:13px;opacity:.9;margin-top:2px;}
+.ring-wrap{width:68px;height:68px;position:relative;flex-shrink:0;}
+.ring-wrap svg{width:100%;height:100%;transform:rotate(-90deg);}
+.ring-wrap .ring-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;}
+.hero-bar-track{margin-top:16px;height:6px;background:rgba(255,255,255,.25);border-radius:6px;overflow:hidden;}
+.hero-bar-fill{height:100%;background:#fff;border-radius:6px;transition:width .4s;}
+
+.progress-track{height:6px;background:var(--surface-2);border-radius:6px;overflow:hidden;border:1px solid var(--border);}
+.progress-fill{height:100%;border-radius:6px;background:var(--primary);transition:width .4s;}
+
+.msg-card{
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--radius-md);padding:14px 16px;font-size:13.5px;color:var(--text-muted);font-style:italic;line-height:1.5;
+}
+
+.btn{
+  border-radius:var(--radius-sm);padding:10px 18px;font-weight:600;font-size:14px;
+  display:inline-flex;align-items:center;gap:8px;justify-content:center;
+  transition:background .15s,box-shadow .15s;
+}
+.btn svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.8;}
+.btn-primary{background:var(--primary-dark);color:#fff;}
+.btn-primary:hover{box-shadow:0 4px 10px rgba(26,91,191,0.3);}
+.btn-primary:active{transform:scale(.97);}
+.btn-secondary{background:var(--surface-2);color:var(--text);border:1px solid var(--border);}
+.btn-secondary:hover{background:var(--border);}
+.btn-ghost{background:transparent;color:var(--text-muted);}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-danger:hover{box-shadow:0 4px 10px rgba(217,92,74,0.3);}
+.btn-success{background:var(--success);color:#fff;}
+.btn-success:hover{box-shadow:0 4px 10px rgba(59,168,122,0.3);}
+.btn-block{width:100%;}
+.btn-sm{padding:5px 12px;font-size:12px;border-radius:6px;}
+
+.fab-row{display:flex;gap:10px;margin-top:14px;}
+
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12.5px;font-weight:500;color:var(--text-muted);margin-bottom:4px;}
+.field-row{display:flex;gap:12px;}
+.field-row .field{flex:1;}
+
+.timer-display{font-size:40px;font-weight:600;text-align:center;letter-spacing:1px;margin:8px 0 18px;color:var(--primary-dark);font-variant-numeric:tabular-nums;}
+.timer-controls{display:flex;gap:10px;}
+
+.list-item{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 4px;border-bottom:1px solid var(--border);
+}
+.list-item:last-child{border-bottom:none;}
+.list-item-main{min-width:0;flex:1;}
+.list-item-title{font-weight:600;font-size:14px;}
+.list-item-sub{font-size:12px;color:var(--text-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.list-item-actions{display:flex;gap:6px;flex-shrink:0;}
+.chip{font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--primary-soft);color:var(--primary-dark);white-space:nowrap;}
+
+.empty-state{text-align:center;padding:32px 12px;color:var(--text-muted);}
+.empty-state svg{width:32px;height:32px;stroke:var(--border);margin-bottom:8px;}
+.empty-state p{font-size:13px;}
+
+.person-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:16px;margin-bottom:10px;
+}
+.person-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;}
+.person-name{font-weight:600;font-size:15px;}
+.person-meta{font-size:12.5px;color:var(--text-muted);margin-top:3px;}
+.person-notes{font-size:13px;margin-top:8px;color:var(--text);background:var(--surface-2);border-radius:var(--radius-sm);padding:8px 10px;}
+.person-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+
+.goal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;}
+.goal-title{font-weight:600;font-size:15px;}
+.pace-chip{font-size:20px;line-height:1;}
+.pace-text{font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;}
+.pace-behind{background:rgba(217,92,74,.12);color:var(--danger);}
+.pace-ahead{background:rgba(59,168,122,.12);color:var(--success);}
+.goal-numbers{display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-muted);margin-top:8px;flex-wrap:wrap;}
+.goal-numbers b{color:var(--text);font-weight:600;}
+
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.cal-head h3{font-size:16px;font-weight:600;}
+.cal-nav{display:flex;gap:4px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center;}
+.cal-dow{font-size:10.5px;color:var(--text-muted);font-weight:600;padding-bottom:6px;}
+.cal-day{
+  aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-radius:var(--radius-sm);font-size:12.5px;position:relative;color:var(--text);cursor:pointer;
+  border:1px solid transparent;transition:background .15s,border-color .15s;
+}
+.cal-day.muted{color:var(--text-muted);opacity:.3;}
+.cal-day.today{border-color:var(--primary);font-weight:600;}
+.cal-day.selected{background:var(--primary-dark);color:#fff;}
+.cal-day:hover:not(.selected){background:var(--surface-2);}
+.cal-dots{display:flex;gap:2px;margin-top:3px;height:5px;}
+.cal-dot{width:4px;height:4px;border-radius:50%;}
+.cal-day-events{margin-top:16px;}
+
+.bar-chart{display:flex;align-items:flex-end;gap:10px;height:110px;margin-top:8px;}
+.bar-chart .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px;}
+.bar-chart .bar{width:100%;max-width:24px;background:var(--primary);border-radius:4px 4px 2px 2px;min-height:3px;transition:height .4s;}
+.bar-chart .bar-lbl{font-size:9px;color:var(--text-muted);font-weight:600;}
+
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(3px);
+  display:none;align-items:center;justify-content:center;z-index:100;padding:20px;
+}
+.modal-overlay.open{display:flex;}
+.modal-sheet{
+  background:var(--surface);width:100%;max-width:440px;max-height:88vh;overflow-y:auto;
+  border-radius:var(--radius-lg);padding:20px 24px;animation:modalIn .2s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(-10px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.modal-head h3{font-size:17px;font-weight:600;}
+
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:30;
+  background:var(--surface);border-top:1px solid var(--border);
+  display:flex;padding:4px 4px calc(4px + env(safe-area-inset-bottom));
+  max-width:1100px;margin:0 auto;
+}
+.bn-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:6px 2px;border:none;background:transparent;color:var(--text-muted);border-radius:8px;
+  font-size:10px;font-weight:500;transition:color .15s;
+}
+.bn-item svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;}
+.bn-item.active{color:var(--primary-dark);font-weight:600;}
+
+.more-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.more-tile{
+  background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:16px 14px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;color:var(--text);
+  transition:background .15s;
+}
+.more-tile:hover{background:var(--border);}
+.more-tile svg{width:18px;height:18px;stroke:var(--primary-dark);stroke-width:1.8;}
+.more-tile span{font-size:13px;font-weight:600;}
+
+.type-option{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border:1.5px solid var(--border);border-radius:var(--radius-md);margin-bottom:10px;
+  cursor:pointer;transition:border-color .15s,background .15s;
+}
+.type-option.selected{border-color:var(--primary-dark);background:var(--primary-soft);}
+.type-option b{font-size:14px;}
+.type-option small{color:var(--text-muted);font-size:12px;display:block;margin-top:2px;}
+.type-radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;}
+.type-option.selected .type-radio{border-color:var(--primary-dark);background:radial-gradient(var(--primary-dark) 0 40%, transparent 42%);}
+
+.profile-avatar{
+  width:60px;height:60px;border-radius:50%;background:var(--primary);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:20px;
+  margin-bottom:12px;
+}
+.toast{
+  position:fixed;bottom:90px;left:50%;transform:translateX(-50%);
+  background:var(--text);color:var(--bg);padding:8px 18px;border-radius:30px;font-size:13px;font-weight:500;
+  z-index:200;opacity:0;pointer-events:none;transition:opacity .2s,bottom .2s;
+}
+.toast.show{opacity:1;bottom:100px;}
+@media(min-width:820px){.toast{bottom:24px;}.toast.show{bottom:32px;}}
+
+.credits-section{margin-top:10px;}
+.credit-block{margin-bottom:18px;}
+.credit-block h4{font-size:14px;font-weight:700;color:var(--primary-dark);margin-bottom:4px;}
+.credit-block p{font-size:13px;color:var(--text-muted);line-height:1.5;}
+
+@media(max-width:480px){
+  .topbar{padding:10px 12px;}
+  .topbar h2{font-size:16px;}
+  .hero-card .hero-hours{font-size:28px;}
+  .ring-wrap{width:56px;height:56px;}
+  .ring-wrap .ring-pct{font-size:11px;}
+  .timer-display{font-size:32px;}
+  .modal-sheet{padding:16px;}
+  .btn{padding:8px 14px;font-size:13px;}
+  .person-card{padding:12px;}
+  .grid-2{grid-template-columns:1fr;}
+  .cal-day{font-size:11px;}
+  .more-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="logo-dot"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12l10-9 10 9"/><path d="M5 10v10h14V10"/></svg></div>
+      <span>JW Field<br>Service</span>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <div class="sidebar-footer">
+      <button class="icon-btn" id="themeToggleDesktop" style="width:100%;border-radius:var(--radius-sm);display:flex;gap:8px;align-items:center;justify-content:center;padding:10px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+        <span style="font-size:13px;font-weight:500;">Cambiar tema</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="main-col">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="back-btn" id="globalBackBtn" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Volver
+        </button>
+        <h2 id="viewTitle">Inicio</h2>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="themeToggleMobile">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <main id="mainContent">
+
+      <section class="view" data-view="inicio">
+        <div class="hero-card">
+          <div class="hero-top">
+            <div>
+              <div class="hero-label">Horas este mes</div>
+              <div class="hero-hours" id="in-hours">0h 0m</div>
+              <div class="hero-sub" id="in-sub">Meta: 0h</div>
+            </div>
+            <div class="ring-wrap">
+              <svg viewBox="0 0 74 74">
+                <circle cx="37" cy="37" r="30" stroke="rgba(255,255,255,.25)" stroke-width="6" fill="none"/>
+                <circle id="in-ring" cx="37" cy="37" r="30" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="188.5"/>
+              </svg>
+              <div class="ring-pct" id="in-pct">0%</div>
+            </div>
+          </div>
+          <div class="hero-bar-track"><div class="hero-bar-fill" id="in-barfill" style="width:0%"></div></div>
+        </div>
+
+        <div class="section-title">Resumen del mes</div>
+        <div class="grid-3">
+          <div class="stat-card"><div class="num" id="in-studies">0</div><div class="lbl">Estudios bíblicos</div></div>
+          <div class="stat-card"><div class="num" id="in-visits">0</div><div class="lbl">Revisitas</div></div>
+          <div class="stat-card"><div class="num" id="in-contacts">0</div><div class="lbl">Publicaciones</div></div>
+        </div>
+
+        <div class="section-title">Mensaje del día</div>
+        <div class="msg-card" id="in-msg"></div>
+
+        <div class="section-title">Accesos rápidos</div>
+        <div class="fab-row">
+          <button class="btn btn-primary btn-block" id="quick-log-hours">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+            Registrar horas
+          </button>
+          <button class="btn btn-secondary btn-block" id="quick-add-visit">Nueva revisita</button>
+        </div>
+      </section>
+
+      <section class="view" data-view="horas">
+        <div class="card">
+          <div class="timer-display" id="timerDisplay">00:00:00</div>
+          <div class="timer-controls">
+            <button class="btn btn-primary btn-block" id="timerStartBtn">Iniciar</button>
+            <button class="btn btn-danger btn-block" id="timerStopBtn" style="display:none;">Detener y guardar</button>
+          </div>
+        </div>
+
+        <div class="section-title">Registro manual</div>
+        <div class="card">
+          <div class="field-row">
+            <div class="field"><label>Fecha</label><input type="date" id="hoursDate"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Horas</label><input type="number" id="hoursH" min="0" value="0"></div>
+            <div class="field"><label>Minutos</label><input type="number" id="hoursM" min="0" max="59" value="0"></div>
+          </div>
+          <div class="field"><label>Nota (opcional)</label><input type="text" id="hoursNote" placeholder="Ej: predicación pública"></div>
+          <button class="btn btn-primary btn-block" id="addHoursBtn">Agregar registro</button>
+        </div>
+
+        <div class="section-title">Totales</div>
+        <div class="grid-3">
+          <div class="stat-card"><div class="num" id="h-week">0h 0m</div><div class="lbl">Esta semana</div></div>
+          <div class="stat-card"><div class="num" id="h-month">0h 0m</div><div class="lbl">Este mes</div></div>
+          <div class="stat-card"><div class="num" id="h-remain">0h 0m</div><div class="lbl">Faltan para meta</div></div>
+        </div>
+
+        <div class="section-title">Historial</div>
+        <div class="card" id="hoursList"></div>
+      </section>
+
+      <section class="view" data-view="metas">
+        <div class="section-title">Meta mensual</div>
+        <div class="card" id="goalMonthlyCard"></div>
+
+        <div class="section-title" id="annualGoalTitle">Meta del año de servicio</div>
+        <div class="card" id="goalAnnualCard"></div>
+
+        <div class="section-title">Proyección</div>
+        <div class="card" id="projectionCard"></div>
+      </section>
+
+      <section class="view" data-view="revisitas">
+        <button class="btn btn-primary btn-block" id="addVisitBtn" style="margin-bottom:14px;">+ Nueva revisita</button>
+        <div class="card" id="visitsList"></div>
+      </section>
+
+      <section class="view" data-view="estudios">
+        <button class="btn btn-primary btn-block" id="addStudyBtn" style="margin-bottom:14px;">+ Nuevo estudio bíblico</button>
+        <div class="card" id="studiesList"></div>
+      </section>
+
+      <section class="view" data-view="calendario">
+        <div class="card">
+          <div class="cal-head">
+            <button class="icon-btn" id="calPrev"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <h3 id="calLabel">Mes</h3>
+            <button class="icon-btn" id="calNext"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+        <div class="cal-day-events" id="calEvents"></div>
+      </section>
+
+      <section class="view" data-view="estadisticas">
+        <div class="section-title">Últimos 7 días</div>
+        <div class="card"><div class="bar-chart" id="chartWeek"></div></div>
+        <div class="section-title">Últimos 6 meses</div>
+        <div class="card"><div class="bar-chart" id="chartMonths"></div></div>
+        <div class="section-title">Totales generales</div>
+        <div class="grid-2">
+          <div class="stat-card"><div class="num" id="st-studies">0</div><div class="lbl">Estudios activos</div></div>
+          <div class="stat-card"><div class="num" id="st-visits">0</div><div class="lbl">Revisitas activas</div></div>
+          <div class="stat-card"><div class="num" id="st-hoursmonth">0h</div><div class="lbl">Horas del mes</div></div>
+          <div class="stat-card"><div class="num" id="st-hoursyear">0h</div><div class="lbl">Horas del año de servicio</div></div>
+        </div>
+      </section>
+
+      <section class="view" data-view="perfil">
+        <div class="card" style="text-align:center;">
+          <div class="profile-avatar" id="profAvatar" style="margin-left:auto;margin-right:auto;">JW</div>
+          <div style="text-align:left;">
+            <div class="field"><label>Nombre completo</label><input type="text" id="profName"></div>
+            <div class="field"><label>Edad</label><input type="number" id="profAge" min="1" max="120"></div>
+            <div class="field"><label>Tipo de precursor</label>
+              <select id="profType">
+                <option value="regular">Precursor Regular (50h/mes · 600h/año)</option>
+                <option value="auxiliar_permanente">Auxiliar Permanente (30h/mes · 360h/año)</option>
+                <option value="auxiliar_provisional">Auxiliar Provisional (15h/mes)</option>
+              </select>
+            </div>
+            <button class="btn btn-primary btn-block" id="saveProfileBtn">Guardar cambios</button>
+          </div>
+        </div>
+        <div class="section-title">Preferencias</div>
+        <div class="card">
+          <button class="btn btn-secondary btn-block" id="profThemeBtn">Cambiar a modo oscuro</button>
+        </div>
+        <div class="section-title">Datos</div>
+        <div class="card">
+          <button class="btn btn-danger btn-block" id="resetDataBtn">Borrar todos los datos</button>
+        </div>
+      </section>
+
+      <section class="view" data-view="mas">
+        <div class="more-grid" id="moreGrid"></div>
+        <div class="section-title" style="margin-top:24px;">Créditos</div>
+        <div class="card credits-section" id="creditsContainer"></div>
+      </section>
+
+    </main>
+
+    <nav class="bottom-nav" id="bottomNav"></nav>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="onboardModal">
+  <div class="modal-sheet">
+    <div class="modal-head"><h3>Bienvenido</h3></div>
+    <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:16px;">Antes de comenzar, cuéntanos un poco sobre tu servicio.</p>
+    <div class="field"><label>Nombre completo</label><input type="text" id="ob-name" placeholder="Tu nombre"></div>
+    <div class="field"><label>Edad</label><input type="number" id="ob-age" min="1" max="120" placeholder="Edad"></div>
+    <div class="field"><label>Tipo de precursor</label></div>
+    <div id="ob-types">
+      <div class="type-option" data-type="regular">
+        <div><b>Precursor Regular</b><small>Meta: 50 horas al mes · 600 al año</small></div>
+        <div class="type-radio"></div>
+      </div>
+      <div class="type-option" data-type="auxiliar_permanente">
+        <div><b>Auxiliar Permanente</b><small>Meta: 30 horas al mes · 360 al año</small></div>
+        <div class="type-radio"></div>
+      </div>
+      <div class="type-option" data-type="auxiliar_provisional">
+        <div><b>Auxiliar Provisional</b><small>Meta: 15 horas, válido por un mes</small></div>
+        <div class="type-radio"></div>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" id="ob-save" style="margin-top:8px;">Comenzar</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="formModal">
+  <div class="modal-sheet">
+    <div class="modal-head"><h3 id="formModalTitle">Nueva revisita</h3><button class="icon-btn" id="formModalClose"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div id="formModalBody"></div>
+    <button class="btn btn-primary btn-block" id="formModalSave" style="margin-top:6px;">Guardar</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="editHoursModal">
+  <div class="modal-sheet">
+    <div class="modal-head"><h3>Editar horas del día</h3><button class="icon-btn" id="editHoursClose"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div id="editHoursBody"></div>
+    <button class="btn btn-primary btn-block" id="editHoursSave" style="margin-top:6px;">Guardar cambios</button>
+  </div>
+</div>
+
+<script>
+const NAV_ITEMS = [
+  {id:'inicio', label:'Inicio', icon:'M2 12l10-9 10 9M5 10v10h14V10'},
+  {id:'horas', label:'Horas', icon:'M12 22a10 10 0 100-20 10 10 0 000 20zM12 7v5l3 3'},
+  {id:'metas', label:'Metas', icon:'M12 22a10 10 0 100-20 10 10 0 000 20zM12 16a4 4 0 100-8 4 4 0 000 8zM12 12h.01'},
+  {id:'revisitas', label:'Revisitas', icon:'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75'},
+  {id:'estudios', label:'Estudios', icon:'M4 19.5A2.5 2.5 0 016.5 17H20M4 19.5A2.5 2.5 0 006.5 22H20V2H6.5A2.5 2.5 0 004 4.5v15z'},
+  {id:'calendario', label:'Calendario', icon:'M3 10h18M8 2v4M16 2v4M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z'},
+  {id:'estadisticas', label:'Estadísticas', icon:'M18 20V10M12 20V4M6 20v-6'},
+  {id:'perfil', label:'Perfil', icon:'M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z'},
+];
+const BOTTOM_ITEMS = ['inicio','horas','metas','mas'];
+const MORE_ITEMS = ['revisitas','estudios','calendario','estadisticas','perfil'];
+
+const GOALS = {
+  regular:{monthly:50, annual:600, label:'Precursor Regular'},
+  auxiliar_permanente:{monthly:30, annual:360, label:'Auxiliar Permanente'},
+  auxiliar_provisional:{monthly:15, annual:null, label:'Auxiliar Provisional'}
+};
+
+const MOTIVATIONAL = [
+  'Cada hora dedicada al ministerio es una semilla plantada; con paciencia, verás crecer el fruto.',
+  'Tu constancia en el servicio es un regalo para quienes aún no conocen la verdad.',
+  'Un paso a la vez: la persistencia vale más que la prisa.',
+  'Hoy es una nueva oportunidad para animar a alguien con una buena noticia.',
+  'El progreso pequeño y constante siempre supera al esfuerzo irregular.',
+  'Cuida tu ritmo, celebra tus avances y sigue adelante con confianza.',
+  'Cada visita, cada estudio, cada conversación cuenta más de lo que imaginas.',
+];
+
+let state = null;
+let currentView = 'inicio';
+let calDate = new Date();
+let calSelected = todayStr();
+let timerInterval = null;
+let timerSeconds = 0;
+let timerRunning = false;
+
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+function pad(n){ return n.toString().padStart(2,'0'); }
+function fmtDate(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function todayStr(){ return fmtDate(new Date()); }
+function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+function minutesToHM(min){ const h=Math.floor(min/60); const m=Math.round(min%60); return h+'h '+m+'m'; }
+function daysInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
+function monthLabel(d){ return d.toLocaleDateString('es-ES',{month:'long', year:'numeric'}); }
+function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+function getServiceYearRange(date){
+  const y = date.getFullYear(); const m = date.getMonth();
+  const startYear = m>=8 ? y : y-1;
+  return { start: new Date(startYear,8,1), end: new Date(startYear+1,8,1), startYear };
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem('jw_state');
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+function saveState(){
+  try{ localStorage.setItem('jw_state', JSON.stringify(state)); }
+  catch(e){ console.error('storage error', e); showToast('No se pudo guardar'); }
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._tm);
+  showToast._tm = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+function applyTheme(){
+  document.documentElement.classList.toggle('dark', state.theme==='dark');
+}
+function toggleTheme(){
+  state.theme = state.theme==='dark' ? 'light' : 'dark';
+  applyTheme();
+  document.getElementById('profThemeBtn').textContent = state.theme==='dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
+  saveState();
+}
+
+function buildNav(){
+  const sidebarNav = document.getElementById('sidebarNav');
+  sidebarNav.innerHTML = NAV_ITEMS.map(it=>`
+    <button class="nav-item" data-nav="${it.id}">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${it.icon}"/></svg>
+      ${it.label}
+    </button>`).join('');
+
+  const bottomNav = document.getElementById('bottomNav');
+  bottomNav.innerHTML = BOTTOM_ITEMS.map(id=>{
+    if(id==='mas'){
+      return `<button class="bn-item" data-nav="mas">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+        <span>Más</span></button>`;
+    }
+    const it = NAV_ITEMS.find(n=>n.id===id);
+    return `<button class="bn-item" data-nav="${it.id}">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${it.icon}"/></svg>
+      <span>${it.label}</span></button>`;
+  }).join('');
+
+  const moreGrid = document.getElementById('moreGrid');
+  moreGrid.innerHTML = MORE_ITEMS.map(id=>{
+    const it = NAV_ITEMS.find(n=>n.id===id);
+    return `<button class="more-tile" data-nav="${it.id}">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${it.icon}"/></svg>
+      <span>${it.label}</span></button>`;
+  }).join('');
+
+  // Créditos
+  document.getElementById('creditsContainer').innerHTML = `
+    <div class="credit-block">
+      <h4>Desarrollo</h4>
+      <p><strong>Abdias Acevedo</strong><br>Desarrollador principal · Programación · Implementación técnica · Integración del sistema</p>
+    </div>
+    <div class="credit-block">
+      <h4>Diseño y creatividad</h4>
+      <p><strong>Crisbely Magdalena Guzmán Medina</strong><br>Diseñadora gráfica · Dirección visual · Diseño de interfaz · Conceptualización creativa · Dirección creativa · Identidad visual · Propuestas de diseño · Experiencia de usuario (UX/UI)</p>
+    </div>
+    <div class="credit-block">
+      <h4>Ideas y concepto</h4>
+      <p><strong>Crisbely Magdalena Guzmán Medina</strong><br>Ideas creativas · Conceptualización del proyecto · Aportes visuales · Propuestas de contenido y presentación</p>
+    </div>
+  `;
+
+  document.querySelectorAll('[data-nav]').forEach(el=>{
+    el.addEventListener('click', ()=> switchView(el.dataset.nav));
+  });
+}
+
+function switchView(id){
+  const prev = currentView;
+  currentView = id;
+  document.querySelectorAll('.view').forEach(v=> v.classList.toggle('active', v.dataset.view===id));
+  const titleMap = {inicio:'Inicio',horas:'Horas',metas:'Metas',revisitas:'Revisitas',estudios:'Estudios bíblicos',calendario:'Calendario',estadisticas:'Estadísticas',perfil:'Perfil',mas:'Más'};
+  document.getElementById('viewTitle').textContent = titleMap[id] || '';
+  document.querySelectorAll('.nav-item').forEach(el=> el.classList.toggle('active', el.dataset.nav===id));
+  document.querySelectorAll('.bn-item').forEach(el=>{
+    const active = el.dataset.nav===id || (el.dataset.nav==='mas' && MORE_ITEMS.includes(id));
+    el.classList.toggle('active', active);
+  });
+  // Mostrar botón volver si no es inicio
+  const backBtn = document.getElementById('globalBackBtn');
+  if(id === 'inicio') {
+    backBtn.style.display = 'none';
+  } else {
+    backBtn.style.display = 'flex';
+    backBtn.onclick = ()=> switchView('inicio');
+  }
+  renderCurrentView();
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
+function renderCurrentView(){
+  if(currentView==='inicio') renderInicio();
+  else if(currentView==='horas') renderHoras();
+  else if(currentView==='metas') renderMetas();
+  else if(currentView==='revisitas') renderVisits();
+  else if(currentView==='estudios') renderStudies();
+  else if(currentView==='calendario') renderCalendar();
+  else if(currentView==='estadisticas') renderStats();
+  else if(currentView==='perfil') renderProfile();
+}
+
+function sumMinutes(entries){ return entries.reduce((a,e)=>a+e.minutes,0); }
+function hoursInRange(start,end){
+  return state.hours.filter(e=>{ const d=parseDate(e.date); return d>=start && d<end; });
+}
+function hoursThisMonth(){
+  const now=new Date();
+  const start=new Date(now.getFullYear(),now.getMonth(),1);
+  const end=new Date(now.getFullYear(),now.getMonth()+1,1);
+  return hoursInRange(start,end);
+}
+function hoursThisWeek(){
+  const now=new Date();
+  const day=(now.getDay()+6)%7;
+  const start=new Date(now.getFullYear(),now.getMonth(),now.getDate()-day);
+  const end=new Date(start); end.setDate(end.getDate()+7);
+  return hoursInRange(start,end);
+}
+function hoursThisServiceYear(){
+  const {start,end} = getServiceYearRange(new Date());
+  return hoursInRange(start,end);
+}
+
+function currentGoal(){ return GOALS[state.profile.type]; }
+
+function renderInicio(){
+  const goal = currentGoal();
+  const monthMinutes = sumMinutes(hoursThisMonth());
+  const goalMinutes = goal.monthly*60;
+  const pct = goalMinutes>0 ? Math.min(100, Math.round(monthMinutes/goalMinutes*100)) : 0;
+  document.getElementById('in-hours').textContent = minutesToHM(monthMinutes);
+  document.getElementById('in-sub').textContent = 'Meta: '+goal.monthly+'h';
+  document.getElementById('in-pct').textContent = pct+'%';
+  document.getElementById('in-barfill').style.width = pct+'%';
+  const circumference = 188.5;
+  document.getElementById('in-ring').style.strokeDashoffset = circumference - (circumference*pct/100);
+
+  document.getElementById('in-studies').textContent = state.studies.length;
+  document.getElementById('in-visits').textContent = state.visits.length;
+  const pubCount = state.visits.filter(v=>v.publication).length + state.studies.filter(s=>s.publication).length;
+  document.getElementById('in-contacts').textContent = pubCount;
+
+  const msgIndex = new Date().getDate() % MOTIVATIONAL.length;
+  document.getElementById('in-msg').textContent = MOTIVATIONAL[msgIndex];
+}
+
+function renderHoras(){
+  document.getElementById('hoursDate').value = todayStr();
+  const week = sumMinutes(hoursThisWeek());
+  const month = sumMinutes(hoursThisMonth());
+  const goal = currentGoal();
+  const remain = Math.max(0, goal.monthly*60 - month);
+  document.getElementById('h-week').textContent = minutesToHM(week);
+  document.getElementById('h-month').textContent = minutesToHM(month);
+  document.getElementById('h-remain').textContent = minutesToHM(remain);
+
+  const list = document.getElementById('hoursList');
+  const sorted = [...state.hours].sort((a,b)=> b.date.localeCompare(a.date));
+  if(sorted.length===0){
+    list.innerHTML = emptyState('Aún no tienes horas registradas.');
+    return;
+  }
+  list.innerHTML = sorted.map(e=>`
+    <div class="list-item">
+      <div class="list-item-main">
+        <div class="list-item-title">${minutesToHM(e.minutes)}</div>
+        <div class="list-item-sub">${formatDateLong(e.date)}${e.note? ' · '+escapeHtml(e.note):''}</div>
+      </div>
+      <div class="list-item-actions">
+        <button class="icon-btn btn-sm" style="width:32px;height:32px;" data-del-hour="${e.id}">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
+        </button>
+      </div>
+    </div>`).join('');
+  list.querySelectorAll('[data-del-hour]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.hours = state.hours.filter(e=>e.id!==btn.dataset.delHour);
+      saveState(); renderHoras(); showToast('Registro eliminado');
+    });
+  });
+}
+
+function formatDateLong(s){
+  const d = parseDate(s);
+  return capitalize(d.toLocaleDateString('es-ES',{weekday:'short', day:'numeric', month:'short'}));
+}
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function emptyState(text){
+  return `<div class="empty-state">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12h6M12 9v6"/></svg>
+    <p>${text}</p></div>`;
+}
+
+function paceInfo(actualMinutes, targetMinutes, elapsedFraction){
+  const expectedMinutes = targetMinutes*elapsedFraction;
+  const ahead = actualMinutes >= expectedMinutes;
+  return {
+    emoji: ahead ? '🐇' : '🐢',
+    text: ahead ? 'Vas adelantado' : 'Vas atrasado',
+    cls: ahead ? 'pace-ahead' : 'pace-behind'
+  };
+}
+
+function renderMetas(){
+  const goal = currentGoal();
+  const now = new Date();
+
+  const monthMinutes = sumMinutes(hoursThisMonth());
+  const targetMonthly = goal.monthly*60;
+  const dim = daysInMonth(now.getFullYear(), now.getMonth());
+  const monthFraction = Math.min(1, now.getDate()/dim);
+  const pctMonth = targetMonthly>0 ? Math.min(100, Math.round(monthMinutes/targetMonthly*100)) : 0;
+  const paceM = paceInfo(monthMinutes, targetMonthly, monthFraction);
+
+  document.getElementById('goalMonthlyCard').innerHTML = `
+    <div class="goal-header">
+      <div class="goal-title">${capitalize(now.toLocaleDateString('es-ES',{month:'long'}))}</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="pace-chip">${paceM.emoji}</span>
+        <span class="pace-text ${paceM.cls}">${paceM.text}</span>
+      </div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:${pctMonth}%"></div></div>
+    <div class="goal-numbers">
+      <span>Hecho: <b>${minutesToHM(monthMinutes)}</b></span>
+      <span>Meta: <b>${goal.monthly}h</b></span>
+      <span>Faltan: <b>${minutesToHM(Math.max(0,targetMonthly-monthMinutes))}</b></span>
+    </div>`;
+
+  const annualCard = document.getElementById('goalAnnualCard');
+  const annualTitleEl = document.getElementById('annualGoalTitle');
+  if(goal.annual==null){
+    annualTitleEl.style.display='none';
+    annualCard.style.display='none';
+  } else {
+    annualTitleEl.style.display='block';
+    annualCard.style.display='block';
+    const {start,end,startYear} = getServiceYearRange(now);
+    const yearMinutes = sumMinutes(hoursThisServiceYear());
+    const targetAnnual = goal.annual*60;
+    const totalDays = (end-start)/86400000;
+    const elapsedDays = Math.min(totalDays, Math.max(0,(now-start)/86400000));
+    const yearFraction = elapsedDays/totalDays;
+    const pctYear = targetAnnual>0 ? Math.min(100, Math.round(yearMinutes/targetAnnual*100)) : 0;
+    const paceY = paceInfo(yearMinutes, targetAnnual, yearFraction);
+    annualCard.innerHTML = `
+      <div class="goal-header">
+        <div class="goal-title">Sept ${startYear} – Sept ${startYear+1}</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="pace-chip">${paceY.emoji}</span>
+          <span class="pace-text ${paceY.cls}">${paceY.text}</span>
+        </div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pctYear}%"></div></div>
+      <div class="goal-numbers">
+        <span>Hecho: <b>${minutesToHM(yearMinutes)}</b></span>
+        <span>Meta: <b>${goal.annual}h</b></span>
+        <span>Faltan: <b>${minutesToHM(Math.max(0,targetAnnual-yearMinutes))}</b></span>
+      </div>`;
+  }
+
+  const daysLeft = Math.max(1, dim-now.getDate());
+  const remainMin = Math.max(0, targetMonthly-monthMinutes);
+  const perDay = remainMin/daysLeft;
+  document.getElementById('projectionCard').innerHTML = `
+    <p style="font-size:13.5px;line-height:1.6;">
+      Para alcanzar tu meta mensual necesitas un promedio de <b>${minutesToHM(Math.ceil(perDay))}</b> por día durante los días que quedan.<br>
+      Si mantienes tu ritmo actual, terminarás el mes con aproximadamente <b>${minutesToHM(Math.round(monthFraction>0 ? monthMinutes/monthFraction : 0))}</b>.
+    </p>`;
+}
+
+function openFormModal(title, bodyHtml, onSave){
+  document.getElementById('formModalTitle').textContent = title;
+  document.getElementById('formModalBody').innerHTML = bodyHtml;
+  document.getElementById('formModal').classList.add('open');
+  const saveBtn = document.getElementById('formModalSave');
+  saveBtn.onclick = ()=>{ onSave(); };
+}
+function closeFormModal(){ document.getElementById('formModal').classList.remove('open'); }
+
+function renderVisits(){
+  const list = document.getElementById('visitsList');
+  if(state.visits.length===0){ list.innerHTML = emptyState('No tienes revisitas registradas.'); return; }
+  const sorted = [...state.visits].sort((a,b)=> (a.nextVisit||'9999').localeCompare(b.nextVisit||'9999'));
+  list.innerHTML = sorted.map(v=>`
+    <div class="person-card">
+      <div class="person-top">
+        <div>
+          <div class="person-name">${escapeHtml(v.name)}</div>
+          <div class="person-meta">${v.address? escapeHtml(v.address):'Sin dirección'}${v.phone? ' · '+escapeHtml(v.phone):''}</div>
+        </div>
+        ${v.nextVisit? `<span class="chip">${formatDateLong(v.nextVisit)}</span>` : ''}
+      </div>
+      ${v.topic? `<div class="person-notes"><b>Tema:</b> ${escapeHtml(v.topic)}</div>`:''}
+      ${v.interests? `<div class="person-notes"><b>Intereses:</b> ${escapeHtml(v.interests)}</div>`:''}
+      ${v.notes? `<div class="person-notes"><b>Notas:</b> ${escapeHtml(v.notes)}</div>`:''}
+      <div class="person-actions">
+        <button class="btn btn-secondary btn-sm" data-edit-visit="${v.id}">Editar</button>
+        <button class="btn btn-success btn-sm" data-convert-visit="${v.id}">Convertir en estudio</button>
+        <button class="btn btn-danger btn-sm" data-del-visit="${v.id}">Eliminar</button>
+      </div>
+    </div>`).join('');
+  list.querySelectorAll('[data-edit-visit]').forEach(b=> b.addEventListener('click', ()=> openVisitForm(b.dataset.editVisit)));
+  list.querySelectorAll('[data-del-visit]').forEach(b=> b.addEventListener('click', ()=>{
+    state.visits = state.visits.filter(v=>v.id!==b.dataset.delVisit);
+    saveState(); renderVisits(); showToast('Revisita eliminada');
+  }));
+  list.querySelectorAll('[data-convert-visit]').forEach(b=> b.addEventListener('click', ()=>{
+    const visit = state.visits.find(v=>v.id===b.dataset.convertVisit);
+    if(visit){
+      // Crear estudio a partir de la revisita
+      const study = {
+        id: uid(),
+        name: visit.name,
+        startDate: visit.lastVisit || todayStr(),
+        nextDate: visit.nextVisit || '',
+        currentLesson: visit.topic || '',
+        publication: visit.publication || '',
+        frequency: '',
+        progress: '',
+        pendingTopics: '',
+        notes: visit.notes || ''
+      };
+      state.studies.push(study);
+      // Eliminar la revisita
+      state.visits = state.visits.filter(v=>v.id!==visit.id);
+      saveState();
+      renderVisits();
+      showToast('Revisita convertida en estudio bíblico');
+    }
+  }));
+}
+
+function visitFormHtml(v){
+  v = v || {};
+  return `
+    <div class="field"><label>Nombre</label><input id="f-name" value="${escapeHtml(v.name||'')}"></div>
+    <div class="field-row">
+      <div class="field"><label>Última visita</label><input type="date" id="f-last" value="${v.lastVisit||''}"></div>
+      <div class="field"><label>Próxima visita</label><input type="date" id="f-next" value="${v.nextVisit||''}"></div>
+    </div>
+    <div class="field"><label>Dirección</label><input id="f-address" value="${escapeHtml(v.address||'')}"></div>
+    <div class="field"><label>Teléfono</label><input id="f-phone" value="${escapeHtml(v.phone||'')}"></div>
+    <div class="field"><label>Tema hablado</label><input id="f-topic" value="${escapeHtml(v.topic||'')}"></div>
+    <div class="field-row">
+      <div class="field"><label>Publicación</label><input id="f-pub" value="${escapeHtml(v.publication||'')}"></div>
+      <div class="field"><label>Video</label><input id="f-video" value="${escapeHtml(v.video||'')}"></div>
+    </div>
+    <div class="field"><label>Intereses</label><input id="f-interests" value="${escapeHtml(v.interests||'')}"></div>
+    <div class="field"><label>Notas</label><textarea id="f-notes">${escapeHtml(v.notes||'')}</textarea></div>
+  `;
+}
+function openVisitForm(id){
+  const v = id ? state.visits.find(x=>x.id===id) : null;
+  openFormModal(v? 'Editar revisita':'Nueva revisita', visitFormHtml(v), ()=>{
+    const name = document.getElementById('f-name').value.trim();
+    if(!name){ showToast('El nombre es obligatorio'); return; }
+    const data = {
+      name,
+      lastVisit: document.getElementById('f-last').value,
+      nextVisit: document.getElementById('f-next').value,
+      address: document.getElementById('f-address').value.trim(),
+      phone: document.getElementById('f-phone').value.trim(),
+      topic: document.getElementById('f-topic').value.trim(),
+      publication: document.getElementById('f-pub').value.trim(),
+      video: document.getElementById('f-video').value.trim(),
+      interests: document.getElementById('f-interests').value.trim(),
+      notes: document.getElementById('f-notes').value.trim(),
+    };
+    if(v){ Object.assign(v, data); } else { state.visits.push({id:uid(), ...data}); }
+    saveState(); closeFormModal(); renderVisits(); showToast('Revisita guardada');
+  });
+}
+
+function renderStudies(){
+  const list = document.getElementById('studiesList');
+  if(state.studies.length===0){ list.innerHTML = emptyState('No tienes estudios bíblicos registrados.'); return; }
+  const sorted = [...state.studies].sort((a,b)=> (a.nextDate||'9999').localeCompare(b.nextDate||'9999'));
+  list.innerHTML = sorted.map(s=>`
+    <div class="person-card">
+      <div class="person-top">
+        <div>
+          <div class="person-name">${escapeHtml(s.name)}</div>
+          <div class="person-meta">${s.publication? escapeHtml(s.publication):'Sin publicación'}${s.frequency? ' · '+escapeHtml(s.frequency):''}</div>
+        </div>
+        ${s.nextDate? `<span class="chip">${formatDateLong(s.nextDate)}</span>` : ''}
+      </div>
+      ${s.currentLesson? `<div class="person-notes"><b>Lección actual:</b> ${escapeHtml(s.currentLesson)}</div>`:''}
+      ${s.progress? `<div class="person-notes"><b>Progreso:</b> ${escapeHtml(s.progress)}</div>`:''}
+      ${s.pendingTopics? `<div class="person-notes"><b>Pendiente:</b> ${escapeHtml(s.pendingTopics)}</div>`:''}
+      ${s.notes? `<div class="person-notes"><b>Notas:</b> ${escapeHtml(s.notes)}</div>`:''}
+      <div class="person-actions">
+        <button class="btn btn-secondary btn-sm" data-edit-study="${s.id}">Editar</button>
+        <button class="btn btn-danger btn-sm" data-del-study="${s.id}">Eliminar</button>
+      </div>
+    </div>`).join('');
+  list.querySelectorAll('[data-edit-study]').forEach(b=> b.addEventListener('click', ()=> openStudyForm(b.dataset.editStudy)));
+  list.querySelectorAll('[data-del-study]').forEach(b=> b.addEventListener('click', ()=>{
+    state.studies = state.studies.filter(s=>s.id!==b.dataset.delStudy);
+    saveState(); renderStudies(); showToast('Estudio eliminado');
+  }));
+}
+function studyFormHtml(s){
+  s = s || {};
+  return `
+    <div class="field"><label>Nombre del estudiante</label><input id="f-name" value="${escapeHtml(s.name||'')}"></div>
+    <div class="field-row">
+      <div class="field"><label>Fecha de inicio</label><input type="date" id="f-start" value="${s.startDate||''}"></div>
+      <div class="field"><label>Próximo estudio</label><input type="date" id="f-next" value="${s.nextDate||''}"></div>
+    </div>
+    <div class="field"><label>Lección actual</label><input id="f-lesson" value="${escapeHtml(s.currentLesson||'')}"></div>
+    <div class="field-row">
+      <div class="field"><label>Publicación</label><input id="f-pub" value="${escapeHtml(s.publication||'')}"></div>
+      <div class="field"><label>Frecuencia</label><input id="f-freq" value="${escapeHtml(s.frequency||'')}" placeholder="Semanal"></div>
+    </div>
+    <div class="field"><label>Progreso</label><input id="f-progress" value="${escapeHtml(s.progress||'')}"></div>
+    <div class="field"><label>Temas pendientes</label><input id="f-pending" value="${escapeHtml(s.pendingTopics||'')}"></div>
+    <div class="field"><label>Notas</label><textarea id="f-notes">${escapeHtml(s.notes||'')}</textarea></div>
+  `;
+}
+function openStudyForm(id){
+  const s = id ? state.studies.find(x=>x.id===id) : null;
+  openFormModal(s? 'Editar estudio':'Nuevo estudio bíblico', studyFormHtml(s), ()=>{
+    const name = document.getElementById('f-name').value.trim();
+    if(!name){ showToast('El nombre es obligatorio'); return; }
+    const data = {
+      name,
+      startDate: document.getElementById('f-start').value,
+      nextDate: document.getElementById('f-next').value,
+      currentLesson: document.getElementById('f-lesson').value.trim(),
+      publication: document.getElementById('f-pub').value.trim(),
+      frequency: document.getElementById('f-freq').value.trim(),
+      progress: document.getElementById('f-progress').value.trim(),
+      pendingTopics: document.getElementById('f-pending').value.trim(),
+      notes: document.getElementById('f-notes').value.trim(),
+    };
+    if(s){ Object.assign(s, data); } else { state.studies.push({id:uid(), ...data}); }
+    saveState(); closeFormModal(); renderStudies(); showToast('Estudio guardado');
+  });
+}
+
+function renderCalendar(){
+  const y = calDate.getFullYear(), m = calDate.getMonth();
+  document.getElementById('calLabel').textContent = capitalize(monthLabel(calDate));
+  const grid = document.getElementById('calGrid');
+  const dow = ['L','M','X','J','V','S','D'];
+  let html = dow.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+
+  const firstDow = (new Date(y,m,1).getDay()+6)%7;
+  const totalDays = daysInMonth(y,m);
+  const prevTotalDays = daysInMonth(y,m-1<0?11:m-1, );
+  const cells = [];
+  for(let i=0;i<firstDow;i++){ cells.push({day: prevTotalDays-firstDow+1+i, muted:true, dateStr:null}); }
+  for(let d=1; d<=totalDays; d++){
+    const dateStr = fmtDate(new Date(y,m,d));
+    cells.push({day:d, muted:false, dateStr});
+  }
+  while(cells.length % 7 !== 0){ cells.push({day: cells.length, muted:true, dateStr:null}); }
+
+  html += cells.map(c=>{
+    if(c.muted) return `<div class="cal-day muted">${c.day}</div>`;
+    const isToday = c.dateStr===todayStr();
+    const isSel = c.dateStr===calSelected;
+    const hasHours = state.hours.some(e=>e.date===c.dateStr);
+    const hasVisit = state.visits.some(v=>v.nextVisit===c.dateStr);
+    const hasStudy = state.studies.some(s=>s.nextDate===c.dateStr);
+    let dots = '';
+    if(hasHours) dots += `<span class="cal-dot" style="background:var(--primary)"></span>`;
+    if(hasVisit) dots += `<span class="cal-dot" style="background:var(--warning)"></span>`;
+    if(hasStudy) dots += `<span class="cal-dot" style="background:var(--success)"></span>`;
+    return `<div class="cal-day ${isToday?'today':''} ${isSel?'selected':''}" data-day="${c.dateStr}">
+      ${c.day}<div class="cal-dots">${dots}</div></div>`;
+  }).join('');
+
+  grid.innerHTML = html;
+  grid.querySelectorAll('[data-day]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const day = el.dataset.day;
+      calSelected = day;
+      renderCalendar();
+      // Mostrar edición de horas si es hoy o pasado
+      const today = todayStr();
+      if(day <= today){
+        openEditHours(day);
+      } else {
+        showToast('No puedes editar horas en días futuros');
+      }
+    });
+  });
+
+  const evWrap = document.getElementById('calEvents');
+  const dayHours = state.hours.filter(e=>e.date===calSelected);
+  const dayVisits = state.visits.filter(v=>v.nextVisit===calSelected);
+  const dayStudies = state.studies.filter(s=>s.nextDate===calSelected);
+  let items = '';
+  dayHours.forEach(e=> items += `<div class="list-item"><div class="list-item-main"><div class="list-item-title">Servicio registrado</div><div class="list-item-sub">${minutesToHM(e.minutes)}${e.note? ' · '+escapeHtml(e.note):''}</div></div></div>`);
+  dayVisits.forEach(v=> items += `<div class="list-item"><div class="list-item-main"><div class="list-item-title">Revisita: ${escapeHtml(v.name)}</div><div class="list-item-sub">${escapeHtml(v.address||'')}</div></div></div>`);
+  dayStudies.forEach(s=> items += `<div class="list-item"><div class="list-item-main"><div class="list-item-title">Estudio: ${escapeHtml(s.name)}</div><div class="list-item-sub">${escapeHtml(s.currentLesson||'')}</div></div></div>`);
+  evWrap.innerHTML = `<div class="section-title">${formatDateLong(calSelected)}</div><div class="card">${items || emptyState('Nada programado para este día.')}</div>`;
+}
+
+function openEditHours(dateStr){
+  const today = todayStr();
+  if(dateStr > today) return;
+  const dayHours = state.hours.filter(e=>e.date===dateStr);
+  const modal = document.getElementById('editHoursModal');
+  const body = document.getElementById('editHoursBody');
+  if(dayHours.length===0){
+    body.innerHTML = `<p style="color:var(--text-muted);">No hay horas registradas para este día. ¿Quieres agregar?</p>
+      <div class="field-row" style="margin-top:10px;">
+        <div class="field"><label>Horas</label><input type="number" id="editH" min="0" value="0"></div>
+        <div class="field"><label>Minutos</label><input type="number" id="editM" min="0" max="59" value="0"></div>
+      </div>
+      <div class="field"><label>Nota</label><input type="text" id="editNote" placeholder="Opcional"></div>`;
+  } else {
+    let html = dayHours.map((e,i)=>`
+      <div class="list-item">
+        <div class="list-item-main">
+          <div class="list-item-title">${minutesToHM(e.minutes)}</div>
+          <div class="list-item-sub">${e.note? escapeHtml(e.note):''}</div>
+        </div>
+        <div class="list-item-actions">
+          <button class="btn btn-danger btn-sm" data-del-hour-edit="${e.id}">Eliminar</button>
+        </div>
+      </div>`).join('');
+    html += `<div class="field-row" style="margin-top:10px;">
+        <div class="field"><label>Agregar horas</label><input type="number" id="editH" min="0" value="0"></div>
+        <div class="field"><label>Minutos</label><input type="number" id="editM" min="0" max="59" value="0"></div>
+      </div>
+      <div class="field"><label>Nota</label><input type="text" id="editNote" placeholder="Opcional"></div>`;
+    body.innerHTML = html;
+    body.querySelectorAll('[data-del-hour-edit]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        state.hours = state.hours.filter(e=>e.id!==btn.dataset.delHourEdit);
+        saveState();
+        renderCalendar();
+        openEditHours(dateStr); // refrescar
+        showToast('Registro eliminado');
+      });
+    });
+  }
+  modal.classList.add('open');
+  const saveBtn = document.getElementById('editHoursSave');
+  saveBtn.onclick = ()=>{
+    const h = parseInt(document.getElementById('editH').value)||0;
+    const m = parseInt(document.getElementById('editM').value)||0;
+    const note = document.getElementById('editNote').value.trim();
+    const minutes = h*60+m;
+    if(minutes>0){
+      state.hours.push({id:uid(), date:dateStr, minutes, note});
+      saveState();
+      renderCalendar();
+      openEditHours(dateStr);
+      showToast('Horas agregadas');
+    } else {
+      showToast('Ingresa un tiempo válido');
+    }
+  };
+}
+document.getElementById('editHoursClose').addEventListener('click', ()=>{
+  document.getElementById('editHoursModal').classList.remove('open');
+});
+document.getElementById('editHoursModal').addEventListener('click', (e)=>{
+  if(e.target.id==='editHoursModal') document.getElementById('editHoursModal').classList.remove('open');
+});
+
+function renderStats(){
+  const now = new Date();
+  const weekCol = document.getElementById('chartWeek');
+  const days = [];
+  for(let i=6;i>=0;i--){
+    const d = new Date(now); d.setDate(now.getDate()-i);
+    const ds = fmtDate(d);
+    const mins = sumMinutes(state.hours.filter(e=>e.date===ds));
+    days.push({label:d.toLocaleDateString('es-ES',{weekday:'narrow'}), mins});
+  }
+  const maxDay = Math.max(1, ...days.map(d=>d.mins));
+  weekCol.innerHTML = days.map(d=>`
+    <div class="bar-col">
+      <div class="bar" style="height:${Math.max(3,d.mins/maxDay*100)}%"></div>
+      <div class="bar-lbl">${d.label.toUpperCase()}</div>
+    </div>`).join('');
+
+  const monthsCol = document.getElementById('chartMonths');
+  const months = [];
+  for(let i=5;i>=0;i--){
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    const start = d, end = new Date(d.getFullYear(), d.getMonth()+1,1);
+    const mins = sumMinutes(hoursInRange(start,end));
+    months.push({label: d.toLocaleDateString('es-ES',{month:'short'}), mins});
+  }
+  const maxMonth = Math.max(1, ...months.map(m=>m.mins));
+  monthsCol.innerHTML = months.map(m=>`
+    <div class="bar-col">
+      <div class="bar" style="height:${Math.max(3,m.mins/maxMonth*100)}%"></div>
+      <div class="bar-lbl">${m.label.toUpperCase()}</div>
+    </div>`).join('');
+
+  document.getElementById('st-studies').textContent = state.studies.length;
+  document.getElementById('st-visits').textContent = state.visits.length;
+  document.getElementById('st-hoursmonth').textContent = Math.round(sumMinutes(hoursThisMonth())/60);
+  document.getElementById('st-hoursyear').textContent = Math.round(sumMinutes(hoursThisServiceYear())/60);
+}
+
+function renderProfile(){
+  document.getElementById('profName').value = state.profile.name;
+  document.getElementById('profAge').value = state.profile.age;
+  document.getElementById('profType').value = state.profile.type;
+  document.getElementById('profAvatar').textContent = initials(state.profile.name);
+  document.getElementById('profThemeBtn').textContent = state.theme==='dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
+}
+function initials(name){
+  if(!name) return 'JW';
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0]||'')+(parts[1]?.[0]||'')).toUpperCase() || 'JW';
+}
+
+function formatTimer(sec){
+  const h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60;
+  return pad(h)+':'+pad(m)+':'+pad(s);
+}
+function startTimer(){
+  timerRunning = true;
+  document.getElementById('timerStartBtn').style.display='none';
+  document.getElementById('timerStopBtn').style.display='flex';
+  timerInterval = setInterval(()=>{
+    timerSeconds++;
+    document.getElementById('timerDisplay').textContent = formatTimer(timerSeconds);
+  },1000);
+}
+function stopTimer(){
+  timerRunning = false;
+  clearInterval(timerInterval);
+  document.getElementById('timerStartBtn').style.display='flex';
+  document.getElementById('timerStopBtn').style.display='none';
+  const minutes = Math.round(timerSeconds/60);
+  if(minutes>0){
+    state.hours.push({id:uid(), date:todayStr(), minutes, note:'Cronómetro'});
+    saveState(); showToast('Se guardaron '+minutesToHM(minutes));
+  }
+  timerSeconds = 0;
+  document.getElementById('timerDisplay').textContent = '00:00:00';
+  renderHoras();
+}
+
+function selectOnboardType(type){
+  document.querySelectorAll('#ob-types .type-option').forEach(el=>{
+    el.classList.toggle('selected', el.dataset.type===type);
+  });
+  document.getElementById('ob-types').dataset.selected = type;
+}
+
+function init(){
+  const loaded = loadState();
+  state = loaded || { profile:null, hours:[], visits:[], studies:[], theme:'light' };
+  applyTheme();
+  buildNav();
+
+  if(!state.profile){
+    document.getElementById('onboardModal').classList.add('open');
+  } else {
+    switchView('inicio');
+  }
+
+  document.getElementById('ob-types').querySelectorAll('.type-option').forEach(el=>{
+    el.addEventListener('click', ()=> selectOnboardType(el.dataset.type));
+  });
+  document.getElementById('ob-save').addEventListener('click', ()=>{
+    const name = document.getElementById('ob-name').value.trim();
+    const age = document.getElementById('ob-age').value;
+    const type = document.getElementById('ob-types').dataset.selected;
+    if(!name){ showToast('Ingresa tu nombre'); return; }
+    if(!age){ showToast('Ingresa tu edad'); return; }
+    if(!type){ showToast('Selecciona un tipo de precursor'); return; }
+    state.profile = { name, age:Number(age), type };
+    saveState();
+    document.getElementById('onboardModal').classList.remove('open');
+    switchView('inicio');
+  });
+
+  document.getElementById('themeToggleMobile').addEventListener('click', toggleTheme);
+  document.getElementById('themeToggleDesktop').addEventListener('click', toggleTheme);
+  document.getElementById('profThemeBtn').addEventListener('click', toggleTheme);
+
+  document.getElementById('timerStartBtn').addEventListener('click', startTimer);
+  document.getElementById('timerStopBtn').addEventListener('click', stopTimer);
+
+  document.getElementById('addHoursBtn').addEventListener('click', ()=>{
+    const date = document.getElementById('hoursDate').value || todayStr();
+    const h = Number(document.getElementById('hoursH').value)||0;
+    const m = Number(document.getElementById('hoursM').value)||0;
+    const note = document.getElementById('hoursNote').value.trim();
+    const minutes = h*60+m;
+    if(minutes<=0){ showToast('Ingresa un tiempo válido'); return; }
+    state.hours.push({id:uid(), date, minutes, note});
+    saveState();
+    document.getElementById('hoursH').value=0;
+    document.getElementById('hoursM').value=0;
+    document.getElementById('hoursNote').value='';
+    renderHoras();
+    showToast('Registro agregado');
+  });
+
+  document.getElementById('quick-log-hours').addEventListener('click', ()=> switchView('horas'));
+  document.getElementById('quick-add-visit').addEventListener('click', ()=>{ switchView('revisitas'); setTimeout(()=>openVisitForm(null), 50); });
+
+  document.getElementById('addVisitBtn').addEventListener('click', ()=> openVisitForm(null));
+  document.getElementById('addStudyBtn').addEventListener('click', ()=> openStudyForm(null));
+  document.getElementById('formModalClose').addEventListener('click', closeFormModal);
+  document.getElementById('formModal').addEventListener('click', (e)=>{ if(e.target.id==='formModal') closeFormModal(); });
+
+  document.getElementById('calPrev').addEventListener('click', ()=>{ calDate = new Date(calDate.getFullYear(), calDate.getMonth()-1, 1); renderCalendar(); });
+  document.getElementById('calNext').addEventListener('click', ()=>{ calDate = new Date(calDate.getFullYear(), calDate.getMonth()+1, 1); renderCalendar(); });
+
+  document.getElementById('saveProfileBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('profName').value.trim();
+    const age = Number(document.getElementById('profAge').value)||state.profile.age;
+    const type = document.getElementById('profType').value;
+    if(!name){ showToast('El nombre no puede estar vacío'); return; }
+    state.profile = { name, age, type };
+    saveState(); renderProfile(); showToast('Perfil actualizado');
+  });
+
+  document.getElementById('resetDataBtn').addEventListener('click', ()=>{
+    if(confirm('¿Seguro que deseas borrar todos los datos? Esta acción no se puede deshacer.')){
+      state = { profile:null, hours:[], visits:[], studies:[], theme:state.theme };
+      saveState();
+      location.reload();
+    }
+  });
+}
+
+init();
+</script>
+</body>
+</html>
+```
