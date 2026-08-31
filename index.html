@@ -407,7 +407,6 @@ main{flex:1;padding:16px 14px 90px;}
         <div class="grid-3">
           <div class="stat-card"><div class="num" id="in-studies">0</div><div class="lbl">Estudios bíblicos</div></div>
           <div class="stat-card"><div class="num" id="in-visits">0</div><div class="lbl">Revisitas</div></div>
-          
         </div>
 
         <div class="section-title">Mensaje del día</div>
@@ -421,11 +420,25 @@ main{flex:1;padding:16px 14px 90px;}
           </button>
           <button class="btn btn-secondary btn-block" id="quick-add-visit">Nueva revisita</button>
         </div>
+
+        <div class="section-title">Notificaciones</div>
+        <div class="card" id="notifCard"></div>
+
+        <div class="section-title">Actualizar aplicación</div>
+        <div class="card">
+          <button class="btn btn-secondary btn-block" id="forceUpdateBtn">Actualizar app</button>
+          <div id="updateStatus" style="margin-top:8px;font-weight:500;display:none;"></div>
+          <p style="font-size:11.5px;color:var(--text-muted);margin-top:8px;">Es recomendable actualizar la app una vez al mes.</p>
+        </div>
       </section>
 
       <section class="view" data-view="horas">
         <div class="card">
           <div class="timer-display" id="timerDisplay">00:00:00</div>
+          <div class="field" id="timerNoteWrap" style="display:none;">
+            <label>Nota del cronómetro (opcional)</label>
+            <input type="text" id="timerNote" placeholder="Ej: predicación pública">
+          </div>
           <div class="timer-controls">
             <button class="btn btn-primary btn-block" id="timerStartBtn">Iniciar</button>
             <button class="btn btn-danger btn-block" id="timerStopBtn" style="display:none;">Detener y guardar</button>
@@ -508,7 +521,6 @@ main{flex:1;padding:16px 14px 90px;}
           <div class="profile-avatar" id="profAvatar" style="margin-left:auto;margin-right:auto;">JW</div>
           <div style="text-align:left;">
             <div class="field"><label>Nombre completo</label><input type="text" id="profName"></div>
-            <div class="field"><label>Edad</label><input type="number" id="profAge" min="1" max="120"></div>
             <div class="field"><label>Tipo de precursor</label>
               <select id="profType">
                 <option value="regular">Precursor Regular (50h/mes · 600h/año)</option>
@@ -558,7 +570,6 @@ main{flex:1;padding:16px 14px 90px;}
     <div class="modal-head"><h3>Bienvenido</h3></div>
     <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:16px;">Antes de comenzar, cuéntanos un poco sobre tu servicio.</p>
     <div class="field"><label>Nombre completo</label><input type="text" id="ob-name" placeholder="Tu nombre"></div>
-    <div class="field"><label>Edad</label><input type="number" id="ob-age" min="1" max="120" placeholder="Edad"></div>
     <div class="field"><label>Tipo de precursor</label></div>
     <div id="ob-types">
       <div class="type-option" data-type="regular">
@@ -593,10 +604,10 @@ main{flex:1;padding:16px 14px 90px;}
     <div class="tutorial-block">
       <h4>Mini tutorial</h4>
       <p>
-        En <b>Inicio</b> verás un resumen de tus horas del mes y accesos rápidos.<br>
-        En <b>Horas</b> puedes usar el cronómetro o registrar tu tiempo manualmente.<br>
+        En <b>Inicio</b> verás un resumen de tus horas del mes, un botón para actualizar la app y el apartado de notificaciones.<br>
+        En <b>Horas</b> puedes usar el cronómetro (con nota opcional) o registrar tu tiempo manualmente.<br>
         En <b>Metas</b> revisas tu progreso mensual y anual con tu ritmo actual.<br>
-        En <b>Revisitas</b> y <b>Estudios</b> guardas tus personas de interés, con la opción de tomar su ubicación y trazar cómo llegar.<br>
+        En <b>Revisitas</b> y <b>Estudios</b> guardas tus personas de interés, con la opción de seleccionar su ubicación en un mapa y trazar cómo llegar.<br>
         En <b>Calendario</b> ves tus horas, revisitas y estudios organizados por día.<br>
         En <b>Estadísticas</b> encuentras gráficas de tu servicio reciente.<br>
         En <b>Perfil</b> editas tus datos y cambias el tema de la app.<br>
@@ -608,48 +619,61 @@ main{flex:1;padding:16px 14px 90px;}
       <h4>Cómo poner la app de acceso directo</h4>
 
       <div class="tutorial-sub">
-        <h5>PC — Chrome / Edge</h5>
-        <p>Abre la URL de tu aplicación.</p>
-        <p style="margin-top:8px;"><b>En Chrome</b></p>
+        <h5>PC — Google Chrome</h5>
         <ol>
-          <li>Entra a tu aplicación.</li>
-          <li>Arriba a la derecha pulsa los tres puntos.</li>
-          <li>Busca Guardar y compartir, luego Instalar página como aplicación.</li>
-          <li>Pulsa Instalar.</li>
+          <li>Abre tu navegador Chrome.</li>
+          <li>Escribe o pega la dirección (URL) de la aplicación en la barra de direcciones y presiona Enter.</li>
+          <li>Espera a que la página cargue completamente.</li>
+          <li>Busca el ícono de los tres puntos verticales en la esquina superior derecha de la ventana y púlsalo.</li>
+          <li>En el menú que se abre, busca la opción "Guardar y compartir".</li>
+          <li>Dentro de esa opción, pulsa "Instalar página como aplicación" (o "Crear acceso directo", según la versión de Chrome).</li>
+          <li>Se abrirá una ventanita de confirmación con el nombre y el ícono de la app.</li>
+          <li>Pulsa el botón "Instalar".</li>
+          <li>La aplicación se agregará automáticamente a tu escritorio y al menú de aplicaciones de tu computadora.</li>
         </ol>
-        <p style="margin-top:8px;">Si tu aplicación cumple los requisitos de PWA, aparecerá con el nombre y logo configurados en el manifest.</p>
-        <p style="margin-top:10px;"><b>En Microsoft Edge</b></p>
-        <ol>
-          <li>Abre tu aplicación.</li>
-          <li>Pulsa los tres puntos.</li>
-          <li>Ve a Aplicaciones.</li>
-          <li>Pulsa Instalar este sitio como una aplicación.</li>
-          <li>Pulsa Instalar.</li>
-        </ol>
-        <p style="margin-top:8px;">Después podrás encontrarla en el menú Inicio de Windows como si fuera una aplicación normal.</p>
       </div>
 
       <div class="tutorial-sub">
-        <h5>Android</h5>
-        <p><b>En Chrome</b></p>
+        <h5>PC — Microsoft Edge</h5>
         <ol>
-          <li>Abre tu aplicación.</li>
-          <li>Pulsa los tres puntos.</li>
-          <li>Selecciona Añadir a pantalla de inicio o Instalar aplicación.</li>
-          <li>Confirma.</li>
+          <li>Abre tu navegador Microsoft Edge.</li>
+          <li>Escribe o pega la dirección (URL) de la aplicación en la barra de direcciones y presiona Enter.</li>
+          <li>Espera a que la página cargue completamente.</li>
+          <li>Pulsa el ícono de los tres puntos horizontales en la esquina superior derecha.</li>
+          <li>En el menú, busca y selecciona la opción "Aplicaciones".</li>
+          <li>Dentro de ese submenú, pulsa "Instalar este sitio como una aplicación".</li>
+          <li>Aparecerá una ventana con el nombre sugerido para la app; puedes dejarlo o cambiarlo.</li>
+          <li>Pulsa el botón "Instalar".</li>
+          <li>Luego podrás encontrarla en el menú Inicio de Windows como si fuera una aplicación normal.</li>
         </ol>
-        <p style="margin-top:8px;">Si tienes bien configurado el manifest, Android utilizará el nombre e icono que configuraste.</p>
       </div>
 
       <div class="tutorial-sub">
-        <h5>iPhone / iPad</h5>
-        <p><b>En Safari</b></p>
+        <h5>Android — Google Chrome</h5>
         <ol>
-          <li>Abre tu aplicación.</li>
-          <li>Pulsa el botón Compartir.</li>
-          <li>Baja y selecciona Añadir a pantalla de inicio.</li>
-          <li>Revisa el nombre.</li>
-          <li>Pulsa Añadir.</li>
+          <li>Abre la aplicación Chrome en tu teléfono.</li>
+          <li>Escribe o pega la dirección (URL) de la aplicación y presiona Ir.</li>
+          <li>Espera a que la página cargue completamente.</li>
+          <li>Pulsa el ícono de los tres puntos verticales en la esquina superior derecha.</li>
+          <li>Busca la opción "Añadir a pantalla de inicio" o "Instalar aplicación" (el nombre varía según la versión).</li>
+          <li>Púlsala y confirma pulsando "Añadir" o "Instalar" en la ventanita que aparece.</li>
+          <li>Puede que Chrome te pida confirmar una segunda vez; pulsa "Añadir" nuevamente.</li>
+          <li>El ícono de la app aparecerá en tu pantalla de inicio, listo para usarse como una app normal.</li>
+        </ol>
+      </div>
+
+      <div class="tutorial-sub">
+        <h5>iPhone / iPad — Safari</h5>
+        <ol>
+          <li>Abre la aplicación Safari en tu iPhone o iPad (debe ser Safari, no funciona igual en Chrome de iOS).</li>
+          <li>Escribe o pega la dirección (URL) de la aplicación y presiona Ir.</li>
+          <li>Espera a que la página cargue completamente.</li>
+          <li>Pulsa el botón "Compartir" (el cuadrado con una flecha hacia arriba) ubicado en la barra inferior o superior.</li>
+          <li>En el menú que aparece, desliza hacia abajo hasta encontrar la opción "Añadir a pantalla de inicio".</li>
+          <li>Púlsala.</li>
+          <li>Revisa el nombre que aparecerá debajo del ícono y edítalo si lo deseas.</li>
+          <li>Pulsa el botón "Añadir" en la esquina superior derecha.</li>
+          <li>El ícono de la app quedará guardado en tu pantalla de inicio.</li>
         </ol>
       </div>
     </div>
@@ -663,6 +687,27 @@ main{flex:1;padding:16px 14px 90px;}
     <div class="modal-head"><h3>Editar horas del día</h3><button class="icon-btn" id="editHoursClose"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div id="editHoursBody"></div>
     <button class="btn btn-primary btn-block" id="editHoursSave" style="margin-top:6px;">Guardar cambios</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="mapPickModal">
+  <div class="modal-sheet" style="max-width:520px;padding:16px;">
+    <div class="modal-head"><h3>Selecciona la ubicación</h3><button class="icon-btn" id="mapPickClose"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:10px;">Toca el mapa o arrastra el marcador para elegir el punto exacto.</p>
+    <div id="mapPickContainer" style="width:100%;height:320px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border);"></div>
+    <button class="btn btn-primary btn-block" id="mapPickSave" style="margin-top:12px;">Guardar este punto</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="changelogModal">
+  <div class="modal-sheet">
+    <div class="modal-head"><h3>¡La versión 1.3 ha llegado!</h3></div>
+    <div id="changelogBody" style="font-size:13.5px;color:var(--text-muted);line-height:1.7;"></div>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:16px;font-size:13px;color:var(--text-muted);cursor:pointer;">
+      <input type="checkbox" id="changelogNoShow" style="width:auto;accent-color:var(--primary-dark);">
+      No mostrar de nuevo
+    </label>
+    <button class="btn btn-primary btn-block" id="changelogAccept" style="margin-top:14px;">Aceptar</button>
   </div>
 </div>
 
@@ -681,6 +726,7 @@ const NAV_ITEMS = [
 ];
 const BOTTOM_ITEMS = ['inicio','horas','metas','mas'];
 const MORE_ITEMS = ['revisitas','estudios','calendario','estadisticas','perfil','tutorial','sugerencias'];
+const TOP_LEVEL_VIEWS = ['inicio','horas','metas','mas'];
 
 const GOALS = {
   regular:{monthly:50, annual:600, label:'Precursor Regular'},
@@ -698,18 +744,31 @@ const MOTIVATIONAL = [
   'Cada visita, cada estudio, cada conversación cuenta más de lo que imaginas.',
 ];
 
+const CHANGELOG_1_3 = [
+  'Ahora puedes editar las horas y notas guardadas en tu historial, no solo eliminarlas.',
+  'El cronómetro permite agregar una nota antes de guardar el registro.',
+  'Nuevo apartado de Notificaciones: recordatorios de revisitas y estudios un día antes, y un resumen de tu progreso mensual cada 15 días.',
+  'Selecciona la ubicación de tus revisitas y estudios tocando un mapa, en vez de usar tu ubicación actual.',
+  'Botón para actualizar la app desde Inicio, incluso si la instalaste en tu pantalla de inicio.',
+  'Navegación mejorada: flechas de volver más claras y se quitó el campo de edad.',
+];
+
 let state = null;
 let currentView = 'inicio';
+let backTarget = 'inicio';
 let calDate = new Date();
 let calSelected = todayStr();
 let timerInterval = null;
 let timerSeconds = 0;
 let timerRunning = false;
+let mapPickState = { map:null, marker:null, lat:null, lng:null, targetLatInput:null, targetLngInput:null, targetStatusEl:null, targetBtnEl:null };
+let reminderInterval = null;
 
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
 function pad(n){ return n.toString().padStart(2,'0'); }
 function fmtDate(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
 function todayStr(){ return fmtDate(new Date()); }
+function tomorrowStr(){ const d = new Date(); d.setDate(d.getDate()+1); return fmtDate(d); }
 function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
 function minutesToHM(min){ const h=Math.floor(min/60); const m=Math.round(min%60); return h+'h '+m+'m'; }
 function daysInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
@@ -797,15 +856,16 @@ function buildNav(){
 
   document.querySelectorAll('[data-nav]').forEach(el=>{
     el.addEventListener('click', ()=>{
-      if(el.dataset.nav==='tutorial'){ openTutorialModal(); return; }
-      switchView(el.dataset.nav);
+      if(el.dataset.nav==='tutorial'){ openTutorialModal(false); return; }
+      const fromMas = currentView==='mas';
+      switchView(el.dataset.nav, fromMas ? 'mas' : (TOP_LEVEL_VIEWS.includes(el.dataset.nav) ? 'inicio' : 'inicio'));
     });
   });
 }
 
-function switchView(id){
-  const prev = currentView;
+function switchView(id, backTo){
   currentView = id;
+  if(backTo!==undefined){ backTarget = backTo; }
   document.querySelectorAll('.view').forEach(v=> v.classList.toggle('active', v.dataset.view===id));
   const titleMap = {inicio:'Inicio',horas:'Horas',metas:'Metas',revisitas:'Revisitas',estudios:'Estudios bíblicos',calendario:'Calendario',estadisticas:'Estadísticas',perfil:'Perfil',mas:'Más',sugerencias:'Sugerencias'};
   document.getElementById('viewTitle').textContent = titleMap[id] || '';
@@ -815,11 +875,11 @@ function switchView(id){
     el.classList.toggle('active', active);
   });
   const backBtn = document.getElementById('globalBackBtn');
-  if(id === 'inicio') {
+  if(TOP_LEVEL_VIEWS.includes(id)){
     backBtn.style.display = 'none';
   } else {
     backBtn.style.display = 'flex';
-    backBtn.onclick = ()=> switchView('inicio');
+    backBtn.onclick = ()=> switchView(backTarget || 'mas');
   }
   renderCurrentView();
   window.scrollTo({top:0,behavior:'instant'});
@@ -877,6 +937,112 @@ function renderInicio(){
 
   const msgIndex = new Date().getDate() % MOTIVATIONAL.length;
   document.getElementById('in-msg').textContent = MOTIVATIONAL[msgIndex];
+
+  renderNotifCard();
+}
+
+function renderNotifCard(){
+  const wrap = document.getElementById('notifCard');
+  if(!wrap) return;
+  const supported = 'Notification' in window;
+  const perm = supported ? Notification.permission : 'unsupported';
+  const enabled = state.notifSettings.enabled;
+  let statusText = 'Recibe un aviso un día antes de tus revisitas y estudios programados, y un resumen de tu progreso cada 15 días.';
+  let btnHtml = '';
+  if(!supported){
+    statusText = 'Tu navegador no admite notificaciones.';
+  } else if(perm==='denied'){
+    statusText = 'Bloqueaste las notificaciones en el navegador. Actívalas desde los ajustes del navegador para este sitio.';
+  } else if(enabled && perm==='granted'){
+    btnHtml = `<button class="btn btn-secondary btn-block" id="notifToggleBtn">Desactivar notificaciones</button>`;
+  } else {
+    btnHtml = `<button class="btn btn-primary btn-block" id="notifToggleBtn">Activar notificaciones</button>`;
+  }
+  wrap.innerHTML = `<p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">${statusText}</p>${btnHtml}`;
+  const btn = document.getElementById('notifToggleBtn');
+  if(btn){
+    btn.addEventListener('click', ()=>{
+      if(state.notifSettings.enabled){
+        state.notifSettings.enabled = false;
+        saveState();
+        renderNotifCard();
+        showToast('Notificaciones desactivadas');
+      } else {
+        Notification.requestPermission().then(p=>{
+          if(p==='granted'){
+            state.notifSettings.enabled = true;
+            saveState();
+            renderNotifCard();
+            showToast('Notificaciones activadas');
+            checkReminders();
+          } else {
+            renderNotifCard();
+            showToast('Permiso de notificaciones no concedido');
+          }
+        });
+      }
+    });
+  }
+}
+
+function sendNotification(title, body){
+  if(!('Notification' in window)) return;
+  if(Notification.permission!=='granted') return;
+  try{ new Notification(title, {body, icon:'/logo/Captura de pantalla 2026-08-25 193118.png'}); }
+  catch(e){ console.error(e); }
+}
+
+function checkReminders(){
+  if(!state || !state.profile) return;
+  if(!state.notifSettings || !state.notifSettings.enabled) return;
+  if(!('Notification' in window) || Notification.permission!=='granted') return;
+
+  const tmr = tomorrowStr();
+  state.notifSettings.notified = state.notifSettings.notified || {};
+
+  state.visits.forEach(v=>{
+    if(v.nextVisit===tmr){
+      const key = 'visit_'+v.id+'_'+v.nextVisit;
+      if(!state.notifSettings.notified[key]){
+        const horaTxt = v.nextVisitTime ? v.nextVisitTime : 'la hora que tenías planeada';
+        sendNotification('Recordatorio de revisita', 'Tienes que ir a hacer una revisita mañana a la '+horaTxt+', la persona se llama '+v.name+'.');
+        state.notifSettings.notified[key] = true;
+      }
+    }
+  });
+
+  state.studies.forEach(s=>{
+    if(s.nextDate===tmr){
+      const key = 'study_'+s.id+'_'+s.nextDate;
+      if(!state.notifSettings.notified[key]){
+        const horaTxt = s.nextDateTime ? s.nextDateTime : 'la hora que tenías planeada';
+        sendNotification('Recordatorio de estudio', 'Tienes que darle estudio a '+s.name+' mañana a la '+horaTxt+'.');
+        state.notifSettings.notified[key] = true;
+      }
+    }
+  });
+
+  const now = Date.now();
+  const last = state.notifSettings.lastMonthlyNotif || 0;
+  const fifteenDays = 15*24*60*60*1000;
+  if(now - last >= fifteenDays){
+    const goal = currentGoal();
+    const monthMinutes = sumMinutes(hoursThisMonth());
+    const goalMinutes = goal.monthly*60;
+    const pct = goalMinutes>0 ? Math.min(100, Math.round(monthMinutes/goalMinutes*100)) : 0;
+    let msg = '';
+    if (pct < 50) {
+      msg = 'Vas atrasado, ¡ánimo! Puedes recuperarte.';
+    } else if (pct < 80) {
+      msg = 'Vas bien, sigue así.';
+    } else {
+      msg = '¡Excelente progreso! Sigue así.';
+    }
+    sendNotification('Tu progreso del mes', 'Llevas '+minutesToHM(monthMinutes)+' de tu meta de '+goal.monthly+'h ('+pct+'%). '+msg);
+    state.notifSettings.lastMonthlyNotif = now;
+  }
+
+  saveState();
 }
 
 function renderHoras(){
@@ -902,6 +1068,9 @@ function renderHoras(){
         <div class="list-item-sub">${formatDateLong(e.date)}${e.note? ' · '+escapeHtml(e.note):''}</div>
       </div>
       <div class="list-item-actions">
+        <button class="icon-btn btn-sm" style="width:32px;height:32px;" data-edit-hour="${e.id}">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </button>
         <button class="icon-btn btn-sm" style="width:32px;height:32px;" data-del-hour="${e.id}">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
         </button>
@@ -912,6 +1081,32 @@ function renderHoras(){
       state.hours = state.hours.filter(e=>e.id!==btn.dataset.delHour);
       saveState(); renderHoras(); showToast('Registro eliminado');
     });
+  });
+  list.querySelectorAll('[data-edit-hour]').forEach(btn=>{
+    btn.addEventListener('click', ()=> openEditHourEntry(btn.dataset.editHour));
+  });
+}
+
+function openEditHourEntry(id){
+  const entry = state.hours.find(e=>e.id===id);
+  if(!entry) return;
+  const h = Math.floor(entry.minutes/60);
+  const m = entry.minutes%60;
+  const bodyHtml = `
+    <div class="field-row">
+      <div class="field"><label>Horas</label><input type="number" id="f-eh" min="0" value="${h}"></div>
+      <div class="field"><label>Minutos</label><input type="number" id="f-em" min="0" max="59" value="${m}"></div>
+    </div>
+    <div class="field"><label>Nota</label><input type="text" id="f-enote" value="${escapeHtml(entry.note||'')}"></div>
+  `;
+  openFormModal('Editar registro de horas', bodyHtml, ()=>{
+    const hh = Math.max(0, parseInt(document.getElementById('f-eh').value)||0);
+    const mm = Math.max(0, Math.min(59, parseInt(document.getElementById('f-em').value)||0));
+    const minutes = hh*60+mm;
+    if(minutes<=0){ showToast('Ingresa un tiempo válido'); return; }
+    entry.minutes = minutes;
+    entry.note = document.getElementById('f-enote').value.trim();
+    saveState(); closeFormModal(); renderHoras(); showToast('Registro actualizado');
   });
 }
 
@@ -1010,33 +1205,130 @@ function openFormModal(title, bodyHtml, onSave){
   document.getElementById('formModal').classList.add('open');
   const saveBtn = document.getElementById('formModalSave');
   saveBtn.onclick = ()=>{ onSave(); };
+  attachModalFieldBehavior('formModalBody');
 }
 function closeFormModal(){ document.getElementById('formModal').classList.remove('open'); }
+
+function attachModalFieldBehavior(bodyId){
+  const body = document.getElementById(bodyId);
+  if(!body) return;
+  body.querySelectorAll('textarea').forEach(ta=>{
+    const resize = ()=>{ ta.style.height='auto'; ta.style.height=(ta.scrollHeight+2)+'px'; };
+    ta.addEventListener('input', resize);
+    resize();
+  });
+  body.querySelectorAll('input, textarea, select').forEach(el=>{
+    el.addEventListener('focus', ()=>{
+      setTimeout(()=>{ el.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 60);
+    });
+  });
+}
+
+function loadLeaflet(cb){
+  if(window.L){ cb(); return; }
+  if(!document.getElementById('leafletCss')){
+    const link = document.createElement('link');
+    link.id = 'leafletCss';
+    link.rel = 'stylesheet';
+    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(link);
+  }
+  const existing = document.getElementById('leafletJs');
+  if(existing){ existing.addEventListener('load', cb); return; }
+  const script = document.createElement('script');
+  script.id = 'leafletJs';
+  script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+  script.onload = cb;
+  document.body.appendChild(script);
+}
+
+function openMapPicker(latInput, lngInput, statusEl, btnEl){
+  mapPickState.targetLatInput = latInput;
+  mapPickState.targetLngInput = lngInput;
+  mapPickState.targetStatusEl = statusEl;
+  mapPickState.targetBtnEl = btnEl;
+  document.getElementById('mapPickModal').classList.add('open');
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      loadLeaflet(() => initMap(lat, lng));
+    }, () => {
+      loadLeaflet(() => initMap(19.4517, -70.6970));
+    });
+  } else {
+    loadLeaflet(() => initMap(19.4517, -70.6970));
+  }
+}
+
+function initMap(startLat, startLng){
+  const container = document.getElementById('mapPickContainer');
+  container.innerHTML = '';
+  const existingLat = mapPickState.targetLatInput.value ? parseFloat(mapPickState.targetLatInput.value) : null;
+  const existingLng = mapPickState.targetLngInput.value ? parseFloat(mapPickState.targetLngInput.value) : null;
+  const lat = existingLat != null ? existingLat : startLat;
+  const lng = existingLng != null ? existingLng : startLng;
+  const map = L.map(container).setView([lat, lng], existingLat != null ? 15 : 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+  const marker = L.marker([lat, lng], {draggable:true}).addTo(map);
+  mapPickState.map = map;
+  mapPickState.marker = marker;
+  mapPickState.lat = lat;
+  mapPickState.lng = lng;
+  marker.on('dragend', ()=>{
+    const pos = marker.getLatLng();
+    mapPickState.lat = pos.lat;
+    mapPickState.lng = pos.lng;
+  });
+  map.on('click', (e)=>{
+    marker.setLatLng(e.latlng);
+    mapPickState.lat = e.latlng.lat;
+    mapPickState.lng = e.latlng.lng;
+  });
+  setTimeout(()=>{ map.invalidateSize(); }, 150);
+}
+
+function closeMapPicker(){
+  document.getElementById('mapPickModal').classList.remove('open');
+  if(mapPickState.map){ mapPickState.map.remove(); mapPickState.map = null; }
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('mapPickClose').addEventListener('click', closeMapPicker);
+  document.getElementById('mapPickModal').addEventListener('click', (e)=>{ if(e.target.id==='mapPickModal') closeMapPicker(); });
+  document.getElementById('mapPickSave').addEventListener('click', ()=>{
+    if(mapPickState.lat==null || mapPickState.lng==null){ showToast('Selecciona un punto en el mapa'); return; }
+    mapPickState.targetLatInput.value = mapPickState.lat;
+    mapPickState.targetLngInput.value = mapPickState.lng;
+    if(mapPickState.targetStatusEl) mapPickState.targetStatusEl.textContent = 'Ubicación guardada';
+    if(mapPickState.targetBtnEl) mapPickState.targetBtnEl.textContent = 'Actualizar punto GPS';
+    closeMapPicker();
+    showToast('Punto guardado');
+  });
+});
 
 function attachLocationCapture(){
   const btn = document.getElementById('f-getloc');
   if(!btn) return;
+  const latInput = document.getElementById('f-lat');
+  const lngInput = document.getElementById('f-lng');
+  const statusEl = document.getElementById('f-loc-status');
+  if(latInput.value && lngInput.value){ btn.textContent = 'Actualizar punto GPS'; }
   btn.addEventListener('click', ()=>{
-    if(!navigator.geolocation){ showToast('Geolocalización no disponible en este navegador'); return; }
-    showToast('Obteniendo ubicación...');
-    navigator.geolocation.getCurrentPosition(pos=>{
-      document.getElementById('f-lat').value = pos.coords.latitude;
-      document.getElementById('f-lng').value = pos.coords.longitude;
-      document.getElementById('f-loc-status').textContent = 'Ubicación guardada';
-      showToast('Ubicación capturada');
-    }, err=>{
-      showToast('No se pudo obtener la ubicación');
-    }, { enableHighAccuracy:true, timeout:10000 });
+    openMapPicker(latInput, lngInput, statusEl, btn);
   });
 }
 
 function locationFieldHtml(v){
   v = v || {};
+  const hasLoc = v.lat!=null && v.lng!=null;
   return `
     <div class="field">
       <label>Ubicación en el mapa (opcional)</label>
-      <button type="button" class="btn btn-secondary btn-block" id="f-getloc">Coger punto en el mapa</button>
-      <div id="f-loc-status" style="font-size:12px;color:var(--text-muted);margin-top:6px;">${v.lat && v.lng ? 'Ubicación guardada' : 'Sin ubicación guardada'}</div>
+      <button type="button" class="btn btn-secondary btn-block" id="f-getloc">${hasLoc ? 'Actualizar punto GPS' : 'Coger punto en el mapa'}</button>
+      <div id="f-loc-status" style="font-size:12px;color:var(--text-muted);margin-top:6px;">${hasLoc ? 'Ubicación guardada' : 'Sin ubicación guardada'}</div>
       <input type="hidden" id="f-lat" value="${v.lat!=null? v.lat : ''}">
       <input type="hidden" id="f-lng" value="${v.lng!=null? v.lng : ''}">
     </div>`;
@@ -1053,7 +1345,7 @@ function renderVisits(){
           <div class="person-name">${escapeHtml(v.name)}</div>
           <div class="person-meta">${v.address? escapeHtml(v.address):'Sin dirección'}${v.phone? ' · '+escapeHtml(v.phone):''}</div>
         </div>
-        ${v.nextVisit? `<span class="chip">${formatDateLong(v.nextVisit)}</span>` : ''}
+        ${v.nextVisit? `<span class="chip">${formatDateLong(v.nextVisit)}${v.nextVisitTime? ' · '+v.nextVisitTime:''}</span>` : ''}
       </div>
       ${v.topic? `<div class="person-notes"><b>Tema:</b> ${escapeHtml(v.topic)}</div>`:''}
       ${v.interests? `<div class="person-notes"><b>Intereses:</b> ${escapeHtml(v.interests)}</div>`:''}
@@ -1084,6 +1376,7 @@ function renderVisits(){
         name: visit.name,
         startDate: visit.lastVisit || todayStr(),
         nextDate: visit.nextVisit || '',
+        nextDateTime: visit.nextVisitTime || '',
         currentLesson: visit.topic || '',
         publication: visit.publication || '',
         frequency: '',
@@ -1110,6 +1403,7 @@ function visitFormHtml(v){
       <div class="field"><label>Última visita</label><input type="date" id="f-last" value="${v.lastVisit||''}"></div>
       <div class="field"><label>Próxima visita</label><input type="date" id="f-next" value="${v.nextVisit||''}"></div>
     </div>
+    <div class="field"><label>Hora de la próxima visita (opcional)</label><input type="time" id="f-next-time" value="${v.nextVisitTime||''}"></div>
     <div class="field"><label>Dirección</label><input id="f-address" value="${escapeHtml(v.address||'')}"></div>
     ${locationFieldHtml(v)}
     <div class="field"><label>Teléfono</label><input id="f-phone" value="${escapeHtml(v.phone||'')}"></div>
@@ -1133,6 +1427,7 @@ function openVisitForm(id){
       name,
       lastVisit: document.getElementById('f-last').value,
       nextVisit: document.getElementById('f-next').value,
+      nextVisitTime: document.getElementById('f-next-time').value,
       address: document.getElementById('f-address').value.trim(),
       phone: document.getElementById('f-phone').value.trim(),
       topic: document.getElementById('f-topic').value.trim(),
@@ -1160,7 +1455,7 @@ function renderStudies(){
           <div class="person-name">${escapeHtml(s.name)}</div>
           <div class="person-meta">${s.publication? escapeHtml(s.publication):'Sin publicación'}${s.frequency? ' · '+escapeHtml(s.frequency):''}</div>
         </div>
-        ${s.nextDate? `<span class="chip">${formatDateLong(s.nextDate)}</span>` : ''}
+        ${s.nextDate? `<span class="chip">${formatDateLong(s.nextDate)}${s.nextDateTime? ' · '+s.nextDateTime:''}</span>` : ''}
       </div>
       ${s.currentLesson? `<div class="person-notes"><b>Lección actual:</b> ${escapeHtml(s.currentLesson)}</div>`:''}
       ${s.progress? `<div class="person-notes"><b>Progreso:</b> ${escapeHtml(s.progress)}</div>`:''}
@@ -1192,6 +1487,7 @@ function studyFormHtml(s){
       <div class="field"><label>Fecha de inicio</label><input type="date" id="f-start" value="${s.startDate||''}"></div>
       <div class="field"><label>Próximo estudio</label><input type="date" id="f-next" value="${s.nextDate||''}"></div>
     </div>
+    <div class="field"><label>Hora del próximo estudio (opcional)</label><input type="time" id="f-next-time" value="${s.nextDateTime||''}"></div>
     <div class="field"><label>Lección actual</label><input id="f-lesson" value="${escapeHtml(s.currentLesson||'')}"></div>
     ${locationFieldHtml(s)}
     <div class="field-row">
@@ -1214,6 +1510,7 @@ function openStudyForm(id){
       name,
       startDate: document.getElementById('f-start').value,
       nextDate: document.getElementById('f-next').value,
+      nextDateTime: document.getElementById('f-next-time').value,
       currentLesson: document.getElementById('f-lesson').value.trim(),
       publication: document.getElementById('f-pub').value.trim(),
       frequency: document.getElementById('f-freq').value.trim(),
@@ -1283,8 +1580,8 @@ function renderCalendar(){
   const dayStudies = state.studies.filter(s=>s.nextDate===calSelected);
   let items = '';
   dayHours.forEach(e=> items += `<div class="list-item"><div class="list-item-main"><div class="list-item-title">Servicio registrado</div><div class="list-item-sub">${minutesToHM(e.minutes)}${e.note? ' · '+escapeHtml(e.note):''}</div></div></div>`);
-  dayVisits.forEach(v=> items += `<div class="list-item"><div class="list-item-main"><div class="list-item-title">Revisita: ${escapeHtml(v.name)}</div><div class="list-item-sub">${escapeHtml(v.address||'')}</div></div></div>`);
-  dayStudies.forEach(s=> items += `<div class="list-item"><div class="list-item-main"><div class="list-item-title">Estudio: ${escapeHtml(s.name)}</div><div class="list-item-sub">${escapeHtml(s.currentLesson||'')}</div></div></div>`);
+  dayVisits.forEach(v=> items += `<div class="list-item"><div class="list-item-main"><div class="list-item-title">Revisita: ${escapeHtml(v.name)}</div><div class="list-item-sub">${escapeHtml(v.address||'')}${v.nextVisitTime? ' · '+v.nextVisitTime:''}</div></div></div>`);
+  dayStudies.forEach(s=> items += `<div class="list-item"><div class="list-item-main"><div class="list-item-title">Estudio: ${escapeHtml(s.name)}</div><div class="list-item-sub">${escapeHtml(s.currentLesson||'')}${s.nextDateTime? ' · '+s.nextDateTime:''}</div></div></div>`);
   evWrap.innerHTML = `<div class="section-title">${formatDateLong(calSelected)}</div><div class="card">${items || emptyState('Nada programado para este día.')}</div>`;
 }
 
@@ -1309,6 +1606,7 @@ function openEditHours(dateStr){
           <div class="list-item-sub">${e.note? escapeHtml(e.note):''}</div>
         </div>
         <div class="list-item-actions">
+          <button class="btn btn-secondary btn-sm" data-edit-hour-inline="${e.id}">Editar</button>
           <button class="btn btn-danger btn-sm" data-del-hour-edit="${e.id}">Eliminar</button>
         </div>
       </div>`).join('');
@@ -1327,12 +1625,19 @@ function openEditHours(dateStr){
         showToast('Registro eliminado');
       });
     });
+    body.querySelectorAll('[data-edit-hour-inline]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        document.getElementById('editHoursModal').classList.remove('open');
+        openEditHourEntry(btn.dataset.editHourInline);
+      });
+    });
   }
+  attachModalFieldBehavior('editHoursBody');
   modal.classList.add('open');
   const saveBtn = document.getElementById('editHoursSave');
   saveBtn.onclick = ()=>{
-    const h = parseInt(document.getElementById('editH').value)||0;
-    const m = parseInt(document.getElementById('editM').value)||0;
+    const h = Math.max(0, parseInt(document.getElementById('editH').value)||0);
+    const m = Math.max(0, Math.min(59, parseInt(document.getElementById('editM').value)||0));
     const note = document.getElementById('editNote').value.trim();
     const minutes = h*60+m;
     if(minutes>0){
@@ -1393,7 +1698,6 @@ function renderStats(){
 
 function renderProfile(){
   document.getElementById('profName').value = state.profile.name;
-  document.getElementById('profAge').value = state.profile.age;
   document.getElementById('profType').value = state.profile.type;
   document.getElementById('profAvatar').textContent = initials(state.profile.name);
   document.getElementById('profThemeBtn').textContent = state.theme==='dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
@@ -1412,6 +1716,7 @@ function startTimer(){
   timerRunning = true;
   document.getElementById('timerStartBtn').style.display='none';
   document.getElementById('timerStopBtn').style.display='flex';
+  document.getElementById('timerNoteWrap').style.display='block';
   timerInterval = setInterval(()=>{
     timerSeconds++;
     document.getElementById('timerDisplay').textContent = formatTimer(timerSeconds);
@@ -1423,11 +1728,18 @@ function stopTimer(){
   document.getElementById('timerStartBtn').style.display='flex';
   document.getElementById('timerStopBtn').style.display='none';
   const minutes = Math.round(timerSeconds/60);
+  const noteInput = document.getElementById('timerNote');
+  const note = noteInput.value.trim() || 'Cronómetro';
   if(minutes>0){
-    state.hours.push({id:uid(), date:todayStr(), minutes, note:'Cronómetro'});
-    saveState(); showToast('Se guardaron '+minutesToHM(minutes));
+    state.hours.push({id:uid(), date:todayStr(), minutes, note});
+    saveState();
+    showToast('Se guardaron '+minutesToHM(minutes));
+  } else {
+    showToast('Tiempo insuficiente (mínimo 1 minuto)');
   }
   timerSeconds = 0;
+  noteInput.value = '';
+  document.getElementById('timerNoteWrap').style.display='none';
   document.getElementById('timerDisplay').textContent = '00:00:00';
   renderHoras();
 }
@@ -1439,23 +1751,82 @@ function selectOnboardType(type){
   document.getElementById('ob-types').dataset.selected = type;
 }
 
-function openTutorialModal(){
+function openTutorialModal(isOnboarding){
   document.getElementById('tutorialModal').classList.add('open');
+  document.getElementById('tutorialStartBtn').textContent = isOnboarding ? 'Comenzar a usar la app' : 'Seguir usando la app';
 }
 function closeTutorialModal(){
   document.getElementById('tutorialModal').classList.remove('open');
 }
 
+function maybeShowChangelog(){
+  if(state.hideChangelog130) return;
+  const body = document.getElementById('changelogBody');
+  body.innerHTML = '<ul style="padding-left:18px;">'+CHANGELOG_1_3.map(t=>`<li style="margin-bottom:6px;">${t}</li>`).join('')+'</ul>';
+  document.getElementById('changelogModal').classList.add('open');
+}
+
+function forceAppUpdate(){
+  const statusDiv = document.getElementById('updateStatus');
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentVersion = urlParams.get('_v') || '0';
+  const newVersion = Date.now().toString();
+  if (currentVersion === newVersion) {
+    statusDiv.style.display = 'block';
+    statusDiv.textContent = '✅ La app está actualizada';
+    statusDiv.style.color = 'var(--success)';
+    setTimeout(() => { statusDiv.style.display = 'none'; }, 3000);
+    return;
+  }
+  showToast('Actualizando... tus datos están seguros');
+  statusDiv.style.display = 'none';
+  const doReload = ()=>{
+    const url = new URL(window.location.href);
+    url.searchParams.set('_v', newVersion);
+    url.searchParams.set('_updated', '1');
+    window.location.href = url.toString();
+  };
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(regs=>{
+      const unregs = regs.map(r=>r.unregister());
+      Promise.all(unregs).then(()=>{
+        if(window.caches && caches.keys){
+          caches.keys().then(keys=>{
+            Promise.all(keys.map(k=>caches.delete(k))).finally(doReload);
+          }).catch(doReload);
+        } else {
+          doReload();
+        }
+      }).catch(doReload);
+    }).catch(doReload);
+  } else {
+    doReload();
+  }
+}
+
 function init(){
   const loaded = loadState();
   state = loaded || { profile:null, hours:[], visits:[], studies:[], theme:'light' };
+  if(!state.notifSettings){ state.notifSettings = { enabled:false, notified:{}, lastMonthlyNotif:0 }; }
+  if(state.profile && state.profile.age!==undefined){ delete state.profile.age; }
+  const isNewUser = !state.profile;
   applyTheme();
   buildNav();
 
-  if(!state.profile){
+  // Mostrar mensaje de actualización completada si venimos de _updated
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('_updated') === '1') {
+    showToast('App actualizada correctamente. Tus datos están intactos.');
+    // Limpiar parámetro de la URL sin recargar
+    const cleanUrl = window.location.pathname + window.location.search.replace(/[?&]_updated=1/, '').replace(/^&/, '?');
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+
+  if(isNewUser){
     document.getElementById('onboardModal').classList.add('open');
   } else {
     switchView('inicio');
+    maybeShowChangelog();
   }
 
   document.getElementById('ob-types').querySelectorAll('.type-option').forEach(el=>{
@@ -1463,16 +1834,14 @@ function init(){
   });
   document.getElementById('ob-save').addEventListener('click', ()=>{
     const name = document.getElementById('ob-name').value.trim();
-    const age = document.getElementById('ob-age').value;
     const type = document.getElementById('ob-types').dataset.selected;
     if(!name){ showToast('Ingresa tu nombre'); return; }
-    if(!age){ showToast('Ingresa tu edad'); return; }
     if(!type){ showToast('Selecciona un tipo de precursor'); return; }
-    state.profile = { name, age:Number(age), type };
+    state.profile = { name, type };
     saveState();
     document.getElementById('onboardModal').classList.remove('open');
     switchView('inicio');
-    openTutorialModal();
+    openTutorialModal(true);
   });
 
   document.getElementById('tutorialCloseBtn').addEventListener('click', closeTutorialModal);
@@ -1481,7 +1850,16 @@ function init(){
     if(e.target.id==='tutorialModal') closeTutorialModal();
   });
 
-  // Envío de sugerencias con formsubmit.co AJAX (funciona con fetch)
+  document.getElementById('changelogAccept').addEventListener('click', ()=>{
+    if(document.getElementById('changelogNoShow').checked){
+      state.hideChangelog130 = true;
+      saveState();
+    }
+    document.getElementById('changelogModal').classList.remove('open');
+  });
+
+  document.getElementById('forceUpdateBtn').addEventListener('click', forceAppUpdate);
+
   document.getElementById('sendSuggestionBtn').addEventListener('click', ()=>{
     const text = document.getElementById('suggestionText').value.trim();
     const status = document.getElementById('suggestionStatus');
@@ -1492,10 +1870,9 @@ function init(){
     const formData = new FormData();
     formData.append('suggestion', text);
     formData.append('_subject', 'Sugerencia JW Field Service');
-    formData.append('_captcha', 'false'); // Desactivar captcha opcional
-    formData.append('_template', 'table'); // Para mejor formato
+    formData.append('_captcha', 'false');
+    formData.append('_template', 'table');
 
-    // Usar el endpoint AJAX de formsubmit
     fetch('https://formsubmit.co/ajax/abdiasjonathanacevedo@gmail.com', {
       method: 'POST',
       body: formData,
@@ -1530,8 +1907,8 @@ function init(){
 
   document.getElementById('addHoursBtn').addEventListener('click', ()=>{
     const date = document.getElementById('hoursDate').value || todayStr();
-    const h = Number(document.getElementById('hoursH').value)||0;
-    const m = Number(document.getElementById('hoursM').value)||0;
+    const h = Math.max(0, parseInt(document.getElementById('hoursH').value)||0);
+    const m = Math.max(0, Math.min(59, parseInt(document.getElementById('hoursM').value)||0));
     const note = document.getElementById('hoursNote').value.trim();
     const minutes = h*60+m;
     if(minutes<=0){ showToast('Ingresa un tiempo válido'); return; }
@@ -1543,9 +1920,11 @@ function init(){
     renderHoras();
     showToast('Registro agregado');
   });
+  document.getElementById('hoursH').addEventListener('input', function(){ if(Number(this.value)<0) this.value=0; });
+  document.getElementById('hoursM').addEventListener('input', function(){ if(Number(this.value)<0) this.value=0; if(Number(this.value)>59) this.value=59; });
 
   document.getElementById('quick-log-hours').addEventListener('click', ()=> switchView('horas'));
-  document.getElementById('quick-add-visit').addEventListener('click', ()=>{ switchView('revisitas'); setTimeout(()=>openVisitForm(null), 50); });
+  document.getElementById('quick-add-visit').addEventListener('click', ()=>{ switchView('revisitas','mas'); setTimeout(()=>openVisitForm(null), 50); });
 
   document.getElementById('addVisitBtn').addEventListener('click', ()=> openVisitForm(null));
   document.getElementById('addStudyBtn').addEventListener('click', ()=> openStudyForm(null));
@@ -1557,20 +1936,22 @@ function init(){
 
   document.getElementById('saveProfileBtn').addEventListener('click', ()=>{
     const name = document.getElementById('profName').value.trim();
-    const age = Number(document.getElementById('profAge').value)||state.profile.age;
     const type = document.getElementById('profType').value;
     if(!name){ showToast('El nombre no puede estar vacío'); return; }
-    state.profile = { name, age, type };
+    state.profile = { name, type };
     saveState(); renderProfile(); showToast('Perfil actualizado');
   });
 
   document.getElementById('resetDataBtn').addEventListener('click', ()=>{
     if(confirm('¿Seguro que deseas borrar todos los datos? Esta acción no se puede deshacer.')){
-      state = { profile:null, hours:[], visits:[], studies:[], theme:state.theme };
+      state = { profile:null, hours:[], visits:[], studies:[], theme:state.theme, notifSettings:{enabled:false,notified:{},lastMonthlyNotif:0} };
       saveState();
       location.reload();
     }
   });
+
+  checkReminders();
+  reminderInterval = setInterval(checkReminders, 15*60*1000);
 }
 
 init();
