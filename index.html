@@ -51,17 +51,18 @@ html.dark {
   color-scheme: dark;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
-body{margin:0;font-family:var(--font-body);background:var(--bg);color:var(--text);transition:background .2s,color .2s;line-height:1.5;}
+html,body{height:100%;}
+body{margin:0;font-family:var(--font-body);background:var(--bg);color:var(--text);transition:background .2s,color .2s;line-height:1.5;overflow-x:hidden;overscroll-behavior-y:none;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);}
 h1,h2,h3,h4{font-weight:600;margin:0;letter-spacing:-0.01em;}
 p{margin:0;}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
-input,select,textarea{font-family:inherit;font-size:1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;color:var(--text);width:100%;transition:border .15s;outline:none;}
+input,select,textarea{font-family:inherit;font-size:16px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;color:var(--text);width:100%;transition:border .15s;outline:none;}
 input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(47,123,224,0.15);}
 textarea{resize:vertical;min-height:60px;}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;}
 
-#app{max-width:1100px;margin:0 auto;min-height:100vh;display:flex;}
+#app{max-width:1100px;margin:0 auto;min-height:100dvh;min-height:100vh;display:flex;}
 
 .sidebar{
   display:none;
@@ -97,6 +98,7 @@ textarea{resize:vertical;min-height:60px;}
 .topbar{
   display:flex;align-items:center;justify-content:space-between;
   padding:14px 18px;
+  padding-top:calc(14px + env(safe-area-inset-top));
   position:sticky;top:0;z-index:20;
   background:var(--bg);
   border-bottom:1px solid var(--border);
@@ -116,7 +118,7 @@ textarea{resize:vertical;min-height:60px;}
 .icon-btn svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.8;}
 .icon-btn:active{transform:scale(.96);}
 
-main{flex:1;padding:16px 14px 90px;}
+main{flex:1;padding:16px 14px calc(96px + env(safe-area-inset-bottom));}
 @media(min-width:820px){
   .sidebar{display:flex;flex-direction:column;}
   main{padding:28px 32px 40px;}
@@ -144,6 +146,7 @@ main{flex:1;padding:16px 14px 90px;}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
 @media(max-width:480px){.grid-3{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:360px){.grid-2{grid-template-columns:1fr;}}
 
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;}
 .stat-card .num{font-size:24px;font-weight:700;color:var(--primary-dark);letter-spacing:-0.02em;}
@@ -174,6 +177,12 @@ main{flex:1;padding:16px 14px 90px;}
   border-radius:var(--radius-md);padding:14px 16px;font-size:13.5px;color:var(--text-muted);font-style:italic;line-height:1.5;
 }
 
+.lock-card{
+  background:var(--surface-2);border:1px dashed var(--border);
+  border-radius:var(--radius-md);padding:16px;font-size:13.5px;color:var(--text-muted);line-height:1.5;text-align:center;
+}
+.lock-card svg{width:26px;height:26px;stroke:var(--text-muted);margin-bottom:8px;}
+
 .btn{
   border-radius:var(--radius-sm);padding:10px 18px;font-weight:600;font-size:14px;
   display:inline-flex;align-items:center;gap:8px;justify-content:center;
@@ -192,13 +201,27 @@ main{flex:1;padding:16px 14px 90px;}
 .btn-success:hover{box-shadow:0 4px 10px rgba(59,168,122,0.3);}
 .btn-block{width:100%;}
 .btn-sm{padding:5px 12px;font-size:12px;border-radius:6px;}
+.btn[disabled]{opacity:.5;pointer-events:none;}
 
 .fab-row{display:flex;gap:10px;margin-top:14px;}
+@media(max-width:380px){.fab-row{flex-direction:column;}}
 
 .field{margin-bottom:14px;}
 .field label{display:block;font-size:12.5px;font-weight:500;color:var(--text-muted);margin-bottom:4px;}
 .field-row{display:flex;gap:12px;}
-.field-row .field{flex:1;}
+.field-row .field{flex:1;min-width:0;}
+@media(max-width:360px){.field-row{flex-direction:column;gap:0;}}
+
+.stepper{display:flex;align-items:stretch;gap:8px;}
+.stepper input{text-align:center;flex:1;min-width:0;-moz-appearance:textfield;}
+.stepper-btn{
+  width:42px;flex-shrink:0;border-radius:var(--radius-sm);border:1px solid var(--border);
+  background:var(--surface-2);color:var(--text);font-size:19px;font-weight:600;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s;
+}
+.stepper-btn:hover{background:var(--border);}
+.stepper-btn:active{transform:scale(.95);}
 
 .timer-display{font-size:40px;font-weight:600;text-align:center;letter-spacing:1px;margin:8px 0 18px;color:var(--primary-dark);font-variant-numeric:tabular-nums;}
 .timer-controls{display:flex;gap:10px;}
@@ -234,7 +257,7 @@ main{flex:1;padding:16px 14px 90px;}
 .pace-text{font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;}
 .pace-behind{background:rgba(217,92,74,.12);color:var(--danger);}
 .pace-ahead{background:rgba(59,168,122,.12);color:var(--success);}
-.goal-numbers{display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-muted);margin-top:8px;flex-wrap:wrap;}
+.goal-numbers{display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-muted);margin-top:8px;flex-wrap:wrap;gap:6px;}
 .goal-numbers b{color:var(--text);font-weight:600;}
 
 .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
@@ -259,14 +282,15 @@ main{flex:1;padding:16px 14px 90px;}
 .bar-chart .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px;}
 .bar-chart .bar{width:100%;max-width:24px;background:var(--primary);border-radius:4px 4px 2px 2px;min-height:3px;transition:height .4s;}
 .bar-chart .bar-lbl{font-size:9px;color:var(--text-muted);font-weight:600;}
+@media(max-width:360px){.bar-chart{gap:5px;}}
 
 .modal-overlay{
   position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(3px);
-  display:none;align-items:center;justify-content:center;z-index:100;padding:20px;
+  display:none;align-items:center;justify-content:center;z-index:100;padding:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom));
 }
 .modal-overlay.open{display:flex;}
 .modal-sheet{
-  background:var(--surface);width:100%;max-width:440px;max-height:88vh;overflow-y:auto;
+  background:var(--surface);width:100%;max-width:440px;max-height:88vh;max-height:88dvh;overflow-y:auto;
   border-radius:var(--radius-lg);padding:20px 24px;animation:modalIn .2s ease;
 }
 @keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(-10px);}to{opacity:1;transform:scale(1) translateY(0);}}
@@ -274,10 +298,11 @@ main{flex:1;padding:16px 14px 90px;}
 .modal-head h3{font-size:17px;font-weight:600;}
 
 .bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;z-index:30;
+  position:fixed;left:0;right:0;bottom:0;z-index:30;
   background:var(--surface);border-top:1px solid var(--border);
   display:flex;padding:4px 4px calc(4px + env(safe-area-inset-bottom));
   max-width:1100px;margin:0 auto;
+  will-change:transform;
 }
 .bn-item{
   flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
@@ -314,11 +339,11 @@ main{flex:1;padding:16px 14px 90px;}
   margin-bottom:12px;
 }
 .toast{
-  position:fixed;bottom:90px;left:50%;transform:translateX(-50%);
+  position:fixed;bottom:calc(90px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
   background:var(--text);color:var(--bg);padding:8px 18px;border-radius:30px;font-size:13px;font-weight:500;
-  z-index:200;opacity:0;pointer-events:none;transition:opacity .2s,bottom .2s;
+  z-index:200;opacity:0;pointer-events:none;transition:opacity .2s,bottom .2s;max-width:88vw;text-align:center;
 }
-.toast.show{opacity:1;bottom:100px;}
+.toast.show{opacity:1;bottom:calc(100px + env(safe-area-inset-bottom));}
 @media(min-width:820px){.toast{bottom:24px;}.toast.show{bottom:32px;}}
 
 .credits-section{margin-top:10px;}
@@ -335,18 +360,21 @@ main{flex:1;padding:16px 14px 90px;}
 .tutorial-sub li{font-size:12.5px;color:var(--text-muted);line-height:1.7;}
 
 @media(max-width:480px){
-  .topbar{padding:10px 12px;}
+  .topbar{padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top));}
   .topbar h2{font-size:16px;}
-  .hero-card .hero-hours{font-size:28px;}
-  .ring-wrap{width:56px;height:56px;}
-  .ring-wrap .ring-pct{font-size:11px;}
-  .timer-display{font-size:32px;}
+  .hero-card{padding:18px 18px 16px;}
+  .hero-card .hero-hours{font-size:26px;}
+  .ring-wrap{width:52px;height:52px;}
+  .ring-wrap .ring-pct{font-size:10.5px;}
+  .timer-display{font-size:30px;}
   .modal-sheet{padding:16px;}
-  .btn{padding:8px 14px;font-size:13px;}
+  .btn{padding:9px 14px;font-size:13px;}
   .person-card{padding:12px;}
   .grid-2{grid-template-columns:1fr;}
   .cal-day{font-size:11px;}
   .more-grid{grid-template-columns:1fr 1fr;}
+  main{padding:14px 12px calc(92px + env(safe-area-inset-bottom));}
+  .card{padding:14px 14px;}
 }
 </style>
 </head>
@@ -403,7 +431,8 @@ main{flex:1;padding:16px 14px 90px;}
           <div class="hero-bar-track"><div class="hero-bar-fill" id="in-barfill" style="width:0%"></div></div>
         </div>
 
-        <div id="inicio-extra" style="margin-top:12px;"></div>
+        <div class="section-title">Cierre de mes</div>
+        <div class="card" id="inicio-extra"></div>
 
         <div class="section-title">Resumen del mes</div>
         <div class="grid-3">
@@ -430,34 +459,50 @@ main{flex:1;padding:16px 14px 90px;}
         <div class="card">
           <button class="btn btn-secondary btn-block" id="forceUpdateBtn">Actualizar app</button>
           <div id="updateStatus" style="margin-top:8px;font-weight:500;display:none;"></div>
-          <p style="font-size:11.5px;color:var(--text-muted);margin-top:8px;">Es recomendable actualizar la app una vez al mes.</p>
+          <p style="font-size:11.5px;color:var(--text-muted);margin-top:8px;">Es recomendable actualizar la app una vez al mes. Tus datos guardados no se pierden al actualizar.</p>
         </div>
       </section>
 
       <section class="view" data-view="horas">
-        <div class="card">
-          <div class="timer-display" id="timerDisplay">00:00:00</div>
-          <div class="field" id="timerNoteWrap" style="display:none;">
-            <label>Nota del cronómetro (opcional)</label>
-            <input type="text" id="timerNote" placeholder="Ej: predicación pública">
-          </div>
-          <div class="timer-controls">
-            <button class="btn btn-primary btn-block" id="timerStartBtn">Iniciar</button>
-            <button class="btn btn-danger btn-block" id="timerStopBtn" style="display:none;">Detener y guardar</button>
-          </div>
-        </div>
+        <div class="card" id="horasLockCard" style="display:none;"></div>
 
-        <div class="section-title">Registro manual</div>
-        <div class="card">
-          <div class="field-row">
-            <div class="field"><label>Fecha</label><input type="date" id="hoursDate"></div>
+        <div id="horasEditableWrap">
+          <div class="card" id="timerCard">
+            <div class="timer-display" id="timerDisplay">00:00:00</div>
+            <div class="field" id="timerNoteWrap" style="display:none;">
+              <label>Nota del cronómetro (opcional)</label>
+              <input type="text" id="timerNote" placeholder="Ej: predicación pública">
+            </div>
+            <div class="timer-controls">
+              <button class="btn btn-primary btn-block" id="timerStartBtn">Iniciar</button>
+              <button class="btn btn-danger btn-block" id="timerStopBtn" style="display:none;">Detener y guardar</button>
+            </div>
           </div>
-          <div class="field-row">
-            <div class="field"><label>Horas</label><input type="number" id="hoursH" min="0" value="0"></div>
-            <div class="field"><label>Minutos</label><input type="number" id="hoursM" min="0" max="59" value="0"></div>
+
+          <div class="section-title">Registro manual</div>
+          <div class="card">
+            <div class="field-row">
+              <div class="field"><label>Fecha</label><input type="date" id="hoursDate"></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Horas</label>
+                <div class="stepper">
+                  <button type="button" class="stepper-btn" data-step="-1" data-target="hoursH">−</button>
+                  <input type="number" id="hoursH" min="0" placeholder="0" inputmode="numeric">
+                  <button type="button" class="stepper-btn" data-step="1" data-target="hoursH">+</button>
+                </div>
+              </div>
+              <div class="field"><label>Minutos</label>
+                <div class="stepper">
+                  <button type="button" class="stepper-btn" data-step="-1" data-target="hoursM">−</button>
+                  <input type="number" id="hoursM" min="0" max="59" placeholder="0" inputmode="numeric">
+                  <button type="button" class="stepper-btn" data-step="1" data-target="hoursM">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="field"><label>Nota (opcional)</label><input type="text" id="hoursNote" placeholder="Ej: predicación pública"></div>
+            <button class="btn btn-primary btn-block" id="addHoursBtn">Agregar registro</button>
           </div>
-          <div class="field"><label>Nota (opcional)</label><input type="text" id="hoursNote" placeholder="Ej: predicación pública"></div>
-          <button class="btn btn-primary btn-block" id="addHoursBtn">Agregar registro</button>
         </div>
 
         <div class="section-title">Totales</div>
@@ -553,13 +598,13 @@ main{flex:1;padding:16px 14px 90px;}
         <div class="section-title">Enviar sugerencias</div>
         <div class="card">
           <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;line-height:1.5;">Cuéntanos qué te gustaría mejorar o agregar en la aplicación. Tu mensaje se enviará por correo.</p>
+          <div class="field"><label>Tu nombre (opcional)</label><input type="text" id="suggestionName" placeholder="Tu nombre"></div>
           <div class="field"><label>Tu sugerencia</label><textarea id="suggestionText" placeholder="Escribe aquí tu sugerencia o comentario" style="min-height:120px;"></textarea></div>
           <button class="btn btn-primary btn-block" id="sendSuggestionBtn">Enviar sugerencia</button>
           <div id="suggestionStatus" style="margin-top:10px;font-weight:500;display:none;"></div>
         </div>
       </section>
 
-      <!-- Nueva vista: Historial de meses -->
       <section class="view" data-view="historial">
         <div class="section-title">Historial de meses</div>
         <div class="card" id="monthHistoryList"></div>
@@ -611,8 +656,8 @@ main{flex:1;padding:16px 14px 90px;}
     <div class="tutorial-block">
       <h4>Mini tutorial</h4>
       <p>
-        En <b>Inicio</b> verás un resumen de tus horas del mes, un botón para actualizar la app y el apartado de notificaciones.<br>
-        En <b>Horas</b> puedes usar el cronómetro (con nota opcional) o registrar tu tiempo manualmente.<br>
+        En <b>Inicio</b> verás un resumen de tus horas del mes, la tarjeta para cerrar el mes, un botón para actualizar la app y el apartado de notificaciones.<br>
+        En <b>Horas</b> puedes usar el cronómetro (con nota opcional) o registrar tu tiempo manualmente, siempre que el mes actual esté abierto.<br>
         En <b>Metas</b> revisas tu progreso mensual y anual con tu ritmo actual.<br>
         En <b>Revisitas</b> y <b>Estudios</b> guardas tus personas de interés, con la opción de seleccionar su ubicación en un mapa y trazar cómo llegar.<br>
         En <b>Calendario</b> ves tus horas, revisitas y estudios organizados por día.<br>
@@ -700,20 +745,6 @@ main{flex:1;padding:16px 14px 90px;}
   </div>
 </div>
 
-<!-- Modal de resumen de año nuevo / campaña de septiembre -->
-<div class="modal-overlay" id="campaignModal">
-  <div class="modal-sheet">
-    <div class="modal-head"><h3>¡Nuevo año de servicio!</h3></div>
-    <div id="campaignBody" style="font-size:13.5px;color:var(--text-muted);line-height:1.7;"></div>
-    <label style="display:flex;align-items:center;gap:8px;margin-top:16px;font-size:13px;color:var(--text-muted);cursor:pointer;">
-      <input type="checkbox" id="campaignNoShow" style="width:auto;accent-color:var(--primary-dark);">
-      No mostrar de nuevo
-    </label>
-    <button class="btn btn-primary btn-block" id="campaignAccept" style="margin-top:14px;">Aceptar</button>
-  </div>
-</div>
-
-<!-- Modal de confirmación para cerrar mes -->
 <div class="modal-overlay" id="confirmModal">
   <div class="modal-sheet">
     <div class="modal-head"><h3 id="confirmTitle">Confirmar</h3><button class="icon-btn" id="confirmClose"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
@@ -722,19 +753,6 @@ main{flex:1;padding:16px 14px 90px;}
       <button class="btn btn-secondary btn-block" id="confirmCancel">Cancelar</button>
       <button class="btn btn-danger btn-block" id="confirmOk">Aceptar</button>
     </div>
-  </div>
-</div>
-
-<!-- Modal de alerta al entrar (cerrar mes anterior) -->
-<div class="modal-overlay" id="alertModal">
-  <div class="modal-sheet">
-    <div class="modal-head"><h3 id="alertTitle">Aviso</h3><button class="icon-btn" id="alertClose"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
-    <div id="alertBody"></div>
-    <label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;color:var(--text-muted);cursor:pointer;">
-      <input type="checkbox" id="alertNoShow" style="width:auto;accent-color:var(--primary-dark);">
-      No mostrar de nuevo para este mes
-    </label>
-    <button class="btn btn-primary btn-block" id="alertOk" style="margin-top:14px;">Entendido</button>
   </div>
 </div>
 
@@ -794,6 +812,8 @@ function minutesToHM(min){ const h=Math.floor(min/60); const m=Math.round(min%60
 function daysInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
 function monthLabel(d){ return d.toLocaleDateString('es-ES',{month:'long', year:'numeric'}); }
 function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+function monthKey(d){ return fmtDate(new Date(d.getFullYear(), d.getMonth(), 1)); }
+function dateMonthKey(dateStr){ return monthKey(parseDate(dateStr)); }
 
 function getServiceYearRange(date){
   const y = date.getFullYear(); const m = date.getMonth();
@@ -812,12 +832,12 @@ function saveState(){
   catch(e){ console.error('storage error', e); showToast('No se pudo guardar'); }
 }
 
-function showToast(msg){
+function showToast(msg, duration){
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(showToast._tm);
-  showToast._tm = setTimeout(()=>t.classList.remove('show'), 2200);
+  showToast._tm = setTimeout(()=>t.classList.remove('show'), duration || 2200);
 }
 
 function applyTheme(){
@@ -958,6 +978,15 @@ function closeMonth(monthDate){
   saveState();
 }
 
+function getOpenMonthDate(){
+  if(!state.openMonth){ state.openMonth = monthKey(new Date()); saveState(); }
+  const [y,m] = state.openMonth.split('-').map(Number);
+  return new Date(y, m-1, 1);
+}
+function isHoursEditingOpen(){
+  return monthKey(new Date()) === state.openMonth;
+}
+
 function renderInicio(){
   const goal = currentGoal();
   const monthMinutes = sumMinutes(hoursThisMonth());
@@ -976,27 +1005,36 @@ function renderInicio(){
   const msgIndex = new Date().getDate() % MOTIVATIONAL.length;
   document.getElementById('in-msg').textContent = MOTIVATIONAL[msgIndex];
 
-  // Mostrar botón "Acabar mes" solo el último día del mes
-  const now = new Date();
-  const today = now.getDate();
-  const lastDay = daysInMonth(now.getFullYear(), now.getMonth());
+  const openDate = getOpenMonthDate();
+  const openLabel = capitalize(monthLabel(openDate));
+  const open = isHoursEditingOpen();
   const extra = document.getElementById('inicio-extra');
-  if(today === lastDay && !isMonthClosed(now)){
-    extra.innerHTML = `<button class="btn btn-danger btn-block" id="closeMonthBtn">Acabar mes (cerrar ${capitalize(now.toLocaleDateString('es-ES',{month:'long'}))})</button>`;
-    document.getElementById('closeMonthBtn').addEventListener('click', ()=>{
-      showConfirmModal('Cerrar mes', '¿Estás seguro de que quieres cerrar el mes de '+capitalize(now.toLocaleDateString('es-ES',{month:'long'}))+'? No podrás agregar más horas a este mes, pero sí editarlas.', ()=>{
-        closeMonth(now);
-        renderInicio();
-        showToast('Mes cerrado correctamente');
-      });
-    });
-  } else if(isMonthClosed(now)){
-    extra.innerHTML = `<p style="color:var(--text-muted);font-size:13px;">Este mes ya está cerrado.</p>`;
-  } else {
-    extra.innerHTML = '';
-  }
+  extra.innerHTML = `
+    <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">
+      Mes abierto para registrar horas: <b style="color:var(--text);">${openLabel}</b>.
+      ${open ? 'Podrás finalizarlo cuando termine.' : 'Este mes ya terminó: finalízalo para poder seguir registrando horas.'}
+    </p>
+    <button class="btn ${open? 'btn-secondary':'btn-primary'} btn-block" id="closeMonthBtn">Finalizar mes (${openLabel})</button>`;
+  document.getElementById('closeMonthBtn').addEventListener('click', tryFinalizeMonth);
 
   renderNotifCard();
+}
+
+function tryFinalizeMonth(){
+  const openDate = getOpenMonthDate();
+  const openLabel = capitalize(monthLabel(openDate));
+  if(isHoursEditingOpen()){
+    showToast('Aún no puedes finalizar '+openLabel+': el mes todavía no ha terminado. Podrás hacerlo apenas comience el próximo mes.', 4200);
+    return;
+  }
+  showConfirmModal('Finalizar mes', '¿Deseas finalizar '+openLabel+'? Podrás seguir editando sus horas desde Historial, pero para registrar horas nuevas pasarás al mes siguiente.', ()=>{
+    closeMonth(openDate);
+    const nextMonth = new Date(openDate.getFullYear(), openDate.getMonth()+1, 1);
+    state.openMonth = monthKey(nextMonth);
+    saveState();
+    renderInicio();
+    showToast('Mes finalizado correctamente');
+  });
 }
 
 function renderNotifCard(){
@@ -1104,7 +1142,36 @@ function checkReminders(){
 }
 
 function renderHoras(){
-  document.getElementById('hoursDate').value = todayStr();
+  const lockCard = document.getElementById('horasLockCard');
+  const editableWrap = document.getElementById('horasEditableWrap');
+  const timerCard = document.getElementById('timerCard');
+  const openDate = getOpenMonthDate();
+  const openLabel = capitalize(monthLabel(openDate));
+  const sameMonth = isHoursEditingOpen();
+  editableWrap.style.display = 'block';
+
+  if(!sameMonth){
+    lockCard.style.display = 'block';
+    lockCard.innerHTML = `
+      <div class="lock-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+        <p>Tienes pendiente finalizar <b>${openLabel}</b>. Puedes seguir agregando o editando sus horas abajo, pero no podrás registrar horas del mes nuevo hasta finalizarlo.</p>
+        <button class="btn btn-primary btn-block" id="horasGoFinalize" style="margin-top:10px;">Ir a finalizar mes</button>
+      </div>`;
+    document.getElementById('horasGoFinalize').addEventListener('click', ()=> switchView('inicio'));
+    timerCard.style.display = 'none';
+  } else {
+    lockCard.style.display = 'none';
+    timerCard.style.display = 'block';
+  }
+
+  const lastDayOfOpen = new Date(openDate.getFullYear(), openDate.getMonth()+1, 0);
+  const maxDate = sameMonth ? new Date(Math.min(lastDayOfOpen.getTime(), new Date().getTime())) : lastDayOfOpen;
+  const hoursDateInput = document.getElementById('hoursDate');
+  hoursDateInput.min = fmtDate(openDate);
+  hoursDateInput.max = fmtDate(maxDate);
+  hoursDateInput.value = sameMonth ? todayStr() : fmtDate(lastDayOfOpen);
+
   const week = sumMinutes(hoursThisWeek());
   const month = sumMinutes(hoursThisMonth());
   const goal = currentGoal();
@@ -1152,8 +1219,8 @@ function openEditHourEntry(id){
   const m = entry.minutes%60;
   const bodyHtml = `
     <div class="field-row">
-      <div class="field"><label>Horas</label><input type="number" id="f-eh" min="0" value="${h}"></div>
-      <div class="field"><label>Minutos</label><input type="number" id="f-em" min="0" max="59" value="${m}"></div>
+      <div class="field"><label>Horas</label>${stepperFieldHtml('f-eh', {value:h})}</div>
+      <div class="field"><label>Minutos</label>${stepperFieldHtml('f-em', {max:59, value:m})}</div>
     </div>
     <div class="field"><label>Nota</label><input type="text" id="f-enote" value="${escapeHtml(entry.note||'')}"></div>
   `;
@@ -1257,6 +1324,38 @@ function renderMetas(){
     </p>`;
 }
 
+function stepperFieldHtml(id, opts){
+  opts = opts || {};
+  const min = opts.min!=null ? opts.min : 0;
+  const maxAttr = opts.max!=null ? ` max="${opts.max}"` : '';
+  const valAttr = opts.value!=null ? ` value="${opts.value}"` : '';
+  const placeholder = opts.placeholder!=null ? opts.placeholder : '0';
+  return `<div class="stepper">
+    <button type="button" class="stepper-btn" data-step="-1" data-target="${id}">−</button>
+    <input type="number" id="${id}" min="${min}"${maxAttr} placeholder="${placeholder}"${valAttr} inputmode="numeric">
+    <button type="button" class="stepper-btn" data-step="1" data-target="${id}">+</button>
+  </div>`;
+}
+function attachSteppers(root){
+  if(!root) return;
+  root.querySelectorAll('[data-step]').forEach(btn=>{
+    if(btn.dataset.stepBound) return;
+    btn.dataset.stepBound = '1';
+    btn.addEventListener('click', ()=>{
+      const input = document.getElementById(btn.dataset.target);
+      if(!input) return;
+      const step = parseInt(btn.dataset.step);
+      const min = input.min!==''? parseInt(input.min) : 0;
+      const max = input.max!==''? parseInt(input.max) : Infinity;
+      const current = input.value===''? 0 : (parseInt(input.value)||0);
+      let next = current + step;
+      if(next<min) next = min;
+      if(next>max) next = max;
+      input.value = next;
+    });
+  });
+}
+
 function openFormModal(title, bodyHtml, onSave){
   document.getElementById('formModalTitle').textContent = title;
   document.getElementById('formModalBody').innerHTML = bodyHtml;
@@ -1280,6 +1379,7 @@ function attachModalFieldBehavior(bodyId){
       setTimeout(()=>{ el.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 60);
     });
   });
+  attachSteppers(body);
 }
 
 function loadLeaflet(cb){
@@ -1624,11 +1724,13 @@ function renderCalendar(){
       calSelected = day;
       renderCalendar();
       const today = todayStr();
-      if(day <= today){
-        openEditHours(day);
-      } else {
-        showToast('No puedes editar horas en días futuros');
+      if(day > today){ showToast('No puedes editar horas en días futuros'); return; }
+      if(dateMonthKey(day) !== state.openMonth){
+        const openLabel = capitalize(monthLabel(getOpenMonthDate()));
+        showToast('Solo puedes editar horas del mes pendiente de finalizar: '+openLabel, 3200);
+        return;
       }
+      openEditHours(day);
     });
   });
 
@@ -1646,14 +1748,15 @@ function renderCalendar(){
 function openEditHours(dateStr){
   const today = todayStr();
   if(dateStr > today) return;
+  if(dateMonthKey(dateStr) !== state.openMonth) return;
   const dayHours = state.hours.filter(e=>e.date===dateStr);
   const modal = document.getElementById('editHoursModal');
   const body = document.getElementById('editHoursBody');
   if(dayHours.length===0){
     body.innerHTML = `<p style="color:var(--text-muted);">No hay horas registradas para este día. ¿Quieres agregar?</p>
       <div class="field-row" style="margin-top:10px;">
-        <div class="field"><label>Horas</label><input type="number" id="editH" min="0" value="0"></div>
-        <div class="field"><label>Minutos</label><input type="number" id="editM" min="0" max="59" value="0"></div>
+        <div class="field"><label>Horas</label>${stepperFieldHtml('editH')}</div>
+        <div class="field"><label>Minutos</label>${stepperFieldHtml('editM', {max:59})}</div>
       </div>
       <div class="field"><label>Nota</label><input type="text" id="editNote" placeholder="Opcional"></div>`;
   } else {
@@ -1669,8 +1772,8 @@ function openEditHours(dateStr){
         </div>
       </div>`).join('');
     html += `<div class="field-row" style="margin-top:10px;">
-        <div class="field"><label>Agregar horas</label><input type="number" id="editH" min="0" value="0"></div>
-        <div class="field"><label>Minutos</label><input type="number" id="editM" min="0" max="59" value="0"></div>
+        <div class="field"><label>Agregar horas</label>${stepperFieldHtml('editH')}</div>
+        <div class="field"><label>Minutos</label>${stepperFieldHtml('editM', {max:59})}</div>
       </div>
       <div class="field"><label>Nota</label><input type="text" id="editNote" placeholder="Opcional"></div>`;
     body.innerHTML = html;
@@ -1771,6 +1874,7 @@ function formatTimer(sec){
   return pad(h)+':'+pad(m)+':'+pad(s);
 }
 function startTimer(){
+  if(!isHoursEditingOpen()){ showToast('Finaliza el mes pendiente desde Inicio para poder usar el cronómetro.', 3200); return; }
   timerRunning = true;
   document.getElementById('timerStartBtn').style.display='none';
   document.getElementById('timerStopBtn').style.display='flex';
@@ -1817,62 +1921,6 @@ function closeTutorialModal(){
   document.getElementById('tutorialModal').classList.remove('open');
 }
 
-function maybeShowCampaignModal(){
-  if(state.hideCampaign2026) return;
-  const now = new Date();
-  const month = now.getMonth();
-  const year = now.getFullYear();
-  // Mostrar solo si estamos en septiembre (mes 8) y es el inicio del año de servicio
-  if(month !== 8) return;
-  // Mostrar una vez por año de servicio
-  const key = 'campaign_'+year;
-  if(state._shownCampaign && state._shownCampaign === key) return;
-  const body = document.getElementById('campaignBody');
-  body.innerHTML = `
-    <p style="margin-bottom:12px;">¡Bienvenido al nuevo año de servicio (Septiembre ${year} - Agosto ${year+1})!</p>
-    <p>Este es un momento especial para intensificar nuestra predicación y ayudar a más personas a conocer la verdad. Te animamos a:</p>
-    <ul style="padding-left:18px;margin:10px 0;">
-      <li>Iniciar nuevos cursos bíblicos</li>
-      <li>Aumentar tu participación en el ministerio</li>
-    </ul>
-    <p>¡Ánimo!</p>
-  `;
-  document.getElementById('campaignModal').classList.add('open');
-  state._shownCampaign = key;
-  saveState();
-}
-
-function maybeShowEndYearSummary(){
-  if(state.dismissedEndYearSummary) return;
-  const now = new Date();
-  const month = now.getMonth();
-  // Si estamos en septiembre, mostramos resumen del año anterior (agosto)
-  if(month !== 8) return;
-  const prevYear = now.getFullYear()-1;
-  const key = 'summary_'+prevYear;
-  if(state._shownYearSummary && state._shownYearSummary === key) return;
-  // Calcular horas del año anterior (sept prev-1 a ago prev)
-  const start = new Date(prevYear, 8, 1);
-  const end = new Date(prevYear+1, 8, 1);
-  const hours = hoursInRange(start, end);
-  const totalMin = sumMinutes(hours);
-  const studiesCount = state.studies.length;
-  const visitsCount = state.visits.length;
-  const body = document.getElementById('campaignBody');
-  body.innerHTML = `
-    <p style="margin-bottom:12px;"><strong>Resumen del año de servicio pasado (Sept ${prevYear} - Ago ${prevYear+1})</strong></p>
-    <ul style="padding-left:18px;margin:10px 0;">
-      <li><b>Horas totales:</b> ${minutesToHM(totalMin)}</li>
-      <li><b>Estudios bíblicos activos:</b> ${studiesCount}</li>
-      <li><b>Revisitas activas:</b> ${visitsCount}</li>
-    </ul>
-    <p>¡Buen trabajo! Ahora comenzamos un nuevo año de servicio. ¿Estás listo para predicar con más entusiasmo?</p>
-  `;
-  document.getElementById('campaignModal').classList.add('open');
-  state._shownYearSummary = key;
-  saveState();
-}
-
 function showConfirmModal(title, msg, onOk){
   document.getElementById('confirmTitle').textContent = title;
   document.getElementById('confirmBody').innerHTML = `<p style="font-size:14px;color:var(--text);">${msg}</p>`;
@@ -1890,34 +1938,12 @@ document.getElementById('confirmOk').addEventListener('click', ()=>{
   closeConfirmModal();
 });
 
-function showAlertModal(title, msg, onOk){
-  document.getElementById('alertTitle').textContent = title;
-  document.getElementById('alertBody').innerHTML = `<p style="font-size:14px;color:var(--text);">${msg}</p>`;
-  document.getElementById('alertModal').classList.add('open');
-  document.getElementById('alertOk').onclick = ()=>{
-    const noShow = document.getElementById('alertNoShow').checked;
-    if(noShow){
-      // Guardar que no se muestre para este mes
-      const now = new Date();
-      const key = 'alert_'+now.getFullYear()+'_'+now.getMonth();
-      if(!state.dismissedAlerts) state.dismissedAlerts = [];
-      if(!state.dismissedAlerts.includes(key)) state.dismissedAlerts.push(key);
-      saveState();
-    }
-    document.getElementById('alertModal').classList.remove('open');
-    if(onOk) onOk();
-  };
-}
-document.getElementById('alertClose').addEventListener('click', ()=>{
-  document.getElementById('alertModal').classList.remove('open');
-});
-
 function renderMonthHistory(){
   const list = document.getElementById('monthHistoryList');
   const now = new Date();
   const {startYear} = getServiceYearRange(now);
-  const startMonth = 8; // septiembre
-  const endMonth = 8; // agosto del siguiente
+  const startMonth = 8;
+  const endMonth = 8;
   const years = [startYear, startYear+1];
   let months = [];
   for(let y of years){
@@ -1929,7 +1955,6 @@ function renderMonthHistory(){
   }
   if(months.length===0) { list.innerHTML = emptyState('No hay meses en el año de servicio actual.'); return; }
 
-  // Mostrar meses desde el inicio del año de servicio hasta el mes actual (o el último cerrado)
   const today = new Date();
   let html = '';
   for(let d of months){
@@ -1955,7 +1980,6 @@ function renderMonthHistory(){
       const key = btn.dataset.editMonth;
       const [year, month] = key.split('-').map(Number);
       const monthDate = new Date(year, month-1, 1);
-      // Abrir modal para editar horas de ese mes (similar a editar día pero con rango)
       openMonthEdit(monthDate);
     });
   });
@@ -1969,9 +1993,14 @@ function openMonthEdit(monthDate){
     const d = parseDate(e.date);
     return d >= start && d < end;
   });
+  const closed = isMonthClosed(monthDate);
+  const canAddHere = monthKey(monthDate) === state.openMonth;
   const modal = document.getElementById('editHoursModal');
   const body = document.getElementById('editHoursBody');
-  body.innerHTML = `<p style="color:var(--text-muted);">Editando horas de ${capitalize(monthDate.toLocaleDateString('es-ES',{month:'long', year:'numeric'}))}</p>`;
+  let noteTxt = '';
+  if(closed) noteTxt = ' (mes cerrado, solo puedes editar o eliminar registros existentes)';
+  else if(!canAddHere) noteTxt = ' (este mes aún no está abierto, solo puedes editar o eliminar registros existentes hasta que finalices el mes pendiente)';
+  body.innerHTML = `<p style="color:var(--text-muted);">Editando horas de ${capitalize(monthDate.toLocaleDateString('es-ES',{month:'long', year:'numeric'}))}${noteTxt}</p>`;
   if(entries.length===0){
     body.innerHTML += `<p style="color:var(--text-muted);margin-top:8px;">No hay registros en este mes.</p>`;
   } else {
@@ -2003,32 +2032,32 @@ function openMonthEdit(monthDate){
       });
     });
   }
-  // Agregar opción para agregar horas a este mes (fecha dentro del mes)
-  body.innerHTML += `
-    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
-      <div class="field"><label>Agregar horas en este mes</label></div>
-      <div class="field-row">
-        <div class="field"><label>Día</label><input type="date" id="monthEditDay" value="${fmtDate(new Date())}"></div>
+  if(canAddHere){
+    body.innerHTML += `
+      <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
+        <div class="field"><label>Agregar horas en este mes</label></div>
+        <div class="field-row">
+          <div class="field"><label>Día</label><input type="date" id="monthEditDay" value="${fmtDate(new Date())}"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Horas</label>${stepperFieldHtml('monthEditH')}</div>
+          <div class="field"><label>Minutos</label>${stepperFieldHtml('monthEditM', {max:59})}</div>
+        </div>
+        <div class="field"><label>Nota</label><input type="text" id="monthEditNote" placeholder="Opcional"></div>
+        <button class="btn btn-primary btn-block" id="monthEditAdd">Agregar</button>
       </div>
-      <div class="field-row">
-        <div class="field"><label>Horas</label><input type="number" id="monthEditH" min="0" value="0"></div>
-        <div class="field"><label>Minutos</label><input type="number" id="monthEditM" min="0" max="59" value="0"></div>
-      </div>
-      <div class="field"><label>Nota</label><input type="text" id="monthEditNote" placeholder="Opcional"></div>
-      <button class="btn btn-primary btn-block" id="monthEditAdd">Agregar</button>
-    </div>
-  `;
+    `;
+  }
   attachModalFieldBehavior('editHoursBody');
   modal.classList.add('open');
   document.getElementById('editHoursSave').onclick = ()=>{
-    // Esta función se reemplaza para el mes
+    if(!canAddHere){ modal.classList.remove('open'); return; }
     const day = document.getElementById('monthEditDay').value;
     const h = Math.max(0, parseInt(document.getElementById('monthEditH').value)||0);
     const m = Math.max(0, Math.min(59, parseInt(document.getElementById('monthEditM').value)||0));
     const note = document.getElementById('monthEditNote').value.trim();
     const minutes = h*60+m;
     if(minutes<=0){ showToast('Ingresa un tiempo válido'); return; }
-    // Verificar que el día pertenezca al mes
     const d = parseDate(day);
     if(d.getMonth() !== monthDate.getMonth() || d.getFullYear() !== monthDate.getFullYear()){
       showToast('El día debe estar dentro del mes seleccionado');
@@ -2083,18 +2112,42 @@ function forceAppUpdate(){
   }
 }
 
+function setupViewportFix(){
+  if(!window.visualViewport) return;
+  const nav = document.getElementById('bottomNav');
+  const vv = window.visualViewport;
+  function adjust(){
+    const offset = window.innerHeight - vv.height - vv.offsetTop;
+    nav.style.transform = offset > 1 ? `translateY(-${offset}px)` : 'translateY(0)';
+  }
+  vv.addEventListener('resize', adjust);
+  vv.addEventListener('scroll', adjust);
+  adjust();
+}
+
+function migrateState(){
+  if(!state.notifSettings){ state.notifSettings = { enabled:false, notified:{}, lastMonthlyNotif:0 }; }
+  if(!state.closedMonths) state.closedMonths = [];
+  if(!state.openMonth) state.openMonth = monthKey(new Date());
+  if(state.profile && state.profile.age!==undefined){ delete state.profile.age; }
+  delete state.seenPrevMonthEditNotice;
+  delete state.dismissedAlerts;
+  delete state.hideCampaign2026;
+  delete state._shownCampaign;
+  delete state._shownYearSummary;
+  delete state.dismissedEndYearSummary;
+}
+
 function init(){
   const loaded = loadState();
   state = loaded || { profile:null, hours:[], visits:[], studies:[], theme:'light' };
-  if(!state.notifSettings){ state.notifSettings = { enabled:false, notified:{}, lastMonthlyNotif:0 }; }
-  if(!state.closedMonths) state.closedMonths = [];
-  if(!state.dismissedAlerts) state.dismissedAlerts = [];
-  if(state.profile && state.profile.age!==undefined){ delete state.profile.age; }
+  migrateState();
   const isNewUser = !state.profile;
   applyTheme();
   buildNav();
+  setupViewportFix();
+  attachSteppers(document);
 
-  // Mostrar mensaje de actualización completada si venimos de _updated
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('_updated') === '1') {
     showToast('App actualizada correctamente. Tus datos están intactos.');
@@ -2106,26 +2159,8 @@ function init(){
     document.getElementById('onboardModal').classList.add('open');
   } else {
     switchView('inicio');
-    // Verificar si el mes anterior no está cerrado y mostrar alerta
-    const now = new Date();
-    const prevMonth = new Date(now.getFullYear(), now.getMonth()-1, 1);
-    const prevKey = fmtDate(prevMonth);
-    if(!state.closedMonths.includes(prevKey) && now.getDate() > 3){
-      // Si no está cerrado y ya pasaron 3 días del mes, preguntar
-      const alertKey = 'alert_'+prevMonth.getFullYear()+'_'+prevMonth.getMonth();
-      if(!state.dismissedAlerts.includes(alertKey)){
-        showAlertModal('Mes anterior sin cerrar',
-          'El mes de '+capitalize(prevMonth.toLocaleDateString('es-ES',{month:'long'}))+' no ha sido cerrado. ¿Deseas cerrarlo ahora? (Puedes seguir editando las horas de ese mes, pero no agregar nuevas)',
-          ()=>{
-            closeMonth(prevMonth);
-            showToast('Mes cerrado');
-          });
-      }
-    }
-    // Mostrar campaña de septiembre o resumen de año
-    maybeShowEndYearSummary();
-    maybeShowCampaignModal();
   }
+  saveState();
 
   document.getElementById('ob-types').querySelectorAll('.type-option').forEach(el=>{
     el.addEventListener('click', ()=> selectOnboardType(el.dataset.type));
@@ -2136,6 +2171,7 @@ function init(){
     if(!name){ showToast('Ingresa tu nombre'); return; }
     if(!type){ showToast('Selecciona un tipo de precursor'); return; }
     state.profile = { name, type };
+    state.openMonth = monthKey(new Date());
     saveState();
     document.getElementById('onboardModal').classList.remove('open');
     switchView('inicio');
@@ -2148,17 +2184,10 @@ function init(){
     if(e.target.id==='tutorialModal') closeTutorialModal();
   });
 
-  document.getElementById('campaignAccept').addEventListener('click', ()=>{
-    if(document.getElementById('campaignNoShow').checked){
-      state.hideCampaign2026 = true;
-      saveState();
-    }
-    document.getElementById('campaignModal').classList.remove('open');
-  });
-
   document.getElementById('forceUpdateBtn').addEventListener('click', forceAppUpdate);
 
   document.getElementById('sendSuggestionBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('suggestionName').value.trim();
     const text = document.getElementById('suggestionText').value.trim();
     const status = document.getElementById('suggestionStatus');
     if(!text){ showToast('Escribe tu sugerencia antes de enviar'); return; }
@@ -2166,6 +2195,7 @@ function init(){
     status.textContent = 'Enviando...';
     status.style.color = 'var(--text-muted)';
     const formData = new FormData();
+    formData.append('nombre', name || 'Anónimo');
     formData.append('suggestion', text);
     formData.append('_subject', 'Sugerencia JW Field Service');
     formData.append('_captcha', 'false');
@@ -2205,6 +2235,11 @@ function init(){
 
   document.getElementById('addHoursBtn').addEventListener('click', ()=>{
     const date = document.getElementById('hoursDate').value || todayStr();
+    if(dateMonthKey(date) !== state.openMonth){
+      const openLabel = capitalize(monthLabel(getOpenMonthDate()));
+      showToast('Solo puedes registrar horas de '+openLabel+', el mes pendiente de finalizar.', 3200);
+      return;
+    }
     const h = Math.max(0, parseInt(document.getElementById('hoursH').value)||0);
     const m = Math.max(0, Math.min(59, parseInt(document.getElementById('hoursM').value)||0));
     const note = document.getElementById('hoursNote').value.trim();
@@ -2212,8 +2247,8 @@ function init(){
     if(minutes<=0){ showToast('Ingresa un tiempo válido'); return; }
     state.hours.push({id:uid(), date, minutes, note});
     saveState();
-    document.getElementById('hoursH').value=0;
-    document.getElementById('hoursM').value=0;
+    document.getElementById('hoursH').value='';
+    document.getElementById('hoursM').value='';
     document.getElementById('hoursNote').value='';
     renderHoras();
     showToast('Registro agregado');
@@ -2242,7 +2277,7 @@ function init(){
 
   document.getElementById('resetDataBtn').addEventListener('click', ()=>{
     if(confirm('¿Seguro que deseas borrar todos los datos? Esta acción no se puede deshacer.')){
-      state = { profile:null, hours:[], visits:[], studies:[], theme:state.theme, notifSettings:{enabled:false,notified:{},lastMonthlyNotif:0}, closedMonths:[], dismissedAlerts:[] };
+      state = { profile:null, hours:[], visits:[], studies:[], theme:state.theme, notifSettings:{enabled:false,notified:{},lastMonthlyNotif:0}, closedMonths:[], openMonth: monthKey(new Date()) };
       saveState();
       location.reload();
     }
@@ -2255,4 +2290,4 @@ function init(){
 init();
 </script>
 </body>
-</html> 
+</html>
