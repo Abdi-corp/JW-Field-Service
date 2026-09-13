@@ -52,7 +52,7 @@ html.dark {
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
 html,body{height:100%;}
-body{margin:0;font-family:var(--font-body);background:var(--bg);color:var(--text);transition:background .2s,color .2s;line-height:1.5;overflow-x:hidden;overscroll-behavior-y:none;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);}
+body{margin:0;font-family:var(--font-body);background:var(--bg);color:var(--text);transition:background .2s,color .2s;line-height:1.5;overflow:hidden;overscroll-behavior-y:none;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);}
 h1,h2,h3,h4{font-weight:600;margin:0;letter-spacing:-0.01em;}
 p{margin:0;}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
@@ -62,7 +62,7 @@ textarea{resize:vertical;min-height:60px;}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;}
 
-#app{max-width:1100px;margin:0 auto;min-height:100dvh;min-height:100vh;display:flex;}
+#app{max-width:1100px;margin:0 auto;height:100vh;height:100dvh;display:flex;overflow:hidden;}
 
 .sidebar{
   display:none;
@@ -70,9 +70,7 @@ textarea{resize:vertical;min-height:60px;}
   flex-shrink:0;
   padding:28px 16px 20px;
   border-right:1px solid var(--border);
-  position:sticky;
-  top:0;
-  height:100vh;
+  height:100%;
   overflow-y:auto;
   background:var(--bg);
 }
@@ -93,13 +91,13 @@ textarea{resize:vertical;min-height:60px;}
 .nav-item.active{background:var(--primary-soft);color:var(--primary-dark);font-weight:600;}
 .sidebar-footer{margin-top:auto;padding-top:20px;border-top:1px solid var(--border);}
 
-.main-col{flex:1;min-width:0;display:flex;flex-direction:column;}
+.main-col{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden;}
 
 .topbar{
   display:flex;align-items:center;justify-content:space-between;
   padding:14px 18px;
   padding-top:calc(14px + env(safe-area-inset-top));
-  position:sticky;top:0;z-index:20;
+  flex-shrink:0;
   background:var(--bg);
   border-bottom:1px solid var(--border);
 }
@@ -118,7 +116,7 @@ textarea{resize:vertical;min-height:60px;}
 .icon-btn svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.8;}
 .icon-btn:active{transform:scale(.96);}
 
-main{flex:1;padding:16px 14px calc(96px + env(safe-area-inset-bottom));}
+main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 14px calc(16px + env(safe-area-inset-bottom));}
 @media(min-width:820px){
   .sidebar{display:flex;flex-direction:column;}
   main{padding:28px 32px 40px;}
@@ -212,6 +210,11 @@ main{flex:1;padding:16px 14px calc(96px + env(safe-area-inset-bottom));}
 .field-row .field{flex:1;min-width:0;}
 @media(max-width:360px){.field-row{flex-direction:column;gap:0;}}
 
+input[type="date"], input[type="time"]{
+  min-width:0;
+  max-width:100%;
+}
+
 .stepper{display:flex;align-items:stretch;gap:8px;}
 .stepper input{text-align:center;flex:1;min-width:0;-moz-appearance:textfield;}
 .stepper-btn{
@@ -298,11 +301,9 @@ main{flex:1;padding:16px 14px calc(96px + env(safe-area-inset-bottom));}
 .modal-head h3{font-size:17px;font-weight:600;}
 
 .bottom-nav{
-  position:fixed;left:0;right:0;bottom:0;z-index:30;
+  flex-shrink:0;
   background:var(--surface);border-top:1px solid var(--border);
   display:flex;padding:4px 4px calc(4px + env(safe-area-inset-bottom));
-  max-width:1100px;margin:0 auto;
-  will-change:transform;
 }
 .bn-item{
   flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
@@ -373,7 +374,7 @@ main{flex:1;padding:16px 14px calc(96px + env(safe-area-inset-bottom));}
   .grid-2{grid-template-columns:1fr;}
   .cal-day{font-size:11px;}
   .more-grid{grid-template-columns:1fr 1fr;}
-  main{padding:14px 12px calc(92px + env(safe-area-inset-bottom));}
+  main{padding:14px 12px calc(14px + env(safe-area-inset-bottom));}
   .card{padding:14px 14px;}
 }
 </style>
@@ -481,9 +482,7 @@ main{flex:1;padding:16px 14px calc(96px + env(safe-area-inset-bottom));}
 
           <div class="section-title">Registro manual</div>
           <div class="card">
-            <div class="field-row">
-              <div class="field"><label>Fecha</label><input type="date" id="hoursDate"></div>
-            </div>
+            <div class="field"><label>Fecha</label><input type="date" id="hoursDate"></div>
             <div class="field-row">
               <div class="field"><label>Horas</label>
                 <div class="stepper">
@@ -922,7 +921,7 @@ function switchView(id, backTo){
     backBtn.onclick = ()=> switchView(backTarget || 'mas');
   }
   renderCurrentView();
-  window.scrollTo({top:0,behavior:'instant'});
+  document.getElementById('mainContent').scrollTop = 0;
 }
 
 function renderCurrentView(){
@@ -2112,19 +2111,6 @@ function forceAppUpdate(){
   }
 }
 
-function setupViewportFix(){
-  if(!window.visualViewport) return;
-  const nav = document.getElementById('bottomNav');
-  const vv = window.visualViewport;
-  function adjust(){
-    const offset = window.innerHeight - vv.height - vv.offsetTop;
-    nav.style.transform = offset > 1 ? `translateY(-${offset}px)` : 'translateY(0)';
-  }
-  vv.addEventListener('resize', adjust);
-  vv.addEventListener('scroll', adjust);
-  adjust();
-}
-
 function migrateState(){
   if(!state.notifSettings){ state.notifSettings = { enabled:false, notified:{}, lastMonthlyNotif:0 }; }
   if(!state.closedMonths) state.closedMonths = [];
@@ -2145,7 +2131,6 @@ function init(){
   const isNewUser = !state.profile;
   applyTheme();
   buildNav();
-  setupViewportFix();
   attachSteppers(document);
 
   const urlParams = new URLSearchParams(window.location.search);
