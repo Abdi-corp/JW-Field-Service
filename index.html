@@ -366,6 +366,14 @@ input[type="date"], input[type="time"]{
 .tutorial-sub ol{padding-left:18px;margin-top:4px;}
 .tutorial-sub li{font-size:12.5px;color:var(--text-muted);line-height:1.7;}
 
+.seg-tabs{display:flex;gap:6px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-md);padding:4px;margin-bottom:14px;}
+.seg-tab{flex:1;text-align:center;padding:8px 6px;border-radius:7px;font-size:13px;font-weight:600;color:var(--text-muted);}
+.seg-tab.active{background:var(--surface);color:var(--primary-dark);box-shadow:var(--shadow);}
+.credit-note-box{font-size:12.5px;color:var(--text-muted);background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;line-height:1.5;margin-bottom:14px;}
+.mini-stat-row{display:flex;justify-content:space-between;font-size:12.5px;color:var(--text-muted);padding:8px 2px;border-bottom:1px solid var(--border);}
+.mini-stat-row:last-child{border-bottom:none;}
+.mini-stat-row b{color:var(--text);font-weight:600;}
+
 @media(max-width:480px){
   .topbar{padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top));}
   .topbar h2{font-size:16px;}
@@ -438,6 +446,9 @@ input[type="date"], input[type="time"]{
           <div class="hero-bar-track"><div class="hero-bar-fill" id="in-barfill" style="width:0%"></div></div>
         </div>
 
+        <div class="section-title">Crédito del mes</div>
+        <div class="card" id="in-credit-card"></div>
+
         <div class="section-title">Cierre de mes</div>
         <div class="card" id="inicio-extra"></div>
 
@@ -461,16 +472,15 @@ input[type="date"], input[type="time"]{
 
         <div class="section-title">Notificaciones</div>
         <div class="card" id="notifCard"></div>
-
-        <div class="section-title">Actualizar aplicación</div>
-        <div class="card">
-          <button class="btn btn-secondary btn-block" id="forceUpdateBtn">Actualizar app</button>
-          <div id="updateStatus" style="margin-top:8px;font-weight:500;display:none;"></div>
-          <p style="font-size:11.5px;color:var(--text-muted);margin-top:8px;">Es recomendable actualizar la app una vez al mes. Tus datos guardados no se pierden al actualizar.</p>
-        </div>
       </section>
 
       <section class="view" data-view="horas">
+        <div class="seg-tabs" id="horasSegTabs">
+          <button class="seg-tab active" data-horas-tab="horas">Horas</button>
+          <button class="seg-tab" data-horas-tab="credito">Crédito</button>
+        </div>
+
+        <div id="horasPanelHoras">
         <div class="card" id="horasLockCard" style="display:none;"></div>
 
         <div id="horasEditableWrap">
@@ -519,6 +529,43 @@ input[type="date"], input[type="time"]{
 
         <div class="section-title">Historial</div>
         <div class="card" id="hoursList"></div>
+        </div>
+
+        <div id="horasPanelCredito" style="display:none;">
+          <div class="credit-note-box">El crédito es para horas de labores del Salón del Reino u otras actividades que no son predicación directa (limpieza, mantenimiento, etc). Estas horas no se suman al total de horas del mes, pero cuentan para saber si vas al día con tu meta.</div>
+          <div class="card" id="creditLockCard" style="display:none;"></div>
+          <div id="creditEditableWrap">
+            <div class="card">
+              <div class="field"><label>Fecha</label><input type="date" id="creditDate"></div>
+              <div class="field-row">
+                <div class="field"><label>Horas</label>
+                  <div class="stepper">
+                    <button type="button" class="stepper-btn" data-step="-1" data-target="creditH">−</button>
+                    <input type="number" id="creditH" min="0" placeholder="0" inputmode="numeric">
+                    <button type="button" class="stepper-btn" data-step="1" data-target="creditH">+</button>
+                  </div>
+                </div>
+                <div class="field"><label>Minutos</label>
+                  <div class="stepper">
+                    <button type="button" class="stepper-btn" data-step="-1" data-target="creditM">−</button>
+                    <input type="number" id="creditM" min="0" max="59" placeholder="0" inputmode="numeric">
+                    <button type="button" class="stepper-btn" data-step="1" data-target="creditM">+</button>
+                  </div>
+                </div>
+              </div>
+              <div class="field"><label>Justificación del crédito</label><input type="text" id="creditNote" placeholder="Ej: limpieza del Salón del Reino"></div>
+              <button class="btn btn-primary btn-block" id="addCreditBtn">Agregar crédito</button>
+            </div>
+          </div>
+          <div class="section-title">Totales de crédito</div>
+          <div class="grid-3">
+            <div class="stat-card"><div class="num" id="c-week">0h 0m</div><div class="lbl">Esta semana</div></div>
+            <div class="stat-card"><div class="num" id="c-month">0h 0m</div><div class="lbl">Este mes</div></div>
+            <div class="stat-card"><div class="num" id="c-year">0h 0m</div><div class="lbl">Año de servicio</div></div>
+          </div>
+          <div class="section-title">Historial de crédito</div>
+          <div class="card" id="creditList"></div>
+        </div>
       </section>
 
       <section class="view" data-view="metas">
@@ -555,17 +602,32 @@ input[type="date"], input[type="time"]{
       </section>
 
       <section class="view" data-view="estadisticas">
-        <div class="section-title">Últimos 7 días</div>
-        <div class="card"><div class="bar-chart" id="chartWeek"></div></div>
-        <div class="section-title">Últimos 6 meses</div>
-        <div class="card"><div class="bar-chart" id="chartMonths"></div></div>
-        <div class="section-title">Totales generales</div>
+        <div class="section-title">Resumen general</div>
         <div class="grid-2">
           <div class="stat-card"><div class="num" id="st-studies">0</div><div class="lbl">Estudios activos</div></div>
           <div class="stat-card"><div class="num" id="st-visits">0</div><div class="lbl">Revisitas activas</div></div>
           <div class="stat-card"><div class="num" id="st-hoursmonth">0h</div><div class="lbl">Horas del mes</div></div>
           <div class="stat-card"><div class="num" id="st-hoursyear">0h</div><div class="lbl">Horas del año de servicio</div></div>
+          <div class="stat-card"><div class="num" id="st-creditmonth">0h</div><div class="lbl">Crédito del mes</div></div>
+          <div class="stat-card"><div class="num" id="st-credityear">0h</div><div class="lbl">Crédito del año</div></div>
+          <div class="stat-card"><div class="num" id="st-avgweek">0h</div><div class="lbl">Promedio semanal (4 sem)</div></div>
+          <div class="stat-card"><div class="num" id="st-streak">0</div><div class="lbl">Días seguidos con servicio</div></div>
         </div>
+
+        <div class="section-title">Últimos 7 días — horas de servicio</div>
+        <div class="card"><div class="bar-chart" id="chartWeek"></div></div>
+
+        <div class="section-title">Últimos 7 días — crédito</div>
+        <div class="card"><div class="bar-chart" id="chartWeekCredit"></div></div>
+
+        <div class="section-title">Últimos 6 meses</div>
+        <div class="card"><div class="bar-chart" id="chartMonths"></div></div>
+
+        <div class="section-title">Estudios por día de la semana</div>
+        <div class="card" id="studyWeekdayList"></div>
+
+        <div class="section-title">Historial total</div>
+        <div class="card" id="totalsHistoryCard"></div>
       </section>
 
       <section class="view" data-view="perfil">
@@ -661,12 +723,12 @@ input[type="date"], input[type="time"]{
     <div class="tutorial-block">
       <h4>Mini tutorial</h4>
       <p>
-        En <b>Inicio</b> verás un resumen de tus horas del mes, la tarjeta para cerrar el mes, un botón para actualizar la app y el apartado de notificaciones.<br>
-        En <b>Horas</b> puedes usar el cronómetro (con nota opcional) o registrar tu tiempo manualmente, siempre que el mes actual esté abierto.<br>
-        En <b>Metas</b> revisas tu progreso mensual y anual con tu ritmo actual.<br>
-        En <b>Revisitas</b> y <b>Estudios</b> guardas tus personas de interés, con la opción de seleccionar su ubicación en un mapa y trazar cómo llegar.<br>
-        En <b>Calendario</b> ves tus horas, revisitas y estudios organizados por día.<br>
-        En <b>Estadísticas</b> encuentras gráficas de tu servicio reciente.<br>
+        En <b>Inicio</b> verás un resumen de tus horas del mes, tu crédito, la tarjeta para cerrar el mes y el apartado de notificaciones.<br>
+        En <b>Horas</b> puedes usar el cronómetro, registrar tu tiempo manualmente, o cambiar a la pestaña de <b>Crédito</b> para horas de labores del Salón del Reino, siempre que el mes actual esté abierto.<br>
+        En <b>Metas</b> revisas tu progreso mensual y anual con tu ritmo actual (el crédito ayuda a tu ritmo sin cambiar tus horas mostradas).<br>
+        En <b>Revisitas</b> y <b>Estudios</b> guardas tus personas de interés, con la opción de seleccionar su ubicación en un mapa (se centra automáticamente en tu ubicación actual) y trazar cómo llegar. Los estudios ahora se programan con un día fijo de la semana y una hora.<br>
+        En <b>Calendario</b> ves tus horas, revisitas y estudios semanales organizados por día.<br>
+        En <b>Estadísticas</b> encuentras gráficas y datos más detallados de tu servicio.<br>
         En <b>Perfil</b> editas tus datos y cambias el tema de la app.<br>
         Toca el ícono en la esquina superior para cambiar entre modo claro y oscuro cuando quieras.
       </p>
@@ -733,6 +795,14 @@ input[type="date"], input[type="time"]{
   </div>
 </div>
 
+<div class="modal-overlay" id="changelogModal">
+  <div class="modal-sheet">
+    <div class="modal-head"><h3>Novedades de la app</h3><button class="icon-btn" id="changelogCloseBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div id="changelogBody"></div>
+    <button class="btn btn-primary btn-block" id="changelogOkBtn" style="margin-top:10px;">Entendido</button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="editHoursModal">
   <div class="modal-sheet">
     <div class="modal-head"><h3>Editar horas del día</h3><button class="icon-btn" id="editHoursClose"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
@@ -744,7 +814,7 @@ input[type="date"], input[type="time"]{
 <div class="modal-overlay" id="mapPickModal">
   <div class="modal-sheet" style="max-width:520px;padding:16px;">
     <div class="modal-head"><h3>Selecciona la ubicación</h3><button class="icon-btn" id="mapPickClose"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
-    <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:10px;">Toca el mapa o arrastra el marcador para elegir el punto exacto.</p>
+    <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:10px;" id="mapPickHint">Ubicando tu posición actual...</p>
     <div id="mapPickContainer" style="width:100%;height:320px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border);"></div>
     <button class="btn btn-primary btn-block" id="mapPickSave" style="margin-top:12px;">Guardar este punto</button>
   </div>
@@ -795,6 +865,18 @@ const MOTIVATIONAL = [
   'Cada visita, cada estudio, cada conversación cuenta más de lo que imaginas.',
 ];
 
+const WEEKDAY_NAMES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+
+const CHANGELOG_VERSION = 'v2';
+const CHANGELOG_ITEMS = [
+  'El mapa ahora ubica tu posición actual automáticamente al abrirlo.',
+  'Los estudios bíblicos ahora se programan con un día fijo de la semana y una hora, y te avisan cada semana en el calendario y con una notificación un día antes.',
+  'Nueva pestaña de Crédito dentro de Horas para registrar labores como limpieza del Salón del Reino: ayuda a tu ritmo sin cambiar tus horas mostradas.',
+  'Las notificaciones se arreglaron para que funcionen correctamente.',
+  'La sección de Estadísticas ahora es más completa y específica.',
+  'Se quitó el botón de actualizar app: la app se actualiza sola sin perder tu progreso.',
+];
+
 let state = null;
 let currentView = 'inicio';
 let backTarget = 'inicio';
@@ -806,6 +888,7 @@ let timerRunning = false;
 let mapPickState = { map:null, marker:null, lat:null, lng:null, targetLatInput:null, targetLngInput:null, targetStatusEl:null, targetBtnEl:null };
 let reminderInterval = null;
 let confirmCallback = null;
+let horasTab = 'horas';
 
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
 function pad(n){ return n.toString().padStart(2,'0'); }
@@ -946,11 +1029,20 @@ function sumMinutes(entries){ return entries.reduce((a,e)=>a+e.minutes,0); }
 function hoursInRange(start,end){
   return state.hours.filter(e=>{ const d=parseDate(e.date); return d>=start && d<end; });
 }
+function creditsInRange(start,end){
+  return (state.credits||[]).filter(e=>{ const d=parseDate(e.date); return d>=start && d<end; });
+}
 function hoursThisMonth(){
   const now=new Date();
   const start=new Date(now.getFullYear(),now.getMonth(),1);
   const end=new Date(now.getFullYear(),now.getMonth()+1,1);
   return hoursInRange(start,end);
+}
+function creditThisMonth(){
+  const now=new Date();
+  const start=new Date(now.getFullYear(),now.getMonth(),1);
+  const end=new Date(now.getFullYear(),now.getMonth()+1,1);
+  return creditsInRange(start,end);
 }
 function hoursThisWeek(){
   const now=new Date();
@@ -959,9 +1051,20 @@ function hoursThisWeek(){
   const end=new Date(start); end.setDate(end.getDate()+7);
   return hoursInRange(start,end);
 }
+function creditThisWeek(){
+  const now=new Date();
+  const day=(now.getDay()+6)%7;
+  const start=new Date(now.getFullYear(),now.getMonth(),now.getDate()-day);
+  const end=new Date(start); end.setDate(end.getDate()+7);
+  return creditsInRange(start,end);
+}
 function hoursThisServiceYear(){
   const {start,end} = getServiceYearRange(new Date());
   return hoursInRange(start,end);
+}
+function creditThisServiceYear(){
+  const {start,end} = getServiceYearRange(new Date());
+  return creditsInRange(start,end);
 }
 function hoursInMonth(monthDate){
   const y = monthDate.getFullYear(), m = monthDate.getMonth();
@@ -1010,6 +1113,10 @@ function renderInicio(){
   const msgIndex = new Date().getDate() % MOTIVATIONAL.length;
   document.getElementById('in-msg').textContent = MOTIVATIONAL[msgIndex];
 
+  const creditMonthMin = sumMinutes(creditThisMonth());
+  document.getElementById('in-credit-card').innerHTML = `
+    <p style="font-size:13.5px;color:var(--text-muted);line-height:1.5;">Has registrado <b style="color:var(--text);">${minutesToHM(creditMonthMin)}</b> de crédito este mes por labores como limpieza o mantenimiento del Salón del Reino. Este tiempo no se suma a tus horas de servicio, pero ayuda a tu ritmo respecto a la meta.</p>`;
+
   const openDate = getOpenMonthDate();
   const openLabel = capitalize(monthLabel(openDate));
   const open = isHoursEditingOpen();
@@ -1048,7 +1155,7 @@ function renderNotifCard(){
   const supported = 'Notification' in window;
   const perm = supported ? Notification.permission : 'unsupported';
   const enabled = state.notifSettings.enabled;
-  let statusText = 'Recibe un aviso un día antes de tus revisitas y estudios programados, y un resumen de tu progreso cada 15 días.';
+  let statusText = 'Recibe un aviso un día antes de tus estudios programados, y un resumen de tu progreso cada 15 días.';
   let btnHtml = '';
   if(!supported){
     statusText = 'Tu navegador no admite notificaciones.';
@@ -1073,6 +1180,7 @@ function renderNotifCard(){
           if(p==='granted'){
             state.notifSettings.enabled = true;
             saveState();
+            registerNotificationSW();
             renderNotifCard();
             showToast('Notificaciones activadas');
             checkReminders();
@@ -1086,11 +1194,34 @@ function renderNotifCard(){
   }
 }
 
+function registerNotificationSW(){
+  if(!('serviceWorker' in navigator)) return Promise.resolve(null);
+  try{
+    const swCode = "self.addEventListener('notificationclick', function(e){ e.notification.close(); e.waitUntil(clients.matchAll({type:'window'}).then(function(list){ if(list.length>0){ return list[0].focus(); } return clients.openWindow('/'); })); });";
+    const blob = new Blob([swCode], {type:'text/javascript'});
+    const swUrl = URL.createObjectURL(blob);
+    return navigator.serviceWorker.register(swUrl).then(()=> navigator.serviceWorker.ready).catch(()=>null);
+  }catch(e){ return Promise.resolve(null); }
+}
+
 function sendNotification(title, body){
   if(!('Notification' in window)) return;
   if(Notification.permission!=='granted') return;
-  try{ new Notification(title, {body, icon:'/logo/Captura de pantalla 2026-08-25 193118.png'}); }
-  catch(e){ console.error(e); }
+  const opts = {body:body, icon:'/logo/Captura de pantalla 2026-08-25 193118.png'};
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistration().then(reg=>{
+      if(reg && reg.showNotification){
+        reg.showNotification(title, opts);
+      } else {
+        try{ new Notification(title, opts); }catch(e){ console.error(e); }
+      }
+    }).catch(()=>{
+      try{ new Notification(title, opts); }catch(e){ console.error(e); }
+    });
+  } else {
+    try{ new Notification(title, opts); }
+    catch(e){ console.error(e); }
+  }
 }
 
 function checkReminders(){
@@ -1099,6 +1230,7 @@ function checkReminders(){
   if(!('Notification' in window) || Notification.permission!=='granted') return;
 
   const tmr = tomorrowStr();
+  const tmrWeekday = parseDate(tmr).getDay();
   state.notifSettings.notified = state.notifSettings.notified || {};
 
   state.visits.forEach(v=>{
@@ -1113,11 +1245,11 @@ function checkReminders(){
   });
 
   state.studies.forEach(s=>{
-    if(s.nextDate===tmr){
-      const key = 'study_'+s.id+'_'+s.nextDate;
+    if(s.weekday===tmrWeekday){
+      const key = 'study_'+s.id+'_'+tmr;
       if(!state.notifSettings.notified[key]){
-        const horaTxt = s.nextDateTime ? s.nextDateTime : 'la hora que tenías planeada';
-        sendNotification('Recordatorio de estudio', 'Tienes que darle estudio a '+s.name+' mañana a la '+horaTxt+'.');
+        const horaTxt = s.time ? s.time : 'la hora que tenías planeada';
+        sendNotification('Recordatorio de estudio', 'Mañana a la '+horaTxt+' tienes que darle el estudio a '+s.name+'.');
         state.notifSettings.notified[key] = true;
       }
     }
@@ -1128,7 +1260,7 @@ function checkReminders(){
   const fifteenDays = 15*24*60*60*1000;
   if(now - last >= fifteenDays){
     const goal = currentGoal();
-    const monthMinutes = sumMinutes(hoursThisMonth());
+    const monthMinutes = sumMinutes(hoursThisMonth()) + sumMinutes(creditThisMonth());
     const goalMinutes = goal.monthly*60;
     const pct = goalMinutes>0 ? Math.min(100, Math.round(monthMinutes/goalMinutes*100)) : 0;
     let msg = '';
@@ -1146,7 +1278,23 @@ function checkReminders(){
   saveState();
 }
 
+function switchHorasTab(tab){
+  horasTab = tab;
+  document.querySelectorAll('#horasSegTabs .seg-tab').forEach(el=>{
+    el.classList.toggle('active', el.dataset.horasTab===tab);
+  });
+  document.getElementById('horasPanelHoras').style.display = tab==='horas' ? 'block' : 'none';
+  document.getElementById('horasPanelCredito').style.display = tab==='credito' ? 'block' : 'none';
+  if(tab==='credito') renderCredito();
+}
+
 function renderHoras(){
+  document.querySelectorAll('#horasSegTabs .seg-tab').forEach(el=>{
+    el.classList.toggle('active', el.dataset.horasTab===horasTab);
+  });
+  document.getElementById('horasPanelHoras').style.display = horasTab==='horas' ? 'block' : 'none';
+  document.getElementById('horasPanelCredito').style.display = horasTab==='credito' ? 'block' : 'none';
+
   const lockCard = document.getElementById('horasLockCard');
   const editableWrap = document.getElementById('horasEditableWrap');
   const timerCard = document.getElementById('timerCard');
@@ -1189,6 +1337,70 @@ function renderHoras(){
   const sorted = [...state.hours].sort((a,b)=> b.date.localeCompare(a.date));
   if(sorted.length===0){
     list.innerHTML = emptyState('Aún no tienes horas registradas.');
+  } else {
+    list.innerHTML = sorted.map(e=>`
+      <div class="list-item">
+        <div class="list-item-main">
+          <div class="list-item-title">${minutesToHM(e.minutes)}</div>
+          <div class="list-item-sub">${formatDateLong(e.date)}${e.note? ' · '+escapeHtml(e.note):''}</div>
+        </div>
+        <div class="list-item-actions">
+          <button class="icon-btn btn-sm" style="width:32px;height:32px;" data-edit-hour="${e.id}">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </button>
+          <button class="icon-btn btn-sm" style="width:32px;height:32px;" data-del-hour="${e.id}">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
+          </button>
+        </div>
+      </div>`).join('');
+    list.querySelectorAll('[data-del-hour]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        state.hours = state.hours.filter(e=>e.id!==btn.dataset.delHour);
+        saveState(); renderHoras(); showToast('Registro eliminado');
+      });
+    });
+    list.querySelectorAll('[data-edit-hour]').forEach(btn=>{
+      btn.addEventListener('click', ()=> openEditHourEntry(btn.dataset.editHour));
+    });
+  }
+
+  if(horasTab==='credito') renderCredito();
+}
+
+function renderCredito(){
+  const lockCard = document.getElementById('creditLockCard');
+  const editableWrap = document.getElementById('creditEditableWrap');
+  const openDate = getOpenMonthDate();
+  const openLabel = capitalize(monthLabel(openDate));
+  const sameMonth = isHoursEditingOpen();
+  editableWrap.style.display = 'block';
+
+  if(!sameMonth){
+    lockCard.style.display = 'block';
+    lockCard.innerHTML = `
+      <div class="lock-card">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+        <p>Tienes pendiente finalizar <b>${openLabel}</b> antes de registrar crédito nuevo.</p>
+      </div>`;
+  } else {
+    lockCard.style.display = 'none';
+  }
+
+  const lastDayOfOpen = new Date(openDate.getFullYear(), openDate.getMonth()+1, 0);
+  const maxDate = sameMonth ? new Date(Math.min(lastDayOfOpen.getTime(), new Date().getTime())) : lastDayOfOpen;
+  const creditDateInput = document.getElementById('creditDate');
+  creditDateInput.min = fmtDate(openDate);
+  creditDateInput.max = fmtDate(maxDate);
+  creditDateInput.value = sameMonth ? todayStr() : fmtDate(lastDayOfOpen);
+
+  document.getElementById('c-week').textContent = minutesToHM(sumMinutes(creditThisWeek()));
+  document.getElementById('c-month').textContent = minutesToHM(sumMinutes(creditThisMonth()));
+  document.getElementById('c-year').textContent = minutesToHM(sumMinutes(creditThisServiceYear()));
+
+  const list = document.getElementById('creditList');
+  const sorted = [...(state.credits||[])].sort((a,b)=> b.date.localeCompare(a.date));
+  if(sorted.length===0){
+    list.innerHTML = emptyState('Aún no tienes crédito registrado.');
     return;
   }
   list.innerHTML = sorted.map(e=>`
@@ -1198,22 +1410,47 @@ function renderHoras(){
         <div class="list-item-sub">${formatDateLong(e.date)}${e.note? ' · '+escapeHtml(e.note):''}</div>
       </div>
       <div class="list-item-actions">
-        <button class="icon-btn btn-sm" style="width:32px;height:32px;" data-edit-hour="${e.id}">
+        <button class="icon-btn btn-sm" style="width:32px;height:32px;" data-edit-credit="${e.id}">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         </button>
-        <button class="icon-btn btn-sm" style="width:32px;height:32px;" data-del-hour="${e.id}">
+        <button class="icon-btn btn-sm" style="width:32px;height:32px;" data-del-credit="${e.id}">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
         </button>
       </div>
     </div>`).join('');
-  list.querySelectorAll('[data-del-hour]').forEach(btn=>{
+  list.querySelectorAll('[data-del-credit]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      state.hours = state.hours.filter(e=>e.id!==btn.dataset.delHour);
-      saveState(); renderHoras(); showToast('Registro eliminado');
+      state.credits = state.credits.filter(e=>e.id!==btn.dataset.delCredit);
+      saveState(); renderCredito(); showToast('Crédito eliminado');
     });
   });
-  list.querySelectorAll('[data-edit-hour]').forEach(btn=>{
-    btn.addEventListener('click', ()=> openEditHourEntry(btn.dataset.editHour));
+  list.querySelectorAll('[data-edit-credit]').forEach(btn=>{
+    btn.addEventListener('click', ()=> openEditCreditEntry(btn.dataset.editCredit));
+  });
+}
+
+function openEditCreditEntry(id){
+  const entry = (state.credits||[]).find(e=>e.id===id);
+  if(!entry) return;
+  const h = Math.floor(entry.minutes/60);
+  const m = entry.minutes%60;
+  const bodyHtml = `
+    <div class="field-row">
+      <div class="field"><label>Horas</label>${stepperFieldHtml('f-ech', {value:h})}</div>
+      <div class="field"><label>Minutos</label>${stepperFieldHtml('f-ecm', {max:59, value:m})}</div>
+    </div>
+    <div class="field"><label>Justificación</label><input type="text" id="f-ecnote" value="${escapeHtml(entry.note||'')}"></div>
+  `;
+  openFormModal('Editar crédito', bodyHtml, ()=>{
+    const hh = Math.max(0, parseInt(document.getElementById('f-ech').value)||0);
+    const mm = Math.max(0, Math.min(59, parseInt(document.getElementById('f-ecm').value)||0));
+    const minutes = hh*60+mm;
+    if(minutes<=0){ showToast('Ingresa un tiempo válido'); return; }
+    const note = document.getElementById('f-ecnote').value.trim();
+    if(!note){ showToast('Escribe una justificación para el crédito'); return; }
+    entry.minutes = minutes;
+    entry.note = note;
+    saveState(); closeFormModal(); renderCredito(); showToast('Crédito actualizado');
   });
 }
 
@@ -1266,11 +1503,12 @@ function renderMetas(){
   const now = new Date();
 
   const monthMinutes = sumMinutes(hoursThisMonth());
+  const creditMonthMinutes = sumMinutes(creditThisMonth());
   const targetMonthly = goal.monthly*60;
   const dim = daysInMonth(now.getFullYear(), now.getMonth());
   const monthFraction = Math.min(1, now.getDate()/dim);
   const pctMonth = targetMonthly>0 ? Math.min(100, Math.round(monthMinutes/targetMonthly*100)) : 0;
-  const paceM = paceInfo(monthMinutes, targetMonthly, monthFraction);
+  const paceM = paceInfo(monthMinutes+creditMonthMinutes, targetMonthly, monthFraction);
 
   document.getElementById('goalMonthlyCard').innerHTML = `
     <div class="goal-header">
@@ -1285,7 +1523,8 @@ function renderMetas(){
       <span>Hecho: <b>${minutesToHM(monthMinutes)}</b></span>
       <span>Meta: <b>${goal.monthly}h</b></span>
       <span>Faltan: <b>${minutesToHM(Math.max(0,targetMonthly-monthMinutes))}</b></span>
-    </div>`;
+    </div>
+    ${creditMonthMinutes>0 ? `<p style="font-size:12px;color:var(--text-muted);margin-top:8px;">Incluye ${minutesToHM(creditMonthMinutes)} de crédito para calcular tu ritmo.</p>` : ''}`;
 
   const annualCard = document.getElementById('goalAnnualCard');
   const annualTitleEl = document.getElementById('annualGoalTitle');
@@ -1297,12 +1536,13 @@ function renderMetas(){
     annualCard.style.display='block';
     const {start,end,startYear} = getServiceYearRange(now);
     const yearMinutes = sumMinutes(hoursThisServiceYear());
+    const creditYearMinutes = sumMinutes(creditThisServiceYear());
     const targetAnnual = goal.annual*60;
     const totalDays = (end-start)/86400000;
     const elapsedDays = Math.min(totalDays, Math.max(0,(now-start)/86400000));
     const yearFraction = elapsedDays/totalDays;
     const pctYear = targetAnnual>0 ? Math.min(100, Math.round(yearMinutes/targetAnnual*100)) : 0;
-    const paceY = paceInfo(yearMinutes, targetAnnual, yearFraction);
+    const paceY = paceInfo(yearMinutes+creditYearMinutes, targetAnnual, yearFraction);
     annualCard.innerHTML = `
       <div class="goal-header">
         <div class="goal-title">Sept ${startYear} – Sept ${startYear+1}</div>
@@ -1316,7 +1556,8 @@ function renderMetas(){
         <span>Hecho: <b>${minutesToHM(yearMinutes)}</b></span>
         <span>Meta: <b>${goal.annual}h</b></span>
         <span>Faltan: <b>${minutesToHM(Math.max(0,targetAnnual-yearMinutes))}</b></span>
-      </div>`;
+      </div>
+      ${creditYearMinutes>0 ? `<p style="font-size:12px;color:var(--text-muted);margin-top:8px;">Incluye ${minutesToHM(creditYearMinutes)} de crédito para calcular tu ritmo.</p>` : ''}`;
   }
 
   const daysLeft = Math.max(1, dim-now.getDate());
@@ -1411,16 +1652,23 @@ function openMapPicker(latInput, lngInput, statusEl, btnEl){
   mapPickState.targetStatusEl = statusEl;
   mapPickState.targetBtnEl = btnEl;
   document.getElementById('mapPickModal').classList.add('open');
+  const hint = document.getElementById('mapPickHint');
 
-  if (navigator.geolocation) {
+  const hasExisting = latInput.value && lngInput.value;
+  hint.textContent = hasExisting ? 'Toca el mapa o arrastra el marcador para elegir el punto exacto.' : 'Ubicando tu posición actual...';
+
+  if (!hasExisting && navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(position => {
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
+      hint.textContent = 'Toca el mapa o arrastra el marcador para elegir el punto exacto.';
       loadLeaflet(() => initMap(lat, lng));
     }, () => {
+      hint.textContent = 'No se pudo obtener tu ubicación actual. Toca el mapa para elegir el punto manualmente.';
       loadLeaflet(() => initMap(19.4517, -70.6970));
-    });
+    }, { enableHighAccuracy:true, timeout:8000 });
   } else {
+    if(hasExisting) hint.textContent = 'Toca el mapa o arrastra el marcador para elegir el punto exacto.';
     loadLeaflet(() => initMap(19.4517, -70.6970));
   }
 }
@@ -1432,7 +1680,7 @@ function initMap(startLat, startLng){
   const existingLng = mapPickState.targetLngInput.value ? parseFloat(mapPickState.targetLngInput.value) : null;
   const lat = existingLat != null ? existingLat : startLat;
   const lng = existingLng != null ? existingLng : startLng;
-  const map = L.map(container).setView([lat, lng], existingLat != null ? 15 : 14);
+  const map = L.map(container).setView([lat, lng], existingLat != null ? 15 : 16);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap'
   }).addTo(map);
@@ -1534,12 +1782,13 @@ function renderVisits(){
   list.querySelectorAll('[data-convert-visit]').forEach(b=> b.addEventListener('click', ()=>{
     const visit = state.visits.find(v=>v.id===b.dataset.convertVisit);
     if(visit){
+      const weekday = visit.nextVisit ? parseDate(visit.nextVisit).getDay() : null;
       const study = {
         id: uid(),
         name: visit.name,
         startDate: visit.lastVisit || todayStr(),
-        nextDate: visit.nextVisit || '',
-        nextDateTime: visit.nextVisitTime || '',
+        weekday: weekday,
+        time: visit.nextVisitTime || '',
         currentLesson: visit.topic || '',
         publication: visit.publication || '',
         frequency: '',
@@ -1610,15 +1859,15 @@ function openVisitForm(id){
 function renderStudies(){
   const list = document.getElementById('studiesList');
   if(state.studies.length===0){ list.innerHTML = emptyState('No tienes estudios bíblicos registrados.'); return; }
-  const sorted = [...state.studies].sort((a,b)=> (a.nextDate||'9999').localeCompare(b.nextDate||'9999'));
+  const sorted = [...state.studies].sort((a,b)=> (a.weekday==null?9:a.weekday)-(b.weekday==null?9:b.weekday));
   list.innerHTML = sorted.map(s=>`
     <div class="person-card">
       <div class="person-top">
         <div>
           <div class="person-name">${escapeHtml(s.name)}</div>
-          <div class="person-meta">${s.publication? escapeHtml(s.publication):'Sin publicación'}${s.frequency? ' · '+escapeHtml(s.frequency):''}</div>
+          <div class="person-meta">${s.publication? escapeHtml(s.publication):'Sin publicación'}</div>
         </div>
-        ${s.nextDate? `<span class="chip">${formatDateLong(s.nextDate)}${s.nextDateTime? ' · '+s.nextDateTime:''}</span>` : ''}
+        ${s.weekday!=null? `<span class="chip">Cada ${WEEKDAY_NAMES[s.weekday]}${s.time? ' · '+s.time:''}</span>` : ''}
       </div>
       ${s.currentLesson? `<div class="person-notes"><b>Lección actual:</b> ${escapeHtml(s.currentLesson)}</div>`:''}
       ${s.progress? `<div class="person-notes"><b>Progreso:</b> ${escapeHtml(s.progress)}</div>`:''}
@@ -1642,15 +1891,19 @@ function renderStudies(){
     }
   }));
 }
+function weekdaySelectHtml(id, selected){
+  const opts = WEEKDAY_NAMES.map((n,i)=> `<option value="${i}" ${selected===i?'selected':''}>${n}</option>`).join('');
+  return `<select id="${id}"><option value="">Sin día fijo</option>${opts}</select>`;
+}
 function studyFormHtml(s){
   s = s || {};
   return `
     <div class="field"><label>Nombre del estudiante</label><input id="f-name" value="${escapeHtml(s.name||'')}"></div>
+    <div class="field"><label>Fecha de inicio</label><input type="date" id="f-start" value="${s.startDate||''}"></div>
     <div class="field-row">
-      <div class="field"><label>Fecha de inicio</label><input type="date" id="f-start" value="${s.startDate||''}"></div>
-      <div class="field"><label>Próximo estudio</label><input type="date" id="f-next" value="${s.nextDate||''}"></div>
+      <div class="field"><label>Día fijo de la semana</label>${weekdaySelectHtml('f-weekday', s.weekday)}</div>
+      <div class="field"><label>Hora</label><input type="time" id="f-time" value="${s.time||''}"></div>
     </div>
-    <div class="field"><label>Hora del próximo estudio (opcional)</label><input type="time" id="f-next-time" value="${s.nextDateTime||''}"></div>
     <div class="field"><label>Lección actual</label><input id="f-lesson" value="${escapeHtml(s.currentLesson||'')}"></div>
     ${locationFieldHtml(s)}
     <div class="field-row">
@@ -1669,11 +1922,12 @@ function openStudyForm(id){
     if(!name){ showToast('El nombre es obligatorio'); return; }
     const latVal = document.getElementById('f-lat').value;
     const lngVal = document.getElementById('f-lng').value;
+    const weekdayVal = document.getElementById('f-weekday').value;
     const data = {
       name,
       startDate: document.getElementById('f-start').value,
-      nextDate: document.getElementById('f-next').value,
-      nextDateTime: document.getElementById('f-next-time').value,
+      weekday: weekdayVal===''? null : Number(weekdayVal),
+      time: document.getElementById('f-time').value,
       currentLesson: document.getElementById('f-lesson').value.trim(),
       publication: document.getElementById('f-pub').value.trim(),
       frequency: document.getElementById('f-freq').value.trim(),
@@ -1711,9 +1965,10 @@ function renderCalendar(){
     if(c.muted) return `<div class="cal-day muted">${c.day}</div>`;
     const isToday = c.dateStr===todayStr();
     const isSel = c.dateStr===calSelected;
+    const cellWeekday = parseDate(c.dateStr).getDay();
     const hasHours = state.hours.some(e=>e.date===c.dateStr);
     const hasVisit = state.visits.some(v=>v.nextVisit===c.dateStr);
-    const hasStudy = state.studies.some(s=>s.nextDate===c.dateStr);
+    const hasStudy = state.studies.some(s=>s.weekday===cellWeekday);
     let dots = '';
     if(hasHours) dots += `<span class="cal-dot" style="background:var(--primary)"></span>`;
     if(hasVisit) dots += `<span class="cal-dot" style="background:var(--warning)"></span>`;
@@ -1740,13 +1995,14 @@ function renderCalendar(){
   });
 
   const evWrap = document.getElementById('calEvents');
+  const selWeekday = parseDate(calSelected).getDay();
   const dayHours = state.hours.filter(e=>e.date===calSelected);
   const dayVisits = state.visits.filter(v=>v.nextVisit===calSelected);
-  const dayStudies = state.studies.filter(s=>s.nextDate===calSelected);
+  const dayStudies = state.studies.filter(s=>s.weekday===selWeekday);
   let items = '';
   dayHours.forEach(e=> items += `<div class="list-item"><div class="list-item-main"><div class="list-item-title">Servicio registrado</div><div class="list-item-sub">${minutesToHM(e.minutes)}${e.note? ' · '+escapeHtml(e.note):''}</div></div></div>`);
   dayVisits.forEach(v=> items += `<div class="list-item"><div class="list-item-main"><div class="list-item-title">Revisita: ${escapeHtml(v.name)}</div><div class="list-item-sub">${escapeHtml(v.address||'')}${v.nextVisitTime? ' · '+v.nextVisitTime:''}</div></div></div>`);
-  dayStudies.forEach(s=> items += `<div class="list-item"><div class="list-item-main"><div class="list-item-title">Estudio: ${escapeHtml(s.name)}</div><div class="list-item-sub">${escapeHtml(s.currentLesson||'')}${s.nextDateTime? ' · '+s.nextDateTime:''}</div></div></div>`);
+  dayStudies.forEach(s=> items += `<div class="list-item"><div class="list-item-main"><div class="list-item-title">Estudio: ${escapeHtml(s.name)}</div><div class="list-item-sub">${escapeHtml(s.currentLesson||'')}${s.time? ' · '+s.time:''}</div></div></div>`);
   evWrap.innerHTML = `<div class="section-title">${formatDateLong(calSelected)}</div><div class="card">${items || emptyState('Nada programado para este día.')}</div>`;
 }
 
@@ -1841,6 +2097,21 @@ function renderStats(){
       <div class="bar-lbl">${d.label.toUpperCase()}</div>
     </div>`).join('');
 
+  const weekColCredit = document.getElementById('chartWeekCredit');
+  const creditDays = [];
+  for(let i=6;i>=0;i--){
+    const d = new Date(now); d.setDate(now.getDate()-i);
+    const ds = fmtDate(d);
+    const mins = sumMinutes((state.credits||[]).filter(e=>e.date===ds));
+    creditDays.push({label:d.toLocaleDateString('es-ES',{weekday:'narrow'}), mins});
+  }
+  const maxCreditDay = Math.max(1, ...creditDays.map(d=>d.mins));
+  weekColCredit.innerHTML = creditDays.map(d=>`
+    <div class="bar-col">
+      <div class="bar" style="height:${Math.max(3,d.mins/maxCreditDay*100)}%;background:var(--warning)"></div>
+      <div class="bar-lbl">${d.label.toUpperCase()}</div>
+    </div>`).join('');
+
   const monthsCol = document.getElementById('chartMonths');
   const months = [];
   for(let i=5;i>=0;i--){
@@ -1860,6 +2131,48 @@ function renderStats(){
   document.getElementById('st-visits').textContent = state.visits.length;
   document.getElementById('st-hoursmonth').textContent = Math.round(sumMinutes(hoursThisMonth())/60);
   document.getElementById('st-hoursyear').textContent = Math.round(sumMinutes(hoursThisServiceYear())/60);
+  document.getElementById('st-creditmonth').textContent = Math.round(sumMinutes(creditThisMonth())/60);
+  document.getElementById('st-credityear').textContent = Math.round(sumMinutes(creditThisServiceYear())/60);
+
+  let avgSum = 0;
+  for(let i=0;i<4;i++){
+    const start = new Date(now); start.setDate(now.getDate()-7*(i+1));
+    const end = new Date(now); end.setDate(now.getDate()-7*i);
+    avgSum += sumMinutes(hoursInRange(start,end));
+  }
+  document.getElementById('st-avgweek').textContent = Math.round((avgSum/4)/60);
+
+  let streak = 0;
+  let cursor = new Date();
+  while(true){
+    const ds = fmtDate(cursor);
+    const has = state.hours.some(e=>e.date===ds);
+    if(!has) break;
+    streak++;
+    cursor.setDate(cursor.getDate()-1);
+  }
+  document.getElementById('st-streak').textContent = streak;
+
+  const weekdayWrap = document.getElementById('studyWeekdayList');
+  const counts = WEEKDAY_NAMES.map((name,i)=> ({name, count: state.studies.filter(s=>s.weekday===i).length}));
+  const withStudies = counts.filter(c=>c.count>0);
+  if(withStudies.length===0){
+    weekdayWrap.innerHTML = emptyState('No tienes estudios con día fijo asignado.');
+  } else {
+    weekdayWrap.innerHTML = withStudies.map(c=>`
+      <div class="mini-stat-row"><span>${c.name}</span><b>${c.count} estudio${c.count===1?'':'s'}</b></div>
+    `).join('');
+  }
+
+  const totalHoursAll = sumMinutes(state.hours);
+  const totalCreditAll = sumMinutes(state.credits||[]);
+  document.getElementById('totalsHistoryCard').innerHTML = `
+    <div class="mini-stat-row"><span>Total histórico de horas</span><b>${minutesToHM(totalHoursAll)}</b></div>
+    <div class="mini-stat-row"><span>Total histórico de crédito</span><b>${minutesToHM(totalCreditAll)}</b></div>
+    <div class="mini-stat-row"><span>Registros de horas</span><b>${state.hours.length}</b></div>
+    <div class="mini-stat-row"><span>Registros de crédito</span><b>${(state.credits||[]).length}</b></div>
+    <div class="mini-stat-row"><span>Meses finalizados</span><b>${(state.closedMonths||[]).length}</b></div>
+  `;
 }
 
 function renderProfile(){
@@ -1924,6 +2237,16 @@ function openTutorialModal(isOnboarding){
 }
 function closeTutorialModal(){
   document.getElementById('tutorialModal').classList.remove('open');
+}
+
+function openChangelogModal(){
+  document.getElementById('changelogBody').innerHTML = `<ul style="padding-left:18px;">${CHANGELOG_ITEMS.map(i=>`<li style="font-size:13px;color:var(--text-muted);line-height:1.7;margin-bottom:4px;">${i}</li>`).join('')}</ul>`;
+  document.getElementById('changelogModal').classList.add('open');
+}
+function closeChangelogModal(){
+  document.getElementById('changelogModal').classList.remove('open');
+  state.changelogSeen = CHANGELOG_VERSION;
+  saveState();
 }
 
 function showConfirmModal(title, msg, onOk){
@@ -2079,49 +2402,25 @@ function openMonthEdit(monthDate){
   });
 }
 
-function forceAppUpdate(){
-  const statusDiv = document.getElementById('updateStatus');
-  const urlParams = new URLSearchParams(window.location.search);
-  const currentVersion = urlParams.get('_v') || '0';
-  const newVersion = Date.now().toString();
-  if (currentVersion === newVersion) {
-    statusDiv.style.display = 'block';
-    statusDiv.textContent = '✅ La app está actualizada';
-    statusDiv.style.color = 'var(--success)';
-    setTimeout(() => { statusDiv.style.display = 'none'; }, 3000);
-    return;
-  }
-  showToast('Actualizando... tus datos están seguros');
-  statusDiv.style.display = 'none';
-  const doReload = ()=>{
-    const url = new URL(window.location.href);
-    url.searchParams.set('_v', newVersion);
-    url.searchParams.set('_updated', '1');
-    window.location.href = url.toString();
-  };
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.getRegistrations().then(regs=>{
-      const unregs = regs.map(r=>r.unregister());
-      Promise.all(unregs).then(()=>{
-        if(window.caches && caches.keys){
-          caches.keys().then(keys=>{
-            Promise.all(keys.map(k=>caches.delete(k))).finally(doReload);
-          }).catch(doReload);
-        } else {
-          doReload();
-        }
-      }).catch(doReload);
-    }).catch(doReload);
-  } else {
-    doReload();
-  }
-}
-
 function migrateState(){
   if(!state.notifSettings){ state.notifSettings = { enabled:false, notified:{}, lastMonthlyNotif:0 }; }
   if(!state.closedMonths) state.closedMonths = [];
   if(!state.openMonth) state.openMonth = monthKey(new Date());
+  if(!state.credits) state.credits = [];
   if(state.profile && state.profile.age!==undefined){ delete state.profile.age; }
+  (state.studies||[]).forEach(s=>{
+    if(s.weekday===undefined){
+      if(s.nextDate){
+        s.weekday = parseDate(s.nextDate).getDay();
+        s.time = s.nextDateTime || '';
+      } else {
+        s.weekday = null;
+        s.time = s.time || '';
+      }
+    }
+    delete s.nextDate;
+    delete s.nextDateTime;
+  });
   delete state.seenPrevMonthEditNotice;
   delete state.dismissedAlerts;
   delete state.hideCampaign2026;
@@ -2133,18 +2432,12 @@ function migrateState(){
 function init(){
   const loaded = loadState();
   state = loaded || { profile:null, hours:[], visits:[], studies:[], theme:'light' };
-  migrateState();
   const isNewUser = !state.profile;
+  migrateState();
+  if(isNewUser){ state.changelogSeen = CHANGELOG_VERSION; }
   applyTheme();
   buildNav();
   attachSteppers(document);
-
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('_updated') === '1') {
-    showToast('App actualizada correctamente. Tus datos están intactos.');
-    const cleanUrl = window.location.pathname + window.location.search.replace(/[?&]_updated=1/, '').replace(/^&/, '?');
-    window.history.replaceState({}, document.title, cleanUrl);
-  }
 
   if(isNewUser){
     document.getElementById('onboardModal').classList.add('open');
@@ -2175,7 +2468,37 @@ function init(){
     if(e.target.id==='tutorialModal') closeTutorialModal();
   });
 
-  document.getElementById('forceUpdateBtn').addEventListener('click', forceAppUpdate);
+  document.getElementById('changelogCloseBtn').addEventListener('click', closeChangelogModal);
+  document.getElementById('changelogOkBtn').addEventListener('click', closeChangelogModal);
+  document.getElementById('changelogModal').addEventListener('click', (e)=>{
+    if(e.target.id==='changelogModal') closeChangelogModal();
+  });
+
+  document.querySelectorAll('#horasSegTabs .seg-tab').forEach(el=>{
+    el.addEventListener('click', ()=> switchHorasTab(el.dataset.horasTab));
+  });
+
+  document.getElementById('addCreditBtn').addEventListener('click', ()=>{
+    const date = document.getElementById('creditDate').value || todayStr();
+    if(dateMonthKey(date) !== state.openMonth){
+      const openLabel = capitalize(monthLabel(getOpenMonthDate()));
+      showToast('Solo puedes registrar crédito de '+openLabel+', el mes pendiente de finalizar.', 3200);
+      return;
+    }
+    const h = Math.max(0, parseInt(document.getElementById('creditH').value)||0);
+    const m = Math.max(0, Math.min(59, parseInt(document.getElementById('creditM').value)||0));
+    const note = document.getElementById('creditNote').value.trim();
+    const minutes = h*60+m;
+    if(minutes<=0){ showToast('Ingresa un tiempo válido'); return; }
+    if(!note){ showToast('Escribe una justificación para el crédito'); return; }
+    state.credits.push({id:uid(), date, minutes, note});
+    saveState();
+    document.getElementById('creditH').value='';
+    document.getElementById('creditM').value='';
+    document.getElementById('creditNote').value='';
+    renderCredito();
+    showToast('Crédito agregado');
+  });
 
   document.getElementById('sendSuggestionBtn').addEventListener('click', ()=>{
     const name = document.getElementById('suggestionName').value.trim();
@@ -2268,11 +2591,19 @@ function init(){
 
   document.getElementById('resetDataBtn').addEventListener('click', ()=>{
     if(confirm('¿Seguro que deseas borrar todos los datos? Esta acción no se puede deshacer.')){
-      state = { profile:null, hours:[], visits:[], studies:[], theme:state.theme, notifSettings:{enabled:false,notified:{},lastMonthlyNotif:0}, closedMonths:[], openMonth: monthKey(new Date()) };
+      state = { profile:null, hours:[], visits:[], studies:[], credits:[], theme:state.theme, notifSettings:{enabled:false,notified:{},lastMonthlyNotif:0}, closedMonths:[], openMonth: monthKey(new Date()), changelogSeen: CHANGELOG_VERSION };
       saveState();
       location.reload();
     }
   });
+
+  if(!isNewUser && state.changelogSeen !== CHANGELOG_VERSION){
+    setTimeout(()=> openChangelogModal(), 350);
+  }
+
+  if(state.notifSettings && state.notifSettings.enabled && 'Notification' in window && Notification.permission==='granted'){
+    registerNotificationSW();
+  }
 
   checkReminders();
   reminderInterval = setInterval(checkReminders, 15*60*1000);
