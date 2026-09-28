@@ -1,15 +1,23 @@
 {
-  "name": "Mi Aplicación",
+  "name": "JW Field Service",
   "short_name": "Field Service",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "logo/Captura de pantalla 2026-08-25 193118.png",
+      "src": "/logo/Captura%20de%20pantalla%202026-08-25%20193118.png?v=2",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo/Captura%20de%20pantalla%202026-08-25%20193118.png?v=2",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
