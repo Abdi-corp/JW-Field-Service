@@ -27,6 +27,10 @@
   --danger: #D95C4A;
   --border: #D0DFEE;
   --shadow: 0 2px 8px rgba(47,123,224,0.08);
+  --focus: rgba(47,123,224,0.15);
+  --plan: #E8B10C;
+  --plan-soft: rgba(245,190,20,0.22);
+  --plan-text: #9A6B00;
   --radius-lg: 16px;
   --radius-md: 10px;
   --radius-sm: 8px;
@@ -48,6 +52,9 @@ html.dark {
   --danger: #E57362;
   --border: #2C4058;
   --shadow: 0 2px 10px rgba(0,0,0,0.3);
+  --plan: #F0C43C;
+  --plan-soft: rgba(240,196,60,0.2);
+  --plan-text: #F0C43C;
   color-scheme: dark;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
@@ -57,7 +64,7 @@ h1,h2,h3,h4{font-weight:600;margin:0;letter-spacing:-0.01em;}
 p{margin:0;}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
 input,select,textarea{font-family:inherit;font-size:16px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;color:var(--text);width:100%;transition:border .15s;outline:none;}
-input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(47,123,224,0.15);}
+input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--focus);}
 textarea{resize:vertical;min-height:60px;}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;}
@@ -170,6 +177,11 @@ main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;paddin
 
 .progress-track{height:6px;background:var(--surface-2);border-radius:6px;overflow:hidden;border:1px solid var(--border);}
 .progress-fill{height:100%;border-radius:6px;background:var(--primary);transition:width .4s;}
+.expected-track{margin-top:6px;}
+.expected-fill{background:var(--plan);}
+.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;}
+.legend-blue{background:var(--primary);}
+.legend-yellow{background:var(--plan);}
 
 .msg-card{
   background:var(--surface-2);border:1px solid var(--border);
@@ -260,6 +272,27 @@ input[type="date"], input[type="time"]{
 .person-notes{font-size:13px;margin-top:8px;color:var(--text);background:var(--surface-2);border-radius:var(--radius-sm);padding:8px 10px;}
 .person-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
 
+.photo-actions{display:flex;gap:8px;}
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;margin-top:10px;}
+.photo-thumb{position:relative;aspect-ratio:1;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.photo-thumb button{position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;}
+
+.viewer{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:150;display:none;flex-direction:column;}
+.viewer.open{display:flex;}
+.viewer-top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));color:#fff;font-size:14px;font-weight:600;}
+.viewer-close{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;display:flex;align-items:center;justify-content:center;}
+.viewer-close svg{width:18px;height:18px;stroke:#fff;stroke-width:2;}
+.viewer-stage{flex:1;min-height:0;position:relative;overflow:auto;display:flex;align-items:center;justify-content:center;-webkit-overflow-scrolling:touch;}
+.viewer-stage img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-select:none;}
+.viewer-stage.zoomed{align-items:flex-start;justify-content:flex-start;}
+.viewer-stage.zoomed img{max-width:none;max-height:none;width:220%;}
+.viewer-arrow{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;z-index:2;}
+.viewer-arrow svg{width:22px;height:22px;stroke:#fff;stroke-width:2.2;}
+.viewer-prev{left:10px;}
+.viewer-next{right:10px;}
+.viewer-hint{color:rgba(255,255,255,.65);font-size:12px;text-align:center;padding:10px 12px calc(12px + env(safe-area-inset-bottom));}
+
 .goal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;}
 .goal-title{font-weight:600;font-size:15px;}
 .pace-chip{font-size:20px;line-height:1;}
@@ -280,12 +313,29 @@ input[type="date"], input[type="time"]{
   border:1px solid transparent;transition:background .15s,border-color .15s;
 }
 .cal-day.muted{color:var(--text-muted);opacity:.3;}
+.cal-day.planned:not(.selected){background:var(--plan-soft);}
 .cal-day.today{border-color:var(--primary);font-weight:600;}
 .cal-day.selected{background:var(--primary-dark);color:#fff;}
 .cal-day:hover:not(.selected){background:var(--surface-2);}
+.cal-day.planned:hover:not(.selected){background:var(--plan-soft);}
 .cal-dots{display:flex;gap:2px;margin-top:3px;height:5px;}
 .cal-dot{width:4px;height:4px;border-radius:50%;}
+.cal-plan{font-size:8.5px;font-weight:700;color:var(--plan-text);line-height:1;margin-top:1px;}
+.cal-day.selected .cal-plan{color:#fff;}
 .cal-day-events{margin-top:16px;}
+
+.plan-day{padding:10px 0 2px;border-bottom:1px solid var(--border);}
+.plan-day:first-child{padding-top:0;}
+.plan-day-name{font-weight:600;font-size:14px;margin-bottom:6px;}
+
+.swatch-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
+@media(max-width:360px){.swatch-grid{grid-template-columns:repeat(5,1fr);}}
+.swatch{aspect-ratio:1;border-radius:50%;border:3px solid transparent;box-shadow:0 0 0 1px var(--border);transition:transform .15s;}
+.swatch:active{transform:scale(.92);}
+.swatch.active{border-color:var(--surface);box-shadow:0 0 0 3px var(--primary-dark);}
+.hue-slider{-webkit-appearance:none;appearance:none;height:14px;padding:0;border-radius:10px;border:1px solid var(--border);background:linear-gradient(90deg,hsl(0,80%,55%),hsl(45,80%,55%),hsl(90,80%,50%),hsl(135,80%,45%),hsl(180,80%,45%),hsl(225,80%,55%),hsl(270,80%,55%),hsl(315,80%,55%),hsl(360,80%,55%));}
+.hue-slider::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--primary-dark);box-shadow:var(--shadow);}
+.hue-slider::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--primary-dark);}
 
 .bar-chart{display:flex;align-items:flex-end;gap:10px;height:110px;margin-top:8px;}
 .bar-chart .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px;}
@@ -532,7 +582,7 @@ input[type="date"], input[type="time"]{
         </div>
 
         <div id="horasPanelCredito" style="display:none;">
-          <div class="credit-note-box">El crédito es para horas de labores del Salón del Reino u otras actividades que no son predicación directa (limpieza, mantenimiento, etc). Estas horas no se suman al total de horas del mes, pero cuentan para saber si vas al día con tu meta.</div>
+          <div class="credit-note-box">El crédito es para horas de labores del Salón del Reino u otras actividades que no son predicación directa (mantenimiento del Salón del Reino, etc). Estas horas no se suman al total de horas del mes, pero cuentan para saber si vas al día con tu meta.</div>
           <div class="card" id="creditLockCard" style="display:none;"></div>
           <div id="creditEditableWrap">
             <div class="card">
@@ -553,7 +603,7 @@ input[type="date"], input[type="time"]{
                   </div>
                 </div>
               </div>
-              <div class="field"><label>Justificación del crédito</label><input type="text" id="creditNote" placeholder="Ej: limpieza del Salón del Reino"></div>
+              <div class="field"><label>Justificación del crédito</label><input type="text" id="creditNote" placeholder="Ej: mantenimiento del Salón del Reino"></div>
               <button class="btn btn-primary btn-block" id="addCreditBtn">Agregar crédito</button>
             </div>
           </div>
@@ -579,6 +629,13 @@ input[type="date"], input[type="time"]{
         <div class="card" id="projectionCard"></div>
       </section>
 
+      <section class="view" data-view="plan">
+        <div class="credit-note-box">Elige cuántas horas quieres hacer cada día de la semana. En el calendario verás en amarillo lo que planeas para cada día y un estimado del mes.</div>
+        <div class="card" id="planCard"></div>
+        <div class="section-title">Estimado según tu plan</div>
+        <div class="card" id="planSummary"></div>
+      </section>
+
       <section class="view" data-view="revisitas">
         <button class="btn btn-primary btn-block" id="addVisitBtn" style="margin-bottom:14px;">+ Nueva revisita</button>
         <div class="card" id="visitsList"></div>
@@ -598,6 +655,7 @@ input[type="date"], input[type="time"]{
           </div>
           <div class="cal-grid" id="calGrid"></div>
         </div>
+        <div id="calPlanInfo" style="margin-top:12px;"></div>
         <div class="cal-day-events" id="calEvents"></div>
       </section>
 
@@ -648,6 +706,16 @@ input[type="date"], input[type="time"]{
         <div class="section-title">Preferencias</div>
         <div class="card">
           <button class="btn btn-secondary btn-block" id="profThemeBtn">Cambiar a modo oscuro</button>
+        </div>
+        <div class="section-title">Colores de la app</div>
+        <div class="card">
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">Elige el tono que más te guste. Se adapta automáticamente al modo claro y al modo oscuro.</p>
+          <div class="swatch-grid" id="swatchGrid"></div>
+          <p style="font-size:12.5px;color:var(--text-muted);margin-top:12px;" id="swatchName"></p>
+          <div class="field" style="margin-top:12px;margin-bottom:0;">
+            <label>Tono personalizado</label>
+            <input type="range" class="hue-slider" id="hueSlider" min="0" max="360" value="215">
+          </div>
         </div>
         <div class="section-title">Datos</div>
         <div class="card">
@@ -725,12 +793,12 @@ input[type="date"], input[type="time"]{
       <p>
         En <b>Inicio</b> verás un resumen de tus horas del mes, tu crédito, la tarjeta para cerrar el mes y el apartado de notificaciones.<br>
         En <b>Horas</b> puedes usar el cronómetro, registrar tu tiempo manualmente, o cambiar a la pestaña de <b>Crédito</b> para horas de labores del Salón del Reino, siempre que el mes actual esté abierto.<br>
-        En <b>Metas</b> revisas tu progreso mensual y anual con tu ritmo actual (el crédito ayuda a tu ritmo sin cambiar tus horas mostradas).<br>
-        En <b>Revisitas</b> y <b>Estudios</b> guardas tus personas de interés, con la opción de seleccionar su ubicación en un mapa (se centra automáticamente en tu ubicación actual) y trazar cómo llegar. Los estudios ahora se programan con un día fijo de la semana y una hora.<br>
-        En <b>Calendario</b> ves tus horas, revisitas y estudios semanales organizados por día.<br>
+        En <b>Metas</b> revisas tu progreso mensual y anual: la barra azul es lo que llevas y la amarilla es lo que deberías llevar para ir al día (el crédito ayuda a tu ritmo sin cambiar tus horas mostradas).<br>
+        En <b>Planificar</b> eliges cuántas horas quieres hacer cada día de la semana y ves el estimado del mes.<br>
+        En <b>Revisitas</b> y <b>Estudios</b> guardas tus personas de interés, con ubicación en el mapa, fotos de la casa (tomadas al momento o de tu fototeca) y cómo llegar. Los estudios se programan con un día fijo de la semana y una hora.<br>
+        En <b>Calendario</b> ves tus horas, revisitas, estudios y tu planificación en amarillo.<br>
         En <b>Estadísticas</b> encuentras gráficas y datos más detallados de tu servicio.<br>
-        En <b>Perfil</b> editas tus datos y cambias el tema de la app.<br>
-        Toca el ícono en la esquina superior para cambiar entre modo claro y oscuro cuando quieras.
+        En <b>Perfil</b> editas tus datos, eliges el color de la app y cambias entre modo claro y oscuro.
       </p>
     </div>
     <div class="tutorial-block">
@@ -797,7 +865,8 @@ input[type="date"], input[type="time"]{
 
 <div class="modal-overlay" id="changelogModal">
   <div class="modal-sheet">
-    <div class="modal-head"><h3>Novedades de la app</h3><button class="icon-btn" id="changelogCloseBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="modal-head"><h3>¡La versión 2.0 ha llegado!</h3><button class="icon-btn" id="changelogCloseBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;line-height:1.5;">Esto es lo nuevo. Todos tus datos se conservan.</p>
     <div id="changelogBody"></div>
     <button class="btn btn-primary btn-block" id="changelogOkBtn" style="margin-top:10px;">Entendido</button>
   </div>
@@ -831,11 +900,25 @@ input[type="date"], input[type="time"]{
   </div>
 </div>
 
+<div class="viewer" id="photoViewer">
+  <div class="viewer-top">
+    <span id="viewerCounter">1 / 1</span>
+    <button class="viewer-close" id="viewerClose"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="viewer-stage" id="viewerStage">
+    <img id="viewerImg" alt="Foto">
+  </div>
+  <button class="viewer-arrow viewer-prev" id="viewerPrev"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <button class="viewer-arrow viewer-next" id="viewerNext"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+  <div class="viewer-hint">Toca la foto para acercar o alejar</div>
+</div>
+
 <script>
 const NAV_ITEMS = [
   {id:'inicio', label:'Inicio', icon:'M2 12l10-9 10 9M5 10v10h14V10'},
   {id:'horas', label:'Horas', icon:'M12 22a10 10 0 100-20 10 10 0 000 20zM12 7v5l3 3'},
   {id:'metas', label:'Metas', icon:'M12 22a10 10 0 100-20 10 10 0 000 20zM12 16a4 4 0 100-8 4 4 0 000 8zM12 12h.01'},
+  {id:'plan', label:'Planificar', icon:'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2 2 2 0 00-2-2h-2a2 2 0 00-2 2zM9 12h6M9 16h4'},
   {id:'revisitas', label:'Revisitas', icon:'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75'},
   {id:'estudios', label:'Estudios', icon:'M4 19.5A2.5 2.5 0 016.5 17H20M4 19.5A2.5 2.5 0 006.5 22H20V2H6.5A2.5 2.5 0 004 4.5v15z'},
   {id:'calendario', label:'Calendario', icon:'M3 10h18M8 2v4M16 2v4M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z'},
@@ -846,7 +929,7 @@ const NAV_ITEMS = [
   {id:'historial', label:'Historial', icon:'M8 5H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2h-3M8 5a2 2 0 104 0 2 2 0 00-4 0z'},
 ];
 const BOTTOM_ITEMS = ['inicio','horas','metas','mas'];
-const MORE_ITEMS = ['revisitas','estudios','calendario','estadisticas','perfil','historial','tutorial','sugerencias'];
+const MORE_ITEMS = ['plan','revisitas','estudios','calendario','estadisticas','perfil','historial','tutorial','sugerencias'];
 const TOP_LEVEL_VIEWS = ['inicio','horas','metas','mas'];
 
 const GOALS = {
@@ -867,14 +950,42 @@ const MOTIVATIONAL = [
 
 const WEEKDAY_NAMES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
-const CHANGELOG_VERSION = 'v2';
+const PALETTES = [
+  {id:'original', name:'Azul original', h:null, s:1},
+  {id:'cielo', name:'Cielo', h:205, s:1},
+  {id:'cobalto', name:'Cobalto', h:225, s:1},
+  {id:'indigo', name:'Índigo', h:245, s:1},
+  {id:'violeta', name:'Violeta', h:268, s:1},
+  {id:'purpura', name:'Púrpura', h:288, s:1},
+  {id:'fucsia', name:'Fucsia', h:315, s:1},
+  {id:'rosa', name:'Rosa', h:338, s:1},
+  {id:'rojo', name:'Rojo', h:355, s:1},
+  {id:'coral', name:'Coral', h:12, s:1},
+  {id:'naranja', name:'Naranja', h:27, s:1},
+  {id:'ambar', name:'Ámbar', h:40, s:1},
+  {id:'lima', name:'Lima', h:80, s:1},
+  {id:'verde', name:'Verde', h:120, s:1},
+  {id:'esmeralda', name:'Esmeralda', h:152, s:1},
+  {id:'turquesa', name:'Turquesa', h:175, s:1},
+  {id:'cian', name:'Cian', h:190, s:1},
+  {id:'grafito', name:'Grafito', h:215, s:0.12},
+  {id:'piedra', name:'Piedra', h:30, s:0.2},
+  {id:'tierra', name:'Tierra', h:25, s:0.45},
+  {id:'lavanda', name:'Lavanda', h:260, s:0.55},
+  {id:'menta', name:'Menta', h:160, s:0.55},
+  {id:'rosapalo', name:'Rosa palo', h:345, s:0.5},
+  {id:'oliva', name:'Oliva', h:75, s:0.45},
+];
+
+const CHANGELOG_VERSION = 'v2.0';
 const CHANGELOG_ITEMS = [
-  'El mapa ahora ubica tu posición actual automáticamente al abrirlo.',
-  'Los estudios bíblicos ahora se programan con un día fijo de la semana y una hora, y te avisan cada semana en el calendario y con una notificación un día antes.',
-  'Nueva pestaña de Crédito dentro de Horas para registrar labores como limpieza del Salón del Reino: ayuda a tu ritmo sin cambiar tus horas mostradas.',
-  'Las notificaciones se arreglaron para que funcionen correctamente.',
-  'La sección de Estadísticas ahora es más completa y específica.',
-  'Se quitó el botón de actualizar app: la app se actualiza sola sin perder tu progreso.',
+  'Ya puedes editar los días y las horas registradas de cada mes desde Historial: el botón de editar ahora funciona.',
+  'Revisitas y estudios bíblicos: agrega fotos de la casa, tomándolas en el momento o eligiéndolas de tu fototeca. Puedes guardar varias y verlas después con flechas para cambiar de foto y zoom.',
+  'Nueva sección Planificar: elige cuántas horas quieres hacer cada día de la semana. El calendario te las muestra en amarillo junto con un estimado del mes.',
+  'En Metas, además de la barra azul, ahora hay una barra amarilla que indica cuántas horas deberías llevar para ir cumpliendo, tanto del mes como del año.',
+  'En Crédito, los ejemplos ahora hablan de mantenimiento del Salón del Reino.',
+  'En Perfil hay muchísimos más tonos para personalizar la app, y funcionan igual en modo claro y modo oscuro. También puedes crear tu propio tono.',
+  'El logo de la app cambió.',
 ];
 
 let state = null;
@@ -889,6 +1000,9 @@ let mapPickState = { map:null, marker:null, lat:null, lng:null, targetLatInput:n
 let reminderInterval = null;
 let confirmCallback = null;
 let horasTab = 'horas';
+let formPhotos = [];
+let formPhotosReady = true;
+let viewerState = { photos:[], i:0, zoomed:false };
 
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
 function pad(n){ return n.toString().padStart(2,'0'); }
@@ -897,6 +1011,7 @@ function todayStr(){ return fmtDate(new Date()); }
 function tomorrowStr(){ const d = new Date(); d.setDate(d.getDate()+1); return fmtDate(d); }
 function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
 function minutesToHM(min){ const h=Math.floor(min/60); const m=Math.round(min%60); return h+'h '+m+'m'; }
+function compactHM(min){ const h=Math.floor(min/60); const m=Math.round(min%60); if(h===0) return m+'m'; return m? h+'h'+pad(m) : h+'h'; }
 function daysInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
 function monthLabel(d){ return d.toLocaleDateString('es-ES',{month:'long', year:'numeric'}); }
 function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
@@ -920,6 +1035,36 @@ function saveState(){
   catch(e){ console.error('storage error', e); showToast('No se pudo guardar'); }
 }
 
+const photoDBReady = new Promise(resolve=>{
+  try{
+    const req = indexedDB.open('jw_photos', 1);
+    req.onupgradeneeded = ()=>{ req.result.createObjectStore('p'); };
+    req.onsuccess = ()=> resolve(req.result);
+    req.onerror = ()=> resolve(null);
+  }catch(e){ resolve(null); }
+});
+function dbGetPhotos(key){
+  return photoDBReady.then(db=> new Promise(resolve=>{
+    if(!db) return resolve([]);
+    try{
+      const q = db.transaction('p').objectStore('p').get(key);
+      q.onsuccess = ()=> resolve(q.result || []);
+      q.onerror = ()=> resolve([]);
+    }catch(e){ resolve([]); }
+  }));
+}
+function dbSetPhotos(key, arr){
+  return photoDBReady.then(db=> new Promise(resolve=>{
+    if(!db) return resolve();
+    try{
+      const tx = db.transaction('p','readwrite');
+      if(arr && arr.length) tx.objectStore('p').put(arr, key); else tx.objectStore('p').delete(key);
+      tx.oncomplete = ()=> resolve();
+      tx.onerror = ()=> resolve();
+    }catch(e){ resolve(); }
+  }));
+}
+
 function showToast(msg, duration){
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -928,8 +1073,33 @@ function showToast(msg, duration){
   showToast._tm = setTimeout(()=>t.classList.remove('show'), duration || 2200);
 }
 
+function applyPalette(){
+  const root = document.documentElement.style;
+  const keys = ['--bg','--surface','--surface-2','--text','--text-muted','--primary','--primary-dark','--primary-soft','--accent','--border','--shadow','--focus'];
+  const p = state.palette;
+  if(!p || p.h==null){ keys.forEach(k=> root.removeProperty(k)); return; }
+  const h = p.h;
+  const s = p.s==null ? 1 : p.s;
+  const dark = state.theme==='dark';
+  const c = (sat, l)=> 'hsl('+h+','+Math.round(sat*s)+'%,'+l+'%)';
+  const vals = dark ? {
+    '--bg': c(35,11), '--surface': c(30,16), '--surface-2': c(28,21),
+    '--text': c(40,93), '--text-muted': c(20,66),
+    '--primary': c(70,60), '--primary-dark': c(80,72), '--primary-soft': c(40,22),
+    '--accent': c(40,40), '--border': c(25,26),
+    '--shadow': '0 2px 10px rgba(0,0,0,0.3)', '--focus': 'hsla('+h+','+Math.round(70*s)+'%,60%,0.25)'
+  } : {
+    '--bg': c(80,97), '--surface': '#FFFFFF', '--surface-2': c(60,94),
+    '--text': c(35,17), '--text-muted': c(18,41),
+    '--primary': c(72,54), '--primary-dark': c(72,40), '--primary-soft': c(90,92),
+    '--accent': c(70,72), '--border': c(40,88),
+    '--shadow': '0 2px 8px hsla('+h+','+Math.round(72*s)+'%,54%,0.10)', '--focus': 'hsla('+h+','+Math.round(72*s)+'%,54%,0.18)'
+  };
+  Object.keys(vals).forEach(k=> root.setProperty(k, vals[k]));
+}
 function applyTheme(){
   document.documentElement.classList.toggle('dark', state.theme==='dark');
+  applyPalette();
 }
 function toggleTheme(){
   state.theme = state.theme==='dark' ? 'light' : 'dark';
@@ -974,11 +1144,11 @@ function buildNav(){
     </div>
     <div class="credit-block">
       <h4>Diseño y creatividad</h4>
-      <p><strong>Crisbely Magdalena Guzmán Medina</strong><br>Diseñadora gráfica · Dirección visual · Diseño de interfaz · Conceptualización creativa · Dirección creativa · Identidad visual · Propuestas de diseño · Experiencia de usuario (UX/UI)</p>
+      <p><strong>Crisbely Guzmán /strong><br>Diseñadora gráfica · Dirección visual · Diseño de interfaz · Conceptualización creativa · Dirección creativa · Identidad visual · Propuestas de diseño · Experiencia de usuario (UX/UI)</p>
     </div>
     <div class="credit-block">
       <h4>Ideas y concepto</h4>
-      <p><strong>Crisbely Magdalena Guzmán Medina</strong><br>Ideas creativas · Conceptualización del proyecto · Aportes visuales · Propuestas de contenido y presentación</p>
+      <p><strong>Crisbely Guzmán </strong><br>Ideas creativas · Conceptualización del proyecto · Aportes visuales · Propuestas de contenido y presentación</p>
     </div>
   `;
 
@@ -986,7 +1156,7 @@ function buildNav(){
     el.addEventListener('click', ()=>{
       if(el.dataset.nav==='tutorial'){ openTutorialModal(false); return; }
       const fromMas = currentView==='mas';
-      switchView(el.dataset.nav, fromMas ? 'mas' : (TOP_LEVEL_VIEWS.includes(el.dataset.nav) ? 'inicio' : 'inicio'));
+      switchView(el.dataset.nav, fromMas ? 'mas' : 'inicio');
     });
   });
 }
@@ -995,7 +1165,7 @@ function switchView(id, backTo){
   currentView = id;
   if(backTo!==undefined){ backTarget = backTo; }
   document.querySelectorAll('.view').forEach(v=> v.classList.toggle('active', v.dataset.view===id));
-  const titleMap = {inicio:'Inicio',horas:'Horas',metas:'Metas',revisitas:'Revisitas',estudios:'Estudios bíblicos',calendario:'Calendario',estadisticas:'Estadísticas',perfil:'Perfil',mas:'Más',sugerencias:'Sugerencias',historial:'Historial'};
+  const titleMap = {inicio:'Inicio',horas:'Horas',metas:'Metas',plan:'Planificar semana',revisitas:'Revisitas',estudios:'Estudios bíblicos',calendario:'Calendario',estadisticas:'Estadísticas',perfil:'Perfil',mas:'Más',sugerencias:'Sugerencias',historial:'Historial'};
   document.getElementById('viewTitle').textContent = titleMap[id] || '';
   document.querySelectorAll('.nav-item').forEach(el=> el.classList.toggle('active', el.dataset.nav===id));
   document.querySelectorAll('.bn-item').forEach(el=>{
@@ -1007,7 +1177,7 @@ function switchView(id, backTo){
     backBtn.style.display = 'none';
   } else {
     backBtn.style.display = 'flex';
-    backBtn.onclick = ()=> switchView(backTarget || 'mas');
+    backBtn.onclick = ()=> switchView(backTarget || 'mas', 'mas');
   }
   renderCurrentView();
   document.getElementById('mainContent').scrollTop = 0;
@@ -1017,6 +1187,7 @@ function renderCurrentView(){
   if(currentView==='inicio') renderInicio();
   else if(currentView==='horas') renderHoras();
   else if(currentView==='metas') renderMetas();
+  else if(currentView==='plan') renderPlan();
   else if(currentView==='revisitas') renderVisits();
   else if(currentView==='estudios') renderStudies();
   else if(currentView==='calendario') renderCalendar();
@@ -1073,6 +1244,18 @@ function hoursInMonth(monthDate){
   return hoursInRange(start,end);
 }
 
+function planForDate(dateStr){
+  return (state.weekPlan && state.weekPlan[parseDate(dateStr).getDay()]) || 0;
+}
+function planMonthMinutes(y,m){
+  let total = 0;
+  const dim = daysInMonth(y,m);
+  for(let d=1; d<=dim; d++){
+    total += (state.weekPlan && state.weekPlan[new Date(y,m,d).getDay()]) || 0;
+  }
+  return total;
+}
+
 function currentGoal(){ return GOALS[state.profile.type]; }
 
 function isMonthClosed(monthDate){
@@ -1115,7 +1298,7 @@ function renderInicio(){
 
   const creditMonthMin = sumMinutes(creditThisMonth());
   document.getElementById('in-credit-card').innerHTML = `
-    <p style="font-size:13.5px;color:var(--text-muted);line-height:1.5;">Has registrado <b style="color:var(--text);">${minutesToHM(creditMonthMin)}</b> de crédito este mes por labores como limpieza o mantenimiento del Salón del Reino. Este tiempo no se suma a tus horas de servicio, pero ayuda a tu ritmo respecto a la meta.</p>`;
+    <p style="font-size:13.5px;color:var(--text-muted);line-height:1.5;">Has registrado <b style="color:var(--text);">${minutesToHM(creditMonthMin)}</b> de crédito este mes por labores de mantenimiento del Salón del Reino. Este tiempo no se suma a tus horas de servicio, pero ayuda a tu ritmo respecto a la meta.</p>`;
 
   const openDate = getOpenMonthDate();
   const openLabel = capitalize(monthLabel(openDate));
@@ -1454,12 +1637,17 @@ function openEditCreditEntry(id){
   });
 }
 
-function openEditHourEntry(id){
+function openEditHourEntry(id, afterSave){
   const entry = state.hours.find(e=>e.id===id);
   if(!entry) return;
   const h = Math.floor(entry.minutes/60);
   const m = entry.minutes%60;
+  const entryMonth = parseDate(entry.date);
+  const firstDay = new Date(entryMonth.getFullYear(), entryMonth.getMonth(), 1);
+  const lastDay = new Date(entryMonth.getFullYear(), entryMonth.getMonth()+1, 0);
+  const maxDay = new Date(Math.min(lastDay.getTime(), Date.now()));
   const bodyHtml = `
+    <div class="field"><label>Día</label><input type="date" id="f-edate" value="${entry.date}" min="${fmtDate(firstDay)}" max="${fmtDate(maxDay)}"></div>
     <div class="field-row">
       <div class="field"><label>Horas</label>${stepperFieldHtml('f-eh', {value:h})}</div>
       <div class="field"><label>Minutos</label>${stepperFieldHtml('f-em', {max:59, value:m})}</div>
@@ -1471,9 +1659,15 @@ function openEditHourEntry(id){
     const mm = Math.max(0, Math.min(59, parseInt(document.getElementById('f-em').value)||0));
     const minutes = hh*60+mm;
     if(minutes<=0){ showToast('Ingresa un tiempo válido'); return; }
+    const newDate = document.getElementById('f-edate').value || entry.date;
+    if(dateMonthKey(newDate) !== dateMonthKey(entry.date)){ showToast('El día debe estar dentro del mismo mes'); return; }
+    if(newDate > todayStr()){ showToast('No puedes usar un día futuro'); return; }
     entry.minutes = minutes;
+    entry.date = newDate;
     entry.note = document.getElementById('f-enote').value.trim();
-    saveState(); closeFormModal(); renderHoras(); showToast('Registro actualizado');
+    saveState(); closeFormModal();
+    if(afterSave) afterSave(); else renderHoras();
+    showToast('Registro actualizado');
   });
 }
 
@@ -1498,6 +1692,20 @@ function paceInfo(actualMinutes, targetMinutes, elapsedFraction){
   };
 }
 
+function expectedBlockHtml(doneWithCredit, expectedMinutes, targetMinutes){
+  const pctExpected = targetMinutes>0 ? Math.min(100, Math.round(expectedMinutes/targetMinutes*100)) : 0;
+  const diff = doneWithCredit - expectedMinutes;
+  const diffTxt = diff>=0
+    ? 'Vas <b>'+minutesToHM(Math.round(diff))+'</b> por delante'
+    : 'Te faltan <b>'+minutesToHM(Math.round(-diff))+'</b> para ir al día';
+  return `
+    <div class="progress-track expected-track"><div class="progress-fill expected-fill" style="width:${pctExpected}%"></div></div>
+    <div class="goal-numbers">
+      <span><i class="legend-dot legend-blue"></i>Hecho · <i class="legend-dot legend-yellow"></i>Deberías llevar: <b>${minutesToHM(Math.round(expectedMinutes))}</b></span>
+      <span>${diffTxt}</span>
+    </div>`;
+}
+
 function renderMetas(){
   const goal = currentGoal();
   const now = new Date();
@@ -1519,6 +1727,7 @@ function renderMetas(){
       </div>
     </div>
     <div class="progress-track"><div class="progress-fill" style="width:${pctMonth}%"></div></div>
+    ${expectedBlockHtml(monthMinutes+creditMonthMinutes, targetMonthly*monthFraction, targetMonthly)}
     <div class="goal-numbers">
       <span>Hecho: <b>${minutesToHM(monthMinutes)}</b></span>
       <span>Meta: <b>${goal.monthly}h</b></span>
@@ -1552,6 +1761,7 @@ function renderMetas(){
         </div>
       </div>
       <div class="progress-track"><div class="progress-fill" style="width:${pctYear}%"></div></div>
+      ${expectedBlockHtml(yearMinutes+creditYearMinutes, targetAnnual*yearFraction, targetAnnual)}
       <div class="goal-numbers">
         <span>Hecho: <b>${minutesToHM(yearMinutes)}</b></span>
         <span>Meta: <b>${goal.annual}h</b></span>
@@ -1568,6 +1778,49 @@ function renderMetas(){
       Para alcanzar tu meta mensual necesitas un promedio de <b>${minutesToHM(Math.ceil(perDay))}</b> por día durante los días que quedan.<br>
       Si mantienes tu ritmo actual, terminarás el mes con aproximadamente <b>${minutesToHM(Math.round(monthFraction>0 ? monthMinutes/monthFraction : 0))}</b>.
     </p>`;
+}
+
+function renderPlan(){
+  const order = [1,2,3,4,5,6,0];
+  const plan = state.weekPlan;
+  const card = document.getElementById('planCard');
+  card.innerHTML = order.map(i=>{
+    const min = plan[i]||0;
+    return `<div class="plan-day">
+      <div class="plan-day-name">${WEEKDAY_NAMES[i]}</div>
+      <div class="field-row">
+        <div class="field"><label>Horas</label>${stepperFieldHtml('plan-h-'+i, {value:Math.floor(min/60)})}</div>
+        <div class="field"><label>Minutos</label>${stepperFieldHtml('plan-m-'+i, {max:59, value:min%60})}</div>
+      </div>
+    </div>`;
+  }).join('') + `<button class="btn btn-primary btn-block" id="planSaveBtn" style="margin-top:14px;">Guardar planificación</button>`;
+  attachSteppers(card);
+  document.getElementById('planSaveBtn').addEventListener('click', ()=>{
+    const next = [0,0,0,0,0,0,0];
+    for(let i=0;i<7;i++){
+      const h = Math.max(0, parseInt(document.getElementById('plan-h-'+i).value)||0);
+      const m = Math.max(0, Math.min(59, parseInt(document.getElementById('plan-m-'+i).value)||0));
+      next[i] = h*60+m;
+    }
+    state.weekPlan = next;
+    saveState();
+    renderPlanSummary();
+    showToast('Planificación guardada');
+  });
+  renderPlanSummary();
+}
+
+function renderPlanSummary(){
+  const now = new Date();
+  const weekTotal = state.weekPlan.reduce((a,b)=>a+b,0);
+  const monthTotal = planMonthMinutes(now.getFullYear(), now.getMonth());
+  const goal = currentGoal();
+  const monthName = capitalize(now.toLocaleDateString('es-ES',{month:'long'}));
+  document.getElementById('planSummary').innerHTML = `
+    <div class="mini-stat-row"><span>Horas planeadas por semana</span><b>${minutesToHM(weekTotal)}</b></div>
+    <div class="mini-stat-row"><span>Estimado de ${monthName}</span><b>${minutesToHM(monthTotal)}</b></div>
+    <div class="mini-stat-row"><span>Tu meta mensual</span><b>${goal.monthly}h</b></div>
+    <p style="font-size:12.5px;color:var(--text-muted);margin-top:10px;line-height:1.5;">${monthTotal>=goal.monthly*60 ? 'Con este plan alcanzarías tu meta del mes.' : 'Con este plan te faltarían '+minutesToHM(goal.monthly*60-monthTotal)+' para llegar a tu meta del mes.'}</p>`;
 }
 
 function stepperFieldHtml(id, opts){
@@ -1745,6 +1998,123 @@ function locationFieldHtml(v){
     </div>`;
 }
 
+function photoFieldHtml(){
+  return `
+    <div class="field">
+      <label>Fotos de la casa (opcional)</label>
+      <div class="photo-actions">
+        <button type="button" class="btn btn-secondary btn-block" id="f-photo-cam-btn">Tomar foto</button>
+        <button type="button" class="btn btn-secondary btn-block" id="f-photo-gal-btn">Fototeca</button>
+      </div>
+      <input type="file" accept="image/*" capture="environment" id="f-photo-cam" style="display:none;">
+      <input type="file" accept="image/*" multiple id="f-photo-gal" style="display:none;">
+      <div class="photo-grid" id="f-photo-grid"></div>
+    </div>`;
+}
+
+function renderPhotoGrid(){
+  const grid = document.getElementById('f-photo-grid');
+  if(!grid) return;
+  grid.innerHTML = formPhotos.map((src,i)=>`
+    <div class="photo-thumb">
+      <img src="${src}" alt="Foto ${i+1}" data-view-photo="${i}">
+      <button type="button" data-rm-photo="${i}">×</button>
+    </div>`).join('');
+  grid.querySelectorAll('[data-rm-photo]').forEach(b=> b.addEventListener('click', ()=>{
+    formPhotos.splice(Number(b.dataset.rmPhoto),1);
+    renderPhotoGrid();
+  }));
+  grid.querySelectorAll('[data-view-photo]').forEach(im=> im.addEventListener('click', ()=>{
+    openViewer(formPhotos, Number(im.dataset.viewPhoto));
+  }));
+}
+
+function compressImage(file){
+  return new Promise(resolve=>{
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const maxSide = 1280;
+        const scale = Math.min(1, maxSide/Math.max(img.width, img.height));
+        const w = Math.round(img.width*scale);
+        const h = Math.round(img.height*scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.75));
+      };
+      img.onerror = ()=> resolve(null);
+      img.src = reader.result;
+    };
+    reader.onerror = ()=> resolve(null);
+    reader.readAsDataURL(file);
+  });
+}
+
+function initPhotoField(itemId){
+  formPhotos = [];
+  formPhotosReady = true;
+  if(itemId){
+    formPhotosReady = false;
+    dbGetPhotos(itemId).then(arr=>{ formPhotos = arr; formPhotosReady = true; renderPhotoGrid(); });
+  }
+  renderPhotoGrid();
+  const cam = document.getElementById('f-photo-cam');
+  const gal = document.getElementById('f-photo-gal');
+  if(!cam || !gal) return;
+  document.getElementById('f-photo-cam-btn').addEventListener('click', ()=> cam.click());
+  document.getElementById('f-photo-gal-btn').addEventListener('click', ()=> gal.click());
+  const handle = (input)=>{
+    const files = Array.from(input.files || []);
+    input.value = '';
+    if(files.length===0) return;
+    showToast('Procesando foto...');
+    Promise.all(files.map(compressImage)).then(list=>{
+      list.filter(Boolean).forEach(src=> formPhotos.push(src));
+      renderPhotoGrid();
+      showToast(list.filter(Boolean).length===1 ? 'Foto agregada' : 'Fotos agregadas');
+    });
+  };
+  cam.addEventListener('change', ()=> handle(cam));
+  gal.addEventListener('change', ()=> handle(gal));
+}
+
+function photoButtonHtml(kind, item){
+  const n = item.photoCount || 0;
+  if(n===0) return '';
+  return `<button class="btn btn-secondary btn-sm" data-photos-${kind}="${item.id}">${n===1 ? 'Ver foto tomada' : 'Ver fotos ('+n+')'}</button>`;
+}
+
+function openViewer(photos, start){
+  if(!photos || photos.length===0){ showToast('No hay fotos para mostrar'); return; }
+  viewerState = { photos:photos.slice(), i:start||0, zoomed:false };
+  document.getElementById('photoViewer').classList.add('open');
+  renderViewer();
+}
+function renderViewer(){
+  const { photos, i, zoomed } = viewerState;
+  document.getElementById('viewerImg').src = photos[i];
+  document.getElementById('viewerCounter').textContent = (i+1)+' / '+photos.length;
+  document.getElementById('viewerStage').classList.toggle('zoomed', zoomed);
+  document.getElementById('viewerStage').scrollTop = 0;
+  document.getElementById('viewerStage').scrollLeft = 0;
+  const multi = photos.length>1;
+  document.getElementById('viewerPrev').style.display = multi ? 'flex' : 'none';
+  document.getElementById('viewerNext').style.display = multi ? 'flex' : 'none';
+}
+function viewerMove(dir){
+  const n = viewerState.photos.length;
+  if(n<2) return;
+  viewerState.i = (viewerState.i + dir + n) % n;
+  viewerState.zoomed = false;
+  renderViewer();
+}
+function closeViewer(){
+  document.getElementById('photoViewer').classList.remove('open');
+  document.getElementById('viewerImg').src = '';
+}
+
 function renderVisits(){
   const list = document.getElementById('visitsList');
   if(state.visits.length===0){ list.innerHTML = emptyState('No tienes revisitas registradas.'); return; }
@@ -1763,13 +2133,18 @@ function renderVisits(){
       ${v.notes? `<div class="person-notes"><b>Notas:</b> ${escapeHtml(v.notes)}</div>`:''}
       <div class="person-actions">
         <button class="btn btn-secondary btn-sm" data-edit-visit="${v.id}">Editar</button>
+        ${photoButtonHtml('visit', v)}
         ${v.lat!=null && v.lng!=null? `<button class="btn btn-secondary btn-sm" data-map-visit="${v.id}">Cómo llegar</button>`:''}
         <button class="btn btn-success btn-sm" data-convert-visit="${v.id}">Convertir en estudio</button>
         <button class="btn btn-danger btn-sm" data-del-visit="${v.id}">Eliminar</button>
       </div>
     </div>`).join('');
   list.querySelectorAll('[data-edit-visit]').forEach(b=> b.addEventListener('click', ()=> openVisitForm(b.dataset.editVisit)));
+  list.querySelectorAll('[data-photos-visit]').forEach(b=> b.addEventListener('click', ()=>{
+    dbGetPhotos(b.dataset.photosVisit).then(arr=> openViewer(arr, 0));
+  }));
   list.querySelectorAll('[data-del-visit]').forEach(b=> b.addEventListener('click', ()=>{
+    dbSetPhotos(b.dataset.delVisit, []);
     state.visits = state.visits.filter(v=>v.id!==b.dataset.delVisit);
     saveState(); renderVisits(); showToast('Revisita eliminada');
   }));
@@ -1796,8 +2171,11 @@ function renderVisits(){
         pendingTopics: '',
         notes: visit.notes || '',
         lat: visit.lat!=null? visit.lat : null,
-        lng: visit.lng!=null? visit.lng : null
+        lng: visit.lng!=null? visit.lng : null,
+        photoCount: visit.photoCount || 0
       };
+      const oldId = visit.id;
+      dbGetPhotos(oldId).then(arr=> dbSetPhotos(study.id, arr).then(()=> dbSetPhotos(oldId, [])));
       state.studies.push(study);
       state.visits = state.visits.filter(v=>v.id!==visit.id);
       saveState();
@@ -1818,6 +2196,7 @@ function visitFormHtml(v){
     <div class="field"><label>Hora de la próxima visita (opcional)</label><input type="time" id="f-next-time" value="${v.nextVisitTime||''}"></div>
     <div class="field"><label>Dirección</label><input id="f-address" value="${escapeHtml(v.address||'')}"></div>
     ${locationFieldHtml(v)}
+    ${photoFieldHtml()}
     <div class="field"><label>Teléfono</label><input id="f-phone" value="${escapeHtml(v.phone||'')}"></div>
     <div class="field"><label>Tema hablado</label><input id="f-topic" value="${escapeHtml(v.topic||'')}"></div>
     <div class="field-row">
@@ -1830,9 +2209,11 @@ function visitFormHtml(v){
 }
 function openVisitForm(id){
   const v = id ? state.visits.find(x=>x.id===id) : null;
+  const itemId = v ? v.id : uid();
   openFormModal(v? 'Editar revisita':'Nueva revisita', visitFormHtml(v), ()=>{
     const name = document.getElementById('f-name').value.trim();
     if(!name){ showToast('El nombre es obligatorio'); return; }
+    if(!formPhotosReady){ showToast('Espera un momento, cargando fotos...'); return; }
     const latVal = document.getElementById('f-lat').value;
     const lngVal = document.getElementById('f-lng').value;
     const data = {
@@ -1849,11 +2230,16 @@ function openVisitForm(id){
       notes: document.getElementById('f-notes').value.trim(),
       lat: latVal!==''? Number(latVal) : null,
       lng: lngVal!==''? Number(lngVal) : null,
+      photoCount: formPhotos.length,
     };
-    if(v){ Object.assign(v, data); } else { state.visits.push({id:uid(), ...data}); }
-    saveState(); closeFormModal(); renderVisits(); showToast('Revisita guardada');
+    if(v){ Object.assign(v, data); } else { state.visits.push({id:itemId, ...data}); }
+    saveState();
+    dbSetPhotos(itemId, formPhotos.slice()).then(()=>{
+      closeFormModal(); renderVisits(); showToast('Revisita guardada');
+    });
   });
   attachLocationCapture();
+  initPhotoField(v ? v.id : null);
 }
 
 function renderStudies(){
@@ -1875,12 +2261,17 @@ function renderStudies(){
       ${s.notes? `<div class="person-notes"><b>Notas:</b> ${escapeHtml(s.notes)}</div>`:''}
       <div class="person-actions">
         <button class="btn btn-secondary btn-sm" data-edit-study="${s.id}">Editar</button>
+        ${photoButtonHtml('study', s)}
         ${s.lat!=null && s.lng!=null? `<button class="btn btn-secondary btn-sm" data-map-study="${s.id}">Cómo llegar</button>`:''}
         <button class="btn btn-danger btn-sm" data-del-study="${s.id}">Eliminar</button>
       </div>
     </div>`).join('');
   list.querySelectorAll('[data-edit-study]').forEach(b=> b.addEventListener('click', ()=> openStudyForm(b.dataset.editStudy)));
+  list.querySelectorAll('[data-photos-study]').forEach(b=> b.addEventListener('click', ()=>{
+    dbGetPhotos(b.dataset.photosStudy).then(arr=> openViewer(arr, 0));
+  }));
   list.querySelectorAll('[data-del-study]').forEach(b=> b.addEventListener('click', ()=>{
+    dbSetPhotos(b.dataset.delStudy, []);
     state.studies = state.studies.filter(s=>s.id!==b.dataset.delStudy);
     saveState(); renderStudies(); showToast('Estudio eliminado');
   }));
@@ -1906,6 +2297,7 @@ function studyFormHtml(s){
     </div>
     <div class="field"><label>Lección actual</label><input id="f-lesson" value="${escapeHtml(s.currentLesson||'')}"></div>
     ${locationFieldHtml(s)}
+    ${photoFieldHtml()}
     <div class="field-row">
       <div class="field"><label>Publicación</label><input id="f-pub" value="${escapeHtml(s.publication||'')}"></div>
       <div class="field"><label>Frecuencia</label><input id="f-freq" value="${escapeHtml(s.frequency||'')}" placeholder="Semanal"></div>
@@ -1917,9 +2309,11 @@ function studyFormHtml(s){
 }
 function openStudyForm(id){
   const s = id ? state.studies.find(x=>x.id===id) : null;
+  const itemId = s ? s.id : uid();
   openFormModal(s? 'Editar estudio':'Nuevo estudio bíblico', studyFormHtml(s), ()=>{
     const name = document.getElementById('f-name').value.trim();
     if(!name){ showToast('El nombre es obligatorio'); return; }
+    if(!formPhotosReady){ showToast('Espera un momento, cargando fotos...'); return; }
     const latVal = document.getElementById('f-lat').value;
     const lngVal = document.getElementById('f-lng').value;
     const weekdayVal = document.getElementById('f-weekday').value;
@@ -1936,11 +2330,16 @@ function openStudyForm(id){
       notes: document.getElementById('f-notes').value.trim(),
       lat: latVal!==''? Number(latVal) : null,
       lng: lngVal!==''? Number(lngVal) : null,
+      photoCount: formPhotos.length,
     };
-    if(s){ Object.assign(s, data); } else { state.studies.push({id:uid(), ...data}); }
-    saveState(); closeFormModal(); renderStudies(); showToast('Estudio guardado');
+    if(s){ Object.assign(s, data); } else { state.studies.push({id:itemId, ...data}); }
+    saveState();
+    dbSetPhotos(itemId, formPhotos.slice()).then(()=>{
+      closeFormModal(); renderStudies(); showToast('Estudio guardado');
+    });
   });
   attachLocationCapture();
+  initPhotoField(s ? s.id : null);
 }
 
 function renderCalendar(){
@@ -1969,12 +2368,13 @@ function renderCalendar(){
     const hasHours = state.hours.some(e=>e.date===c.dateStr);
     const hasVisit = state.visits.some(v=>v.nextVisit===c.dateStr);
     const hasStudy = state.studies.some(s=>s.weekday===cellWeekday);
+    const planMin = planForDate(c.dateStr);
     let dots = '';
     if(hasHours) dots += `<span class="cal-dot" style="background:var(--primary)"></span>`;
     if(hasVisit) dots += `<span class="cal-dot" style="background:var(--warning)"></span>`;
     if(hasStudy) dots += `<span class="cal-dot" style="background:var(--success)"></span>`;
-    return `<div class="cal-day ${isToday?'today':''} ${isSel?'selected':''}" data-day="${c.dateStr}">
-      ${c.day}<div class="cal-dots">${dots}</div></div>`;
+    return `<div class="cal-day ${isToday?'today':''} ${isSel?'selected':''} ${planMin>0?'planned':''}" data-day="${c.dateStr}">
+      ${c.day}<div class="cal-dots">${dots}</div>${planMin>0? `<span class="cal-plan">${compactHM(planMin)}</span>`:''}</div>`;
   }).join('');
 
   grid.innerHTML = html;
@@ -1994,12 +2394,28 @@ function renderCalendar(){
     });
   });
 
+  const monthPlan = planMonthMinutes(y,m);
+  const planInfo = document.getElementById('calPlanInfo');
+  if(monthPlan>0){
+    planInfo.innerHTML = `<div class="card" style="border-color:var(--plan);">
+      <p style="font-size:13px;line-height:1.5;"><i class="legend-dot legend-yellow"></i>Según tu planificación, en ${capitalize(calDate.toLocaleDateString('es-ES',{month:'long'}))} harías aproximadamente <b>${minutesToHM(monthPlan)}</b>.</p>
+    </div>`;
+  } else {
+    planInfo.innerHTML = `<div class="card">
+      <p style="font-size:13px;color:var(--text-muted);line-height:1.5;margin-bottom:10px;">Aún no has planificado tu semana. Tus horas planeadas aparecerán aquí en amarillo.</p>
+      <button class="btn btn-secondary btn-block" id="calGoPlan">Planificar mi semana</button>
+    </div>`;
+    document.getElementById('calGoPlan').addEventListener('click', ()=> switchView('plan','calendario'));
+  }
+
   const evWrap = document.getElementById('calEvents');
   const selWeekday = parseDate(calSelected).getDay();
   const dayHours = state.hours.filter(e=>e.date===calSelected);
   const dayVisits = state.visits.filter(v=>v.nextVisit===calSelected);
   const dayStudies = state.studies.filter(s=>s.weekday===selWeekday);
+  const dayPlan = planForDate(calSelected);
   let items = '';
+  if(dayPlan>0) items += `<div class="list-item"><div class="list-item-main"><div class="list-item-title" style="color:var(--plan-text);">Planificado</div><div class="list-item-sub">${minutesToHM(dayPlan)} según tu planificación semanal</div></div></div>`;
   dayHours.forEach(e=> items += `<div class="list-item"><div class="list-item-main"><div class="list-item-title">Servicio registrado</div><div class="list-item-sub">${minutesToHM(e.minutes)}${e.note? ' · '+escapeHtml(e.note):''}</div></div></div>`);
   dayVisits.forEach(v=> items += `<div class="list-item"><div class="list-item-main"><div class="list-item-title">Revisita: ${escapeHtml(v.name)}</div><div class="list-item-sub">${escapeHtml(v.address||'')}${v.nextVisitTime? ' · '+v.nextVisitTime:''}</div></div></div>`);
   dayStudies.forEach(s=> items += `<div class="list-item"><div class="list-item-main"><div class="list-item-title">Estudio: ${escapeHtml(s.name)}</div><div class="list-item-sub">${escapeHtml(s.currentLesson||'')}${s.time? ' · '+s.time:''}</div></div></div>`);
@@ -2050,7 +2466,7 @@ function openEditHours(dateStr){
     body.querySelectorAll('[data-edit-hour-inline]').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         document.getElementById('editHoursModal').classList.remove('open');
-        openEditHourEntry(btn.dataset.editHourInline);
+        openEditHourEntry(btn.dataset.editHourInline, ()=> renderCalendar());
       });
     });
   }
@@ -2180,11 +2596,34 @@ function renderProfile(){
   document.getElementById('profType').value = state.profile.type;
   document.getElementById('profAvatar').textContent = initials(state.profile.name);
   document.getElementById('profThemeBtn').textContent = state.theme==='dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
+  renderSwatches();
 }
 function initials(name){
   if(!name) return 'JW';
   const parts = name.trim().split(/\s+/);
   return ((parts[0]?.[0]||'')+(parts[1]?.[0]||'')).toUpperCase() || 'JW';
+}
+
+function renderSwatches(){
+  const grid = document.getElementById('swatchGrid');
+  const current = state.palette && state.palette.id ? state.palette.id : 'original';
+  grid.innerHTML = PALETTES.map(p=>{
+    const bg = p.h==null ? 'linear-gradient(135deg,#2F7BE0,#1A5BBF)' : 'hsl('+p.h+','+Math.round(72*p.s)+'%,52%)';
+    return `<button type="button" class="swatch ${current===p.id?'active':''}" data-palette="${p.id}" title="${p.name}" style="background:${bg};"></button>`;
+  }).join('');
+  grid.querySelectorAll('[data-palette]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const p = PALETTES.find(x=>x.id===btn.dataset.palette);
+      state.palette = p.h==null ? null : {id:p.id, h:p.h, s:p.s};
+      applyPalette();
+      saveState();
+      renderSwatches();
+    });
+  });
+  const pal = state.palette;
+  const label = pal ? (pal.id==='custom' ? 'Tono personalizado' : (PALETTES.find(x=>x.id===pal.id)||{}).name) : 'Azul original';
+  document.getElementById('swatchName').textContent = 'Tono actual: '+label;
+  document.getElementById('hueSlider').value = pal && pal.h!=null ? pal.h : 215;
 }
 
 function formatTimer(sec){
@@ -2320,7 +2759,7 @@ function openMonthEdit(monthDate){
   const entries = state.hours.filter(e=>{
     const d = parseDate(e.date);
     return d >= start && d < end;
-  });
+  }).sort((a,b)=> a.date.localeCompare(b.date));
   const closed = isMonthClosed(monthDate);
   const canAddHere = monthKey(monthDate) === state.openMonth;
   const modal = document.getElementById('editHoursModal');
@@ -2328,11 +2767,11 @@ function openMonthEdit(monthDate){
   let noteTxt = '';
   if(closed) noteTxt = ' (mes cerrado, solo puedes editar o eliminar registros existentes)';
   else if(!canAddHere) noteTxt = ' (este mes aún no está abierto, solo puedes editar o eliminar registros existentes hasta que finalices el mes pendiente)';
-  body.innerHTML = `<p style="color:var(--text-muted);">Editando horas de ${capitalize(monthDate.toLocaleDateString('es-ES',{month:'long', year:'numeric'}))}${noteTxt}</p>`;
+  let html = `<p style="color:var(--text-muted);">Editando horas de ${capitalize(monthDate.toLocaleDateString('es-ES',{month:'long', year:'numeric'}))}${noteTxt}</p>`;
   if(entries.length===0){
-    body.innerHTML += `<p style="color:var(--text-muted);margin-top:8px;">No hay registros en este mes.</p>`;
+    html += `<p style="color:var(--text-muted);margin-top:8px;">No hay registros en este mes.</p>`;
   } else {
-    let html = entries.map(e=>`
+    html += entries.map(e=>`
       <div class="list-item">
         <div class="list-item-main">
           <div class="list-item-title">${formatDateLong(e.date)} - ${minutesToHM(e.minutes)}</div>
@@ -2343,63 +2782,65 @@ function openMonthEdit(monthDate){
           <button class="btn btn-danger btn-sm" data-del-hour-month="${e.id}">Eliminar</button>
         </div>
       </div>`).join('');
-    body.innerHTML += html;
-    body.querySelectorAll('[data-del-hour-month]').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        state.hours = state.hours.filter(e=>e.id!==btn.dataset.delHourMonth);
-        saveState();
-        renderMonthHistory();
-        openMonthEdit(monthDate);
-        showToast('Registro eliminado');
-      });
-    });
-    body.querySelectorAll('[data-edit-hour-month]').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        document.getElementById('editHoursModal').classList.remove('open');
-        openEditHourEntry(btn.dataset.editHourMonth);
-      });
-    });
   }
   if(canAddHere){
-    body.innerHTML += `
+    const lastDay = new Date(y,m+1,0);
+    const defaultDay = fmtDate(new Date(Math.min(lastDay.getTime(), Date.now())));
+    html += `
       <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
         <div class="field"><label>Agregar horas en este mes</label></div>
         <div class="field-row">
-          <div class="field"><label>Día</label><input type="date" id="monthEditDay" value="${fmtDate(new Date())}"></div>
+          <div class="field"><label>Día</label><input type="date" id="monthEditDay" value="${defaultDay}" min="${fmtDate(start)}" max="${defaultDay}"></div>
         </div>
         <div class="field-row">
           <div class="field"><label>Horas</label>${stepperFieldHtml('monthEditH')}</div>
           <div class="field"><label>Minutos</label>${stepperFieldHtml('monthEditM', {max:59})}</div>
         </div>
         <div class="field"><label>Nota</label><input type="text" id="monthEditNote" placeholder="Opcional"></div>
-        <button class="btn btn-primary btn-block" id="monthEditAdd">Agregar</button>
       </div>
     `;
   }
+  body.innerHTML = html;
+  const refresh = ()=>{ renderMonthHistory(); openMonthEdit(monthDate); };
+  body.querySelectorAll('[data-del-hour-month]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.hours = state.hours.filter(e=>e.id!==btn.dataset.delHourMonth);
+      saveState();
+      refresh();
+      showToast('Registro eliminado');
+    });
+  });
+  body.querySelectorAll('[data-edit-hour-month]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      modal.classList.remove('open');
+      openEditHourEntry(btn.dataset.editHourMonth, refresh);
+    });
+  });
   attachModalFieldBehavior('editHoursBody');
   modal.classList.add('open');
   document.getElementById('editHoursSave').onclick = ()=>{
     if(!canAddHere){ modal.classList.remove('open'); return; }
     const day = document.getElementById('monthEditDay').value;
     const h = Math.max(0, parseInt(document.getElementById('monthEditH').value)||0);
-    const m = Math.max(0, Math.min(59, parseInt(document.getElementById('monthEditM').value)||0));
+    const mi = Math.max(0, Math.min(59, parseInt(document.getElementById('monthEditM').value)||0));
     const note = document.getElementById('monthEditNote').value.trim();
-    const minutes = h*60+m;
-    if(minutes<=0){ showToast('Ingresa un tiempo válido'); return; }
+    const minutes = h*60+mi;
+    if(minutes<=0){
+      modal.classList.remove('open');
+      return;
+    }
+    if(!day){ showToast('Elige un día'); return; }
     const d = parseDate(day);
     if(d.getMonth() !== monthDate.getMonth() || d.getFullYear() !== monthDate.getFullYear()){
       showToast('El día debe estar dentro del mes seleccionado');
       return;
     }
+    if(day > todayStr()){ showToast('No puedes usar un día futuro'); return; }
     state.hours.push({id:uid(), date:day, minutes, note});
     saveState();
-    renderMonthHistory();
-    openMonthEdit(monthDate);
+    refresh();
     showToast('Horas agregadas');
   };
-  document.getElementById('editHoursModal').addEventListener('click', (e)=>{
-    if(e.target.id==='editHoursModal') document.getElementById('editHoursModal').classList.remove('open');
-  });
 }
 
 function migrateState(){
@@ -2407,8 +2848,15 @@ function migrateState(){
   if(!state.closedMonths) state.closedMonths = [];
   if(!state.openMonth) state.openMonth = monthKey(new Date());
   if(!state.credits) state.credits = [];
+  if(!Array.isArray(state.hours)) state.hours = [];
+  if(!Array.isArray(state.visits)) state.visits = [];
+  if(!Array.isArray(state.studies)) state.studies = [];
+  if(!Array.isArray(state.weekPlan) || state.weekPlan.length!==7) state.weekPlan = [0,0,0,0,0,0,0];
+  if(state.palette===undefined) state.palette = null;
+  if(!state.theme) state.theme = 'light';
   if(state.profile && state.profile.age!==undefined){ delete state.profile.age; }
-  (state.studies||[]).forEach(s=>{
+  state.visits.forEach(v=>{ if(v.photoCount===undefined) v.photoCount = 0; });
+  state.studies.forEach(s=>{
     if(s.weekday===undefined){
       if(s.nextDate){
         s.weekday = parseDate(s.nextDate).getDay();
@@ -2418,6 +2866,7 @@ function migrateState(){
         s.time = s.time || '';
       }
     }
+    if(s.photoCount===undefined) s.photoCount = 0;
     delete s.nextDate;
     delete s.nextDateTime;
   });
@@ -2472,6 +2921,38 @@ function init(){
   document.getElementById('changelogOkBtn').addEventListener('click', closeChangelogModal);
   document.getElementById('changelogModal').addEventListener('click', (e)=>{
     if(e.target.id==='changelogModal') closeChangelogModal();
+  });
+
+  document.getElementById('viewerClose').addEventListener('click', closeViewer);
+  document.getElementById('viewerPrev').addEventListener('click', ()=> viewerMove(-1));
+  document.getElementById('viewerNext').addEventListener('click', ()=> viewerMove(1));
+  document.getElementById('viewerImg').addEventListener('click', ()=>{
+    viewerState.zoomed = !viewerState.zoomed;
+    document.getElementById('viewerStage').classList.toggle('zoomed', viewerState.zoomed);
+  });
+  let touchX = null;
+  const stage = document.getElementById('viewerStage');
+  stage.addEventListener('touchstart', (e)=>{ touchX = e.touches.length===1 ? e.touches[0].clientX : null; }, {passive:true});
+  stage.addEventListener('touchend', (e)=>{
+    if(touchX===null || viewerState.zoomed) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if(Math.abs(dx) > 50) viewerMove(dx<0 ? 1 : -1);
+    touchX = null;
+  }, {passive:true});
+  document.addEventListener('keydown', (e)=>{
+    if(!document.getElementById('photoViewer').classList.contains('open')) return;
+    if(e.key==='ArrowLeft') viewerMove(-1);
+    else if(e.key==='ArrowRight') viewerMove(1);
+    else if(e.key==='Escape') closeViewer();
+  });
+
+  document.getElementById('hueSlider').addEventListener('input', function(){
+    state.palette = { id:'custom', h:Number(this.value), s:1 };
+    applyPalette();
+  });
+  document.getElementById('hueSlider').addEventListener('change', ()=>{
+    saveState();
+    renderSwatches();
   });
 
   document.querySelectorAll('#horasSegTabs .seg-tab').forEach(el=>{
@@ -2591,8 +3072,9 @@ function init(){
 
   document.getElementById('resetDataBtn').addEventListener('click', ()=>{
     if(confirm('¿Seguro que deseas borrar todos los datos? Esta acción no se puede deshacer.')){
-      state = { profile:null, hours:[], visits:[], studies:[], credits:[], theme:state.theme, notifSettings:{enabled:false,notified:{},lastMonthlyNotif:0}, closedMonths:[], openMonth: monthKey(new Date()), changelogSeen: CHANGELOG_VERSION };
+      state = { profile:null, hours:[], visits:[], studies:[], credits:[], weekPlan:[0,0,0,0,0,0,0], palette:null, theme:state.theme, notifSettings:{enabled:false,notified:{},lastMonthlyNotif:0}, closedMonths:[], openMonth: monthKey(new Date()), changelogSeen: CHANGELOG_VERSION };
       saveState();
+      try{ indexedDB.deleteDatabase('jw_photos'); }catch(e){}
       location.reload();
     }
   });
