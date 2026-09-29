@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
 <title>JW Field Service</title>
 <link rel="manifest" href="/manifest.json">
-<link rel="icon" type="image/png" href="/logo/Captura de pantalla 2026-08-25 193118.png">
-<link rel="apple-touch-icon" href="/logo/Captura de pantalla 2026-08-25 193118.png">
+<link rel="icon" type="image/jpeg" href="/logo/WhatsApp%20Image%202026-09-28%20at%207.09.19%20PM.jpeg?v=3">
+<link rel="apple-touch-icon" href="/logo/WhatsApp%20Image%202026-09-28%20at%207.09.19%20PM.jpeg?v=3">
 <meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -863,15 +863,6 @@ input[type="date"], input[type="time"]{
   </div>
 </div>
 
-<div class="modal-overlay" id="changelogModal">
-  <div class="modal-sheet">
-    <div class="modal-head"><h3>¡La versión 2.0 ha llegado!</h3><button class="icon-btn" id="changelogCloseBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px;line-height:1.5;">Esto es lo nuevo. Todos tus datos se conservan.</p>
-    <div id="changelogBody"></div>
-    <button class="btn btn-primary btn-block" id="changelogOkBtn" style="margin-top:10px;">Entendido</button>
-  </div>
-</div>
-
 <div class="modal-overlay" id="editHoursModal">
   <div class="modal-sheet">
     <div class="modal-head"><h3>Editar horas del día</h3><button class="icon-btn" id="editHoursClose"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
@@ -975,17 +966,6 @@ const PALETTES = [
   {id:'menta', name:'Menta', h:160, s:0.55},
   {id:'rosapalo', name:'Rosa palo', h:345, s:0.5},
   {id:'oliva', name:'Oliva', h:75, s:0.45},
-];
-
-const CHANGELOG_VERSION = 'v2.0';
-const CHANGELOG_ITEMS = [
-  'Ya puedes editar los días y las horas registradas de cada mes desde Historial: el botón de editar ahora funciona.',
-  'Revisitas y estudios bíblicos: agrega fotos de la casa, tomándolas en el momento o eligiéndolas de tu fototeca. Puedes guardar varias y verlas después con flechas para cambiar de foto y zoom.',
-  'Nueva sección Planificar: elige cuántas horas quieres hacer cada día de la semana. El calendario te las muestra en amarillo junto con un estimado del mes.',
-  'En Metas, además de la barra azul, ahora hay una barra amarilla que indica cuántas horas deberías llevar para ir cumpliendo, tanto del mes como del año.',
-  'En Crédito, los ejemplos ahora hablan de mantenimiento del Salón del Reino.',
-  'En Perfil hay muchísimos más tonos para personalizar la app, y funcionan igual en modo claro y modo oscuro. También puedes crear tu propio tono.',
-  'El logo de la app cambió.',
 ];
 
 let state = null;
@@ -1144,11 +1124,11 @@ function buildNav(){
     </div>
     <div class="credit-block">
       <h4>Diseño y creatividad</h4>
-      <p><strong>Crisbely Guzmán /strong><br>Diseñadora gráfica · Dirección visual · Diseño de interfaz · Conceptualización creativa · Dirección creativa · Identidad visual · Propuestas de diseño · Experiencia de usuario (UX/UI)</p>
+      <p><strong>Crisbely Guzmán</strong><br>Diseñadora gráfica · Dirección visual · Diseño de interfaz · Conceptualización creativa · Dirección creativa · Identidad visual · Propuestas de diseño · Experiencia de usuario (UX/UI)</p>
     </div>
     <div class="credit-block">
       <h4>Ideas y concepto</h4>
-      <p><strong>Crisbely Guzmán </strong><br>Ideas creativas · Conceptualización del proyecto · Aportes visuales · Propuestas de contenido y presentación</p>
+      <p><strong>Crisbely Guzmán</strong><br>Ideas creativas · Conceptualización del proyecto · Aportes visuales · Propuestas de contenido y presentación</p>
     </div>
   `;
 
@@ -1390,7 +1370,7 @@ function registerNotificationSW(){
 function sendNotification(title, body){
   if(!('Notification' in window)) return;
   if(Notification.permission!=='granted') return;
-  const opts = {body:body, icon:'/logo/Captura de pantalla 2026-08-25 193118.png'};
+  const opts = {body:body, icon:'/logo/WhatsApp%20Image%202026-09-28%20at%207.09.19%20PM.jpeg?v=3'};
   if('serviceWorker' in navigator){
     navigator.serviceWorker.getRegistration().then(reg=>{
       if(reg && reg.showNotification){
@@ -2678,16 +2658,6 @@ function closeTutorialModal(){
   document.getElementById('tutorialModal').classList.remove('open');
 }
 
-function openChangelogModal(){
-  document.getElementById('changelogBody').innerHTML = `<ul style="padding-left:18px;">${CHANGELOG_ITEMS.map(i=>`<li style="font-size:13px;color:var(--text-muted);line-height:1.7;margin-bottom:4px;">${i}</li>`).join('')}</ul>`;
-  document.getElementById('changelogModal').classList.add('open');
-}
-function closeChangelogModal(){
-  document.getElementById('changelogModal').classList.remove('open');
-  state.changelogSeen = CHANGELOG_VERSION;
-  saveState();
-}
-
 function showConfirmModal(title, msg, onOk){
   document.getElementById('confirmTitle').textContent = title;
   document.getElementById('confirmBody').innerHTML = `<p style="font-size:14px;color:var(--text);">${msg}</p>`;
@@ -2870,6 +2840,7 @@ function migrateState(){
     delete s.nextDate;
     delete s.nextDateTime;
   });
+  delete state.changelogSeen;
   delete state.seenPrevMonthEditNotice;
   delete state.dismissedAlerts;
   delete state.hideCampaign2026;
@@ -2883,7 +2854,6 @@ function init(){
   state = loaded || { profile:null, hours:[], visits:[], studies:[], theme:'light' };
   const isNewUser = !state.profile;
   migrateState();
-  if(isNewUser){ state.changelogSeen = CHANGELOG_VERSION; }
   applyTheme();
   buildNav();
   attachSteppers(document);
@@ -2915,12 +2885,6 @@ function init(){
   document.getElementById('tutorialStartBtn').addEventListener('click', closeTutorialModal);
   document.getElementById('tutorialModal').addEventListener('click', (e)=>{
     if(e.target.id==='tutorialModal') closeTutorialModal();
-  });
-
-  document.getElementById('changelogCloseBtn').addEventListener('click', closeChangelogModal);
-  document.getElementById('changelogOkBtn').addEventListener('click', closeChangelogModal);
-  document.getElementById('changelogModal').addEventListener('click', (e)=>{
-    if(e.target.id==='changelogModal') closeChangelogModal();
   });
 
   document.getElementById('viewerClose').addEventListener('click', closeViewer);
@@ -3072,16 +3036,12 @@ function init(){
 
   document.getElementById('resetDataBtn').addEventListener('click', ()=>{
     if(confirm('¿Seguro que deseas borrar todos los datos? Esta acción no se puede deshacer.')){
-      state = { profile:null, hours:[], visits:[], studies:[], credits:[], weekPlan:[0,0,0,0,0,0,0], palette:null, theme:state.theme, notifSettings:{enabled:false,notified:{},lastMonthlyNotif:0}, closedMonths:[], openMonth: monthKey(new Date()), changelogSeen: CHANGELOG_VERSION };
+      state = { profile:null, hours:[], visits:[], studies:[], credits:[], weekPlan:[0,0,0,0,0,0,0], palette:null, theme:state.theme, notifSettings:{enabled:false,notified:{},lastMonthlyNotif:0}, closedMonths:[], openMonth: monthKey(new Date()) };
       saveState();
       try{ indexedDB.deleteDatabase('jw_photos'); }catch(e){}
       location.reload();
     }
   });
-
-  if(!isNewUser && state.changelogSeen !== CHANGELOG_VERSION){
-    setTimeout(()=> openChangelogModal(), 350);
-  }
 
   if(state.notifSettings && state.notifSettings.enabled && 'Notification' in window && Notification.permission==='granted'){
     registerNotificationSW();
