@@ -638,6 +638,10 @@ input[type="date"], input[type="time"]{
 
       <section class="view" data-view="revisitas">
         <button class="btn btn-primary btn-block" id="addVisitBtn" style="margin-bottom:14px;">+ Nueva revisita</button>
+        <div class="field-row" style="margin-bottom:14px;">
+          <div class="field" style="margin-bottom:0;flex:1.4;"><input type="search" id="visitSearch" placeholder="Buscar revisita..."></div>
+          <div class="field" style="margin-bottom:0;"><select id="visitSort"><option value="next">Próxima visita</option><option value="name">Nombre A–Z</option><option value="recent">Última visita</option></select></div>
+        </div>
         <div class="card" id="visitsList"></div>
       </section>
 
@@ -740,6 +744,18 @@ input[type="date"], input[type="time"]{
         </div>
       </section>
 
+      <section class="view" data-view="informe">
+        <div class="credit-note-box">Elige el mes y envía tu informe de servicio por WhatsApp o cópialo.</div>
+        <div class="card">
+          <div class="field"><label>Mes</label><select id="reportMonth"></select></div>
+          <div id="reportBox"></div>
+          <div class="fab-row">
+            <button class="btn btn-success btn-block" id="reportWhats">Enviar por WhatsApp</button>
+            <button class="btn btn-secondary btn-block" id="reportCopy">Copiar informe</button>
+          </div>
+        </div>
+      </section>
+
       <section class="view" data-view="historial">
         <div class="section-title">Historial de meses</div>
         <div class="card" id="monthHistoryList"></div>
@@ -774,6 +790,14 @@ input[type="date"], input[type="time"]{
       </div>
     </div>
     <button class="btn btn-primary btn-block" id="ob-save" style="margin-top:8px;">Comenzar</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="newsModal">
+  <div class="modal-sheet">
+    <div class="modal-head"><h3>Novedades</h3></div>
+    <p style="font-size:13.5px;color:var(--text-muted);line-height:1.6;margin-bottom:16px;">Ahora puedes enviar las horas del mes por WhatsApp y se corrigieron errores.</p>
+    <button class="btn btn-primary btn-block" id="newsOk">Entendido</button>
   </div>
 </div>
 
@@ -914,13 +938,14 @@ const NAV_ITEMS = [
   {id:'estudios', label:'Estudios', icon:'M4 19.5A2.5 2.5 0 016.5 17H20M4 19.5A2.5 2.5 0 006.5 22H20V2H6.5A2.5 2.5 0 004 4.5v15z'},
   {id:'calendario', label:'Calendario', icon:'M3 10h18M8 2v4M16 2v4M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z'},
   {id:'estadisticas', label:'Estadísticas', icon:'M18 20V10M12 20V4M6 20v-6'},
+  {id:'informe', label:'Informe', icon:'M9 8h6M9 12h6M9 16h6M5 4h14v16H5z'},
   {id:'perfil', label:'Perfil', icon:'M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z'},
   {id:'tutorial', label:'Tutorial', icon:'M12 22a10 10 0 100-20 10 10 0 000 20zM9.5 9a2.5 2.5 0 015 0c0 1.5-2 2-2 3.5M12 17h.01'},
   {id:'sugerencias', label:'Sugerencias', icon:'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z'},
   {id:'historial', label:'Historial', icon:'M8 5H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2h-3M8 5a2 2 0 104 0 2 2 0 00-4 0z'},
 ];
 const BOTTOM_ITEMS = ['inicio','horas','metas','mas'];
-const MORE_ITEMS = ['plan','revisitas','estudios','calendario','estadisticas','perfil','historial','tutorial','sugerencias'];
+const MORE_ITEMS = ['plan','revisitas','estudios','calendario','estadisticas','informe','perfil','historial','tutorial','sugerencias'];
 const TOP_LEVEL_VIEWS = ['inicio','horas','metas','mas'];
 
 const GOALS = {
@@ -968,6 +993,7 @@ const PALETTES = [
   {id:'oliva', name:'Oliva', h:75, s:0.45},
 ];
 
+const NEWS_VERSION = 'informe-whatsapp-1';
 let state = null;
 let currentView = 'inicio';
 let backTarget = 'inicio';
@@ -1145,7 +1171,7 @@ function switchView(id, backTo){
   currentView = id;
   if(backTo!==undefined){ backTarget = backTo; }
   document.querySelectorAll('.view').forEach(v=> v.classList.toggle('active', v.dataset.view===id));
-  const titleMap = {inicio:'Inicio',horas:'Horas',metas:'Metas',plan:'Planificar semana',revisitas:'Revisitas',estudios:'Estudios bíblicos',calendario:'Calendario',estadisticas:'Estadísticas',perfil:'Perfil',mas:'Más',sugerencias:'Sugerencias',historial:'Historial'};
+  const titleMap = {inicio:'Inicio',horas:'Horas',metas:'Metas',plan:'Planificar semana',revisitas:'Revisitas',estudios:'Estudios bíblicos',calendario:'Calendario',estadisticas:'Estadísticas',perfil:'Perfil',mas:'Más',sugerencias:'Sugerencias',historial:'Historial',informe:'Informe mensual'};
   document.getElementById('viewTitle').textContent = titleMap[id] || '';
   document.querySelectorAll('.nav-item').forEach(el=> el.classList.toggle('active', el.dataset.nav===id));
   document.querySelectorAll('.bn-item').forEach(el=>{
@@ -1174,6 +1200,7 @@ function renderCurrentView(){
   else if(currentView==='estadisticas') renderStats();
   else if(currentView==='perfil') renderProfile();
   else if(currentView==='historial') renderMonthHistory();
+  else if(currentView==='informe') renderReport();
 }
 
 function sumMinutes(entries){ return entries.reduce((a,e)=>a+e.minutes,0); }
@@ -1289,8 +1316,10 @@ function renderInicio(){
       Mes abierto para registrar horas: <b style="color:var(--text);">${openLabel}</b>.
       ${open ? 'Podrás finalizarlo cuando termine.' : 'Este mes ya terminó: finalízalo para poder seguir registrando horas.'}
     </p>
-    <button class="btn ${open? 'btn-secondary':'btn-primary'} btn-block" id="closeMonthBtn">Finalizar mes (${openLabel})</button>`;
+    <button class="btn ${open? 'btn-secondary':'btn-primary'} btn-block" id="closeMonthBtn">Finalizar mes (${openLabel})</button>
+    <button class="btn btn-success btn-block" id="goReportBtn" style="margin-top:10px;">Enviar informe por WhatsApp</button>`;
   document.getElementById('closeMonthBtn').addEventListener('click', tryFinalizeMonth);
+  document.getElementById('goReportBtn').addEventListener('click', ()=> switchView('informe','inicio'));
 
   renderNotifCard();
 }
@@ -1312,13 +1341,22 @@ function tryFinalizeMonth(){
   });
 }
 
+function upcomingReminderLines(){
+  const out = [];
+  const tmr = tomorrowStr();
+  const wd = parseDate(tmr).getDay();
+  state.visits.forEach(v=>{ if(v.nextVisit===tmr) out.push('Revisita mañana: '+v.name+(v.nextVisitTime? ' · '+v.nextVisitTime : '')); });
+  state.studies.forEach(s=>{ if(s.weekday===wd) out.push('Estudio mañana: '+s.name+(s.time? ' · '+s.time : '')); });
+  return out;
+}
+
 function renderNotifCard(){
   const wrap = document.getElementById('notifCard');
   if(!wrap) return;
   const supported = 'Notification' in window;
   const perm = supported ? Notification.permission : 'unsupported';
   const enabled = state.notifSettings.enabled;
-  let statusText = 'Recibe un aviso un día antes de tus estudios programados, y un resumen de tu progreso cada 15 días.';
+  let statusText = 'Recibe un aviso un día antes de tus estudios programados, y un resumen de tu progreso cada 15 días. Los avisos llegan cuando abres la app.';
   let btnHtml = '';
   if(!supported){
     statusText = 'Tu navegador no admite notificaciones.';
@@ -1329,7 +1367,9 @@ function renderNotifCard(){
   } else {
     btnHtml = `<button class="btn btn-primary btn-block" id="notifToggleBtn">Activar notificaciones</button>`;
   }
-  wrap.innerHTML = `<p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">${statusText}</p>${btnHtml}`;
+  const lines = upcomingReminderLines();
+  const listHtml = lines.length ? `<div style="margin-bottom:12px;">${lines.map(l=>`<div class="mini-stat-row"><span>${escapeHtml(l)}</span></div>`).join('')}</div>` : '';
+  wrap.innerHTML = `<p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">${statusText}</p>${listHtml}${btnHtml}`;
   const btn = document.getElementById('notifToggleBtn');
   if(btn){
     btn.addEventListener('click', ()=>{
@@ -1343,7 +1383,6 @@ function renderNotifCard(){
           if(p==='granted'){
             state.notifSettings.enabled = true;
             saveState();
-            registerNotificationSW();
             renderNotifCard();
             showToast('Notificaciones activadas');
             checkReminders();
@@ -1355,16 +1394,6 @@ function renderNotifCard(){
       }
     });
   }
-}
-
-function registerNotificationSW(){
-  if(!('serviceWorker' in navigator)) return Promise.resolve(null);
-  try{
-    const swCode = "self.addEventListener('notificationclick', function(e){ e.notification.close(); e.waitUntil(clients.matchAll({type:'window'}).then(function(list){ if(list.length>0){ return list[0].focus(); } return clients.openWindow('/'); })); });";
-    const blob = new Blob([swCode], {type:'text/javascript'});
-    const swUrl = URL.createObjectURL(blob);
-    return navigator.serviceWorker.register(swUrl).then(()=> navigator.serviceWorker.ready).catch(()=>null);
-  }catch(e){ return Promise.resolve(null); }
 }
 
 function sendNotification(title, body){
@@ -1400,7 +1429,7 @@ function checkReminders(){
     if(v.nextVisit===tmr){
       const key = 'visit_'+v.id+'_'+v.nextVisit;
       if(!state.notifSettings.notified[key]){
-        const horaTxt = v.nextVisitTime ? v.nextVisitTime : 'la hora que tenías planeada';
+        const horaTxt = v.nextVisitTime ? v.nextVisitTime : 'hora que tenías planeada';
         sendNotification('Recordatorio de revisita', 'Tienes que ir a hacer una revisita mañana a la '+horaTxt+', la persona se llama '+v.name+'.');
         state.notifSettings.notified[key] = true;
       }
@@ -1411,7 +1440,7 @@ function checkReminders(){
     if(s.weekday===tmrWeekday){
       const key = 'study_'+s.id+'_'+tmr;
       if(!state.notifSettings.notified[key]){
-        const horaTxt = s.time ? s.time : 'la hora que tenías planeada';
+        const horaTxt = s.time ? s.time : 'hora que tenías planeada';
         sendNotification('Recordatorio de estudio', 'Mañana a la '+horaTxt+' tienes que darle el estudio a '+s.name+'.');
         state.notifSettings.notified[key] = true;
       }
@@ -2098,7 +2127,14 @@ function closeViewer(){
 function renderVisits(){
   const list = document.getElementById('visitsList');
   if(state.visits.length===0){ list.innerHTML = emptyState('No tienes revisitas registradas.'); return; }
-  const sorted = [...state.visits].sort((a,b)=> (a.nextVisit||'9999').localeCompare(b.nextVisit||'9999'));
+  const norm = s=> (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const q = norm(document.getElementById('visitSearch').value.trim());
+  const mode = document.getElementById('visitSort').value;
+  const sorted = state.visits.filter(v=> !q || norm([v.name,v.address,v.phone,v.topic,v.publication,v.interests,v.notes].join(' ')).includes(q));
+  if(sorted.length===0){ list.innerHTML = emptyState('No se encontraron revisitas.'); return; }
+  if(mode==='name') sorted.sort((a,b)=> a.name.localeCompare(b.name,'es'));
+  else if(mode==='recent') sorted.sort((a,b)=> (b.lastVisit||'').localeCompare(a.lastVisit||''));
+  else sorted.sort((a,b)=> (a.nextVisit||'9999').localeCompare(b.nextVisit||'9999'));
   list.innerHTML = sorted.map(v=>`
     <div class="person-card">
       <div class="person-top">
@@ -2331,7 +2367,7 @@ function renderCalendar(){
 
   const firstDow = (new Date(y,m,1).getDay()+6)%7;
   const totalDays = daysInMonth(y,m);
-  const prevTotalDays = daysInMonth(y,m-1<0?11:m-1, );
+  const prevTotalDays = new Date(y, m, 0).getDate();
   const cells = [];
   for(let i=0;i<firstDow;i++){ cells.push({day: prevTotalDays-firstDow+1+i, muted:true, dateStr:null}); }
   for(let d=1; d<=totalDays; d++){
@@ -2610,18 +2646,35 @@ function formatTimer(sec){
   const h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60;
   return pad(h)+':'+pad(m)+':'+pad(s);
 }
-function startTimer(){
-  if(!isHoursEditingOpen()){ showToast('Finaliza el mes pendiente desde Inicio para poder usar el cronómetro.', 3200); return; }
+function timerTick(){
+  if(!state || !state.timerStart) return;
+  timerSeconds = Math.max(0, Math.floor((Date.now()-state.timerStart)/1000));
+  document.getElementById('timerDisplay').textContent = formatTimer(timerSeconds);
+}
+function showTimerRunning(){
   timerRunning = true;
   document.getElementById('timerStartBtn').style.display='none';
   document.getElementById('timerStopBtn').style.display='flex';
   document.getElementById('timerNoteWrap').style.display='block';
-  timerInterval = setInterval(()=>{
-    timerSeconds++;
-    document.getElementById('timerDisplay').textContent = formatTimer(timerSeconds);
-  },1000);
+  clearInterval(timerInterval);
+  timerTick();
+  timerInterval = setInterval(timerTick,1000);
+}
+function startTimer(){
+  if(!isHoursEditingOpen()){ showToast('Finaliza el mes pendiente desde Inicio para poder usar el cronómetro.', 3200); return; }
+  state.timerStart = Date.now();
+  state.timerNote = '';
+  saveState();
+  showTimerRunning();
+}
+function resumeTimer(){
+  if(state.timerStart){
+    document.getElementById('timerNote').value = state.timerNote || '';
+    showTimerRunning();
+  }
 }
 function stopTimer(){
+  timerTick();
   timerRunning = false;
   clearInterval(timerInterval);
   document.getElementById('timerStartBtn').style.display='flex';
@@ -2629,13 +2682,20 @@ function stopTimer(){
   const minutes = Math.round(timerSeconds/60);
   const noteInput = document.getElementById('timerNote');
   const note = noteInput.value.trim() || 'Cronómetro';
+  let date = todayStr();
+  if(state.timerStart){
+    const sd = fmtDate(new Date(state.timerStart));
+    if(dateMonthKey(sd)===state.openMonth) date = sd;
+  }
+  state.timerStart = null;
+  state.timerNote = '';
   if(minutes>0){
-    state.hours.push({id:uid(), date:todayStr(), minutes, note});
-    saveState();
+    state.hours.push({id:uid(), date, minutes, note});
     showToast('Se guardaron '+minutesToHM(minutes));
   } else {
     showToast('Tiempo insuficiente (mínimo 1 minuto)');
   }
+  saveState();
   timerSeconds = 0;
   noteInput.value = '';
   document.getElementById('timerNoteWrap').style.display='none';
@@ -2674,6 +2734,19 @@ document.getElementById('confirmOk').addEventListener('click', ()=>{
   if(confirmCallback) confirmCallback();
   closeConfirmModal();
 });
+
+/* Confirmación antes de eliminar (horas, crédito, revisitas y estudios) */
+document.addEventListener('click', (e)=>{
+  const b = e.target.closest('[data-del-hour],[data-del-credit],[data-del-hour-edit],[data-del-hour-month],[data-del-visit],[data-del-study]');
+  if(!b || b.dataset.ok) return;
+  e.stopImmediatePropagation();
+  e.preventDefault();
+  const msg = b.hasAttribute('data-del-visit') ? '¿Eliminar esta revisita y sus fotos?'
+    : b.hasAttribute('data-del-study') ? '¿Eliminar este estudio y sus fotos?'
+    : b.hasAttribute('data-del-credit') ? '¿Eliminar este crédito?'
+    : '¿Eliminar este registro de horas?';
+  showConfirmModal('Eliminar', msg, ()=>{ b.dataset.ok='1'; b.click(); delete b.dataset.ok; });
+}, true);
 
 function renderMonthHistory(){
   const list = document.getElementById('monthHistoryList');
@@ -2813,6 +2886,61 @@ function openMonthEdit(monthDate){
   };
 }
 
+function reportMonthDate(){
+  const [y,m] = document.getElementById('reportMonth').value.split('-').map(Number);
+  return new Date(y, m-1, 1);
+}
+function buildReport(d){
+  const start = new Date(d.getFullYear(), d.getMonth(), 1);
+  const end = new Date(d.getFullYear(), d.getMonth()+1, 1);
+  const mins = sumMinutes(hoursInRange(start,end));
+  const cr = sumMinutes(creditsInRange(start,end));
+  const studies = state.studies.length, visits = state.visits.length;
+  const text = '*Informe de servicio – '+capitalize(monthLabel(d))+'*\n'
+    + 'Nombre: '+state.profile.name+'\n'
+    + 'Tipo: '+currentGoal().label+'\n'
+    + 'Horas: '+minutesToHM(mins)+'\n'
+    + 'Crédito: '+minutesToHM(cr)+'\n'
+    + 'Revisitas: '+visits+'\n'
+    + 'Estudios bíblicos: '+studies;
+  return {mins, cr, studies, visits, text};
+}
+function renderReport(){
+  const sel = document.getElementById('reportMonth');
+  const prev = sel.value;
+  sel.innerHTML = '';
+  const open = getOpenMonthDate();
+  for(let i=0;i<6;i++){
+    const d = new Date(open.getFullYear(), open.getMonth()-i, 1);
+    const o = document.createElement('option');
+    o.value = monthKey(d);
+    o.textContent = capitalize(monthLabel(d));
+    sel.appendChild(o);
+  }
+  if(prev && Array.from(sel.options).some(o=>o.value===prev)) sel.value = prev;
+  const r = buildReport(reportMonthDate());
+  document.getElementById('reportBox').innerHTML = `
+    <div class="mini-stat-row"><span>Horas</span><b>${minutesToHM(r.mins)}</b></div>
+    <div class="mini-stat-row"><span>Crédito</span><b>${minutesToHM(r.cr)}</b></div>
+    <div class="mini-stat-row"><span>Revisitas</span><b>${r.visits}</b></div>
+    <div class="mini-stat-row"><span>Estudios bíblicos</span><b>${r.studies}</b></div>
+    <div style="height:6px;"></div>`;
+}
+function fallbackCopy(t, cb){
+  const ta = document.createElement('textarea');
+  ta.value = t; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); cb(); }catch(e){ showToast('No se pudo copiar'); }
+  ta.remove();
+}
+function copyReport(){
+  const text = buildReport(reportMonthDate()).text;
+  const done = ()=> showToast('Informe copiado');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(()=> fallbackCopy(text, done));
+  } else fallbackCopy(text, done);
+}
+
 function migrateState(){
   if(!state.notifSettings){ state.notifSettings = { enabled:false, notified:{}, lastMonthlyNotif:0 }; }
   if(!state.closedMonths) state.closedMonths = [];
@@ -2824,6 +2952,7 @@ function migrateState(){
   if(!Array.isArray(state.weekPlan) || state.weekPlan.length!==7) state.weekPlan = [0,0,0,0,0,0,0];
   if(state.palette===undefined) state.palette = null;
   if(!state.theme) state.theme = 'light';
+  if(state.timerStart===undefined) state.timerStart = null;
   if(state.profile && state.profile.age!==undefined){ delete state.profile.age; }
   state.visits.forEach(v=>{ if(v.photoCount===undefined) v.photoCount = 0; });
   state.studies.forEach(s=>{
@@ -2875,6 +3004,7 @@ function init(){
     if(!type){ showToast('Selecciona un tipo de precursor'); return; }
     state.profile = { name, type };
     state.openMonth = monthKey(new Date());
+    state.newsSeen = NEWS_VERSION;
     saveState();
     document.getElementById('onboardModal').classList.remove('open');
     switchView('inicio');
@@ -2989,8 +3119,24 @@ function init(){
   document.getElementById('themeToggleDesktop').addEventListener('click', toggleTheme);
   document.getElementById('profThemeBtn').addEventListener('click', toggleTheme);
 
+  document.getElementById('visitSearch').addEventListener('input', renderVisits);
+  document.getElementById('visitSort').addEventListener('change', renderVisits);
+  document.getElementById('reportMonth').addEventListener('change', renderReport);
+  document.getElementById('reportWhats').addEventListener('click', ()=>{
+    window.open('https://wa.me/?text='+encodeURIComponent(buildReport(reportMonthDate()).text), '_blank');
+  });
+  document.getElementById('reportCopy').addEventListener('click', copyReport);
+  document.getElementById('newsOk').addEventListener('click', ()=>{
+    state.newsSeen = NEWS_VERSION;
+    saveState();
+    document.getElementById('newsModal').classList.remove('open');
+  });
+
   document.getElementById('timerStartBtn').addEventListener('click', startTimer);
   document.getElementById('timerStopBtn').addEventListener('click', stopTimer);
+  document.getElementById('timerNote').addEventListener('input', function(){
+    if(state.timerStart){ state.timerNote = this.value; saveState(); }
+  });
 
   document.getElementById('addHoursBtn').addEventListener('click', ()=>{
     const date = document.getElementById('hoursDate').value || todayStr();
@@ -3036,19 +3182,24 @@ function init(){
 
   document.getElementById('resetDataBtn').addEventListener('click', ()=>{
     if(confirm('¿Seguro que deseas borrar todos los datos? Esta acción no se puede deshacer.')){
-      state = { profile:null, hours:[], visits:[], studies:[], credits:[], weekPlan:[0,0,0,0,0,0,0], palette:null, theme:state.theme, notifSettings:{enabled:false,notified:{},lastMonthlyNotif:0}, closedMonths:[], openMonth: monthKey(new Date()) };
+      state = { profile:null, hours:[], visits:[], studies:[], credits:[], weekPlan:[0,0,0,0,0,0,0], palette:null, theme:state.theme, notifSettings:{enabled:false,notified:{},lastMonthlyNotif:0}, closedMonths:[], openMonth: monthKey(new Date()), timerStart:null };
       saveState();
       try{ indexedDB.deleteDatabase('jw_photos'); }catch(e){}
       location.reload();
     }
   });
 
-  if(state.notifSettings && state.notifSettings.enabled && 'Notification' in window && Notification.permission==='granted'){
-    registerNotificationSW();
-  }
-
+  resumeTimer();
   checkReminders();
-  reminderInterval = setInterval(checkReminders, 15*60*1000);
+  reminderInterval = setInterval(checkReminders, 5*60*1000);
+  document.addEventListener('visibilitychange', ()=>{
+    if(!document.hidden){ timerTick(); checkReminders(); }
+  });
+  window.addEventListener('focus', ()=>{ timerTick(); checkReminders(); });
+
+  if(state.profile && state.newsSeen!==NEWS_VERSION){
+    document.getElementById('newsModal').classList.add('open');
+  }
 }
 
 init();
