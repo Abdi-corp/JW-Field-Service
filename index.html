@@ -424,6 +424,10 @@ input[type="date"], input[type="time"]{
 .mini-stat-row:last-child{border-bottom:none;}
 .mini-stat-row b{color:var(--text);font-weight:600;}
 
+.big-total > label{display:block;font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:8px;}
+.big-total input{font-size:30px;font-weight:700;height:60px;color:var(--primary-dark);}
+.big-total .stepper-btn{width:48px;font-size:24px;}
+
 @media(max-width:480px){
   .topbar{padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top));}
   .topbar h2{font-size:16px;}
@@ -754,6 +758,13 @@ input[type="date"], input[type="time"]{
             <button class="btn btn-secondary btn-block" id="reportCopy">Copiar informe</button>
           </div>
         </div>
+
+        <div class="section-title">Enviar a Hourglass</div>
+        <div class="card">
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;line-height:1.5;">Copia cada dato y pégalo en el formulario de Hourglass. Las horas se muestran completas; los minutos sobrantes se pasan al mes siguiente.</p>
+          <div id="hgBox"></div>
+          <button class="btn btn-primary btn-block" id="reportHourglass" style="margin-top:12px;">Abrir Hourglass</button>
+        </div>
       </section>
 
       <section class="view" data-view="historial">
@@ -790,14 +801,6 @@ input[type="date"], input[type="time"]{
       </div>
     </div>
     <button class="btn btn-primary btn-block" id="ob-save" style="margin-top:8px;">Comenzar</button>
-  </div>
-</div>
-
-<div class="modal-overlay" id="newsModal">
-  <div class="modal-sheet">
-    <div class="modal-head"><h3>Novedades</h3></div>
-    <p style="font-size:13.5px;color:var(--text-muted);line-height:1.6;margin-bottom:16px;">Ahora puedes enviar las horas del mes por WhatsApp y se corrigieron errores.</p>
-    <button class="btn btn-primary btn-block" id="newsOk">Entendido</button>
   </div>
 </div>
 
@@ -993,7 +996,6 @@ const PALETTES = [
   {id:'oliva', name:'Oliva', h:75, s:0.45},
 ];
 
-const NEWS_VERSION = 'informe-whatsapp-1';
 let state = null;
 let currentView = 'inicio';
 let backTarget = 'inicio';
@@ -1016,7 +1018,7 @@ function fmtDate(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.ge
 function todayStr(){ return fmtDate(new Date()); }
 function tomorrowStr(){ const d = new Date(); d.setDate(d.getDate()+1); return fmtDate(d); }
 function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
-function minutesToHM(min){ const h=Math.floor(min/60); const m=Math.round(min%60); return h+'h '+m+'m'; }
+function minutesToHM(min){ const neg=min<0; min=Math.abs(min); const h=Math.floor(min/60); const m=Math.round(min%60); return (neg?'−':'')+h+'h '+m+'m'; }
 function compactHM(min){ const h=Math.floor(min/60); const m=Math.round(min%60); if(h===0) return m+'m'; return m? h+'h'+pad(m) : h+'h'; }
 function daysInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
 function monthLabel(d){ return d.toLocaleDateString('es-ES',{month:'long', year:'numeric'}); }
@@ -1305,7 +1307,8 @@ function renderInicio(){
 
   const creditMonthMin = sumMinutes(creditThisMonth());
   document.getElementById('in-credit-card').innerHTML = `
-    <p style="font-size:13.5px;color:var(--text-muted);line-height:1.5;">Has registrado <b style="color:var(--text);">${minutesToHM(creditMonthMin)}</b> de crédito este mes por labores de mantenimiento del Salón del Reino. Este tiempo no se suma a tus horas de servicio, pero ayuda a tu ritmo respecto a la meta.</p>`;
+    <div class="num" style="font-size:32px;font-weight:700;color:var(--primary-dark);letter-spacing:-0.02em;">${minutesToHM(creditMonthMin)}</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-top:4px;font-weight:500;">Crédito de este mes</div>`;
 
   const openDate = getOpenMonthDate();
   const openLabel = capitalize(monthLabel(openDate));
@@ -1649,6 +1652,7 @@ function openEditCreditEntry(id){
 function openEditHourEntry(id, afterSave){
   const entry = state.hours.find(e=>e.id===id);
   if(!entry) return;
+  if(entry.adj){ showToast('Para cambiar este ajuste, edita el total del mes o elimínalo'); return; }
   const h = Math.floor(entry.minutes/60);
   const m = entry.minutes%60;
   const entryMonth = parseDate(entry.date);
@@ -2843,8 +2847,31 @@ function openMonthEdit(monthDate){
       </div>
     `;
   }
+  const curTotal = sumMinutes(entries);
+  html += `
+    <div class="big-total" style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px;">
+      <label>Total de horas del mes</label>
+      <div class="field-row">
+        <div class="field"><label>Horas</label>${stepperFieldHtml('monthTotH', {value:Math.floor(curTotal/60)})}</div>
+        <div class="field"><label>Minutos</label>${stepperFieldHtml('monthTotM', {max:59, value:curTotal%60})}</div>
+      </div>
+      <button type="button" class="btn btn-primary btn-block" id="monthTotSave">Guardar total</button>
+    </div>`;
   body.innerHTML = html;
   const refresh = ()=>{ renderMonthHistory(); openMonthEdit(monthDate); };
+  document.getElementById('monthTotSave').addEventListener('click', ()=>{
+    const h = Math.max(0, parseInt(document.getElementById('monthTotH').value)||0);
+    const mi = Math.max(0, Math.min(59, parseInt(document.getElementById('monthTotM').value)||0));
+    const target = h*60+mi;
+    const adjId = 'adj_'+monthKey(monthDate);
+    state.hours = state.hours.filter(e=>e.id!==adjId);
+    const others = sumMinutes(state.hours.filter(e=>{ const d=parseDate(e.date); return d>=start && d<end; }));
+    const diff = target - others;
+    if(diff!==0) state.hours.push({id:adjId, date:fmtDate(start), minutes:diff, note:'Ajuste del total', adj:true});
+    saveState();
+    refresh();
+    showToast('Total actualizado');
+  });
   body.querySelectorAll('[data-del-hour-month]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       state.hours = state.hours.filter(e=>e.id!==btn.dataset.delHourMonth);
@@ -2895,15 +2922,13 @@ function buildReport(d){
   const end = new Date(d.getFullYear(), d.getMonth()+1, 1);
   const mins = sumMinutes(hoursInRange(start,end));
   const cr = sumMinutes(creditsInRange(start,end));
-  const studies = state.studies.length, visits = state.visits.length;
+  const studies = state.studies.length;
   const text = '*Informe de servicio – '+capitalize(monthLabel(d))+'*\n'
     + 'Nombre: '+state.profile.name+'\n'
-    + 'Tipo: '+currentGoal().label+'\n'
     + 'Horas: '+minutesToHM(mins)+'\n'
     + 'Crédito: '+minutesToHM(cr)+'\n'
-    + 'Revisitas: '+visits+'\n'
     + 'Estudios bíblicos: '+studies;
-  return {mins, cr, studies, visits, text};
+  return {mins, cr, studies, text};
 }
 function renderReport(){
   const sel = document.getElementById('reportMonth');
@@ -2922,9 +2947,19 @@ function renderReport(){
   document.getElementById('reportBox').innerHTML = `
     <div class="mini-stat-row"><span>Horas</span><b>${minutesToHM(r.mins)}</b></div>
     <div class="mini-stat-row"><span>Crédito</span><b>${minutesToHM(r.cr)}</b></div>
-    <div class="mini-stat-row"><span>Revisitas</span><b>${r.visits}</b></div>
     <div class="mini-stat-row"><span>Estudios bíblicos</span><b>${r.studies}</b></div>
     <div style="height:6px;"></div>`;
+
+  const hgRows = [
+    ['Horas', String(Math.floor(r.mins/60))],
+    ['Cursos bíblicos', String(r.studies)],
+    ['Comentarios', r.cr>0 ? 'Crédito: '+minutesToHM(r.cr) : '']
+  ];
+  document.getElementById('hgBox').innerHTML = hgRows.map(row=>`
+    <div class="mini-stat-row" style="align-items:center;">
+      <span>${row[0]}: <b>${escapeHtml(row[1]) || '—'}</b></span>
+      ${row[1] ? `<button class="btn btn-secondary btn-sm" data-hg-copy="${escapeHtml(row[1])}">Copiar</button>` : ''}
+    </div>`).join('');
 }
 function fallbackCopy(t, cb){
   const ta = document.createElement('textarea');
@@ -2969,6 +3004,7 @@ function migrateState(){
     delete s.nextDate;
     delete s.nextDateTime;
   });
+  delete state.newsSeen;
   delete state.changelogSeen;
   delete state.seenPrevMonthEditNotice;
   delete state.dismissedAlerts;
@@ -3004,7 +3040,6 @@ function init(){
     if(!type){ showToast('Selecciona un tipo de precursor'); return; }
     state.profile = { name, type };
     state.openMonth = monthKey(new Date());
-    state.newsSeen = NEWS_VERSION;
     saveState();
     document.getElementById('onboardModal').classList.remove('open');
     switchView('inicio');
@@ -3126,10 +3161,17 @@ function init(){
     window.open('https://wa.me/?text='+encodeURIComponent(buildReport(reportMonthDate()).text), '_blank');
   });
   document.getElementById('reportCopy').addEventListener('click', copyReport);
-  document.getElementById('newsOk').addEventListener('click', ()=>{
-    state.newsSeen = NEWS_VERSION;
-    saveState();
-    document.getElementById('newsModal').classList.remove('open');
+  document.getElementById('reportHourglass').addEventListener('click', ()=>{
+    window.open('https://app.hourglass-app.com/v2/page/app', '_blank');
+  });
+  document.getElementById('hgBox').addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-hg-copy]');
+    if(!b) return;
+    const t = b.dataset.hgCopy;
+    const done = ()=> showToast('Copiado');
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(done).catch(()=> fallbackCopy(t, done));
+    } else fallbackCopy(t, done);
   });
 
   document.getElementById('timerStartBtn').addEventListener('click', startTimer);
@@ -3196,10 +3238,6 @@ function init(){
     if(!document.hidden){ timerTick(); checkReminders(); }
   });
   window.addEventListener('focus', ()=>{ timerTick(); checkReminders(); });
-
-  if(state.profile && state.newsSeen!==NEWS_VERSION){
-    document.getElementById('newsModal').classList.add('open');
-  }
 }
 
 init();
